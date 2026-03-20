@@ -185,40 +185,6 @@ export default function LandingHome() {
             </CardContent>
           </Card>
 
-          {/* Rifas Section - OCULTA */}
-          <Card className="hidden bg-white/60 backdrop-blur-xl border-border/50 shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
-            <CardContent className="p-0">
-              <div className="relative h-32 md:h-48 bg-gradient-to-br from-purple-400 to-pink-400 overflow-hidden">
-                <img
-                  src="https://http2.mlstatic.com/D_NQ_NP_2X_867895-MLA99578718932_122025-F.webp"
-                  alt="Rifa BTS Album"
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
-              </div>
-              <div className="p-2 md:p-6">
-                <h2 className="text-lg md:text-2xl font-bold mb-1 md:mb-2 flex items-center gap-2">
-                  <Sparkles className="size-4 md:size-5 text-purple-600" />
-                  <span className="hidden md:inline">Rifas</span>
-                  <span className="md:hidden">Rifas</span>
-                </h2>
-                <p className="text-gray-600 text-xs md:text-sm mb-2 md:mb-4 hidden md:block">
-                  Participa en nuestras rifas exclusivas y gana productos
-                  increíbles del mundo K-POP. ¡Tu oportunidad de ganar está
-                  aquí!
-                </p>
-                <Button
-                  onClick={() => navigate("/rifa")}
-                  className="w-full gap-1 md:gap-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-xs md:text-sm py-1 md:py-2"
-                >
-                  <span className="hidden md:inline">Ver Rifas Activas</span>
-                  <span className="md:hidden">Rifas</span>
-                  <ArrowRight className="size-3 md:size-4" />
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-
           {/* Tienda Section */}
           <Card className="bg-white/60 backdrop-blur-xl border-border/50 shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
             <CardContent className="p-0">
@@ -284,63 +250,21 @@ export default function LandingHome() {
           </Card>
         </div>
 
-        {/* Featured Raffle - OCULTA */}
-        <div className="hidden mt-8 md:mt-16">
-          <div className="flex items-center justify-between mb-4 md:mb-8">
-            <h2 className="text-xl md:text-3xl font-bold flex items-center gap-2 md:gap-3">
-              <Ticket className="size-5 md:size-8 text-purple-600" />
-              Rifa Destacada
+        {/* Espacio Inferior Adicional */}
+        <div className="mt-12 md:mt-24 pb-12">
+          <div className="text-center space-y-4">
+            <h2 className="text-xl md:text-3xl font-bold text-slate-900">
+              Únete a nuestra comunidad
             </h2>
-            <Button
-              variant="ghost"
-              onClick={() => navigate("/rifa")}
-              className="text-purple-600 hover:text-purple-700 hover:bg-purple-50 text-xs md:text-sm"
-            >
-              Ver todas <ArrowRight className="ml-1 md:ml-2 size-3 md:size-4" />
-            </Button>
+            <p className="text-slate-500 text-sm md:text-base max-w-xl mx-auto">
+              Síguenos en nuestras redes sociales para no perderte ningún sorteo, noticia o lanzamiento exclusivo de tus artistas favoritos.
+            </p>
+            <div className="flex justify-center gap-4 pt-4">
+              <Button variant="outline" className="rounded-full px-6">Instagram</Button>
+              <Button variant="outline" className="rounded-full px-6">TikTok</Button>
+              <Button variant="outline" className="rounded-full px-6">Facebook</Button>
+            </div>
           </div>
-
-          <Card className="bg-white/60 backdrop-blur-xl border-border/50 shadow-xl overflow-hidden">
-            <CardContent className="p-0 flex flex-col md:flex-row">
-              <div className="w-full md:w-1/2 h-48 md:h-auto relative">
-                <img
-                  src={RAFFLE_CONFIG.images[0]}
-                  alt={RAFFLE_CONFIG.name}
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute top-2 md:top-4 left-2 md:left-4">
-                  <Badge className="bg-purple-600 text-white px-2 md:px-3 py-0.5 md:py-1 text-[10px] md:text-xs">
-                    ACTIVA
-                  </Badge>
-                </div>
-              </div>
-              <div className="w-full md:w-1/2 p-4 md:p-8 flex flex-col justify-center">
-                <h3 className="text-lg md:text-3xl font-bold mb-2 md:mb-4">
-                  {RAFFLE_CONFIG.name}
-                </h3>
-                <div className="space-y-2 md:space-y-4 mb-4 md:mb-8">
-                  <div className="flex items-center gap-2 md:gap-3 text-gray-600">
-                    <Clock className="size-4 md:size-5 text-purple-500" />
-                    <span className="text-xs md:text-base">
-                      Sorteo: {RAFFLE_CONFIG.drawDate}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2 md:gap-3 text-gray-600">
-                    <Ticket className="size-4 md:size-5 text-purple-500" />
-                    <span className="text-xs md:text-base">
-                      Costo: {RAFFLE_CONFIG.priceDisplay} por boleto
-                    </span>
-                  </div>
-                </div>
-                <Button
-                  onClick={() => navigate("/rifa")}
-                  className="w-full md:w-max gap-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-sm md:text-lg py-4 md:py-6 px-6 md:px-12 shadow-lg hover:shadow-purple-200 transition-all"
-                >
-                  Participar Ahora <ArrowRight className="size-4 md:size-5" />
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
         </div>
       </section>
 
