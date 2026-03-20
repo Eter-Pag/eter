@@ -255,7 +255,7 @@ export default function LandingHome() {
             <CardContent className="p-0">
               <div className="relative h-32 md:h-48 bg-gradient-to-br from-pink-400 to-rose-400 overflow-hidden">
                 <img
-                  src="https://d2xsxph8kpxj0f.cloudfront.net/310519663442540562/eG7tCpxgJHL2beNG2g3VYE/BIOGRAFIAS_f7f8f9f0.png"
+                  src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663454062860/CJfhlofOQtUSJFwk.png"
                   alt="K-POP Artists"
                   className="w-full h-full object-cover object-top"
                 />
