@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { 
   ArrowLeft, Plus, Trash2, Eye, Calendar, Copy, Check, 
   LayoutDashboard, Ticket, ShoppingBag, ClipboardList, 
-  Users, TrendingUp, AlertTriangle, Search, RefreshCw
+  Users, TrendingUp, AlertTriangle, Search, RefreshCw, ShieldCheck
 } from "lucide-react";
 import { raffleThemes, type RaffleCategory } from "@shared/raffleThemes";
 import { trpc } from "@/lib/trpc";
