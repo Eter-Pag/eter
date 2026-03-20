@@ -160,7 +160,7 @@ export default function LandingHome() {
             <CardContent className="p-0 flex flex-col md:flex-row">
               <div className="relative w-full md:w-1/2 h-48 md:h-64 bg-gradient-to-br from-emerald-400 to-teal-400 overflow-hidden">
                 <img
-                  src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663442540562/eG7tCpxgJHL2beNG2g3VYE/suMDQROvNoqZUbzE.png"
+                  src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663454062860/OkKvFoQfhoNmWKfR.png"
                   alt="Noticias K-POP"
                   className="w-full h-full object-cover"
                 />
