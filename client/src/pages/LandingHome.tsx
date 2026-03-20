@@ -154,9 +154,9 @@ export default function LandingHome() {
 
       {/* Main Content */}
       <section className="container py-8 md:py-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
-          {/* Noticias Section - Tarjeta Grande */}
-          <Card className="md:col-span-2 bg-white/60 backdrop-blur-xl border-border/50 shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
+        {/* Noticias Section - Tarjeta Grande */}
+        <div className="mb-8 md:mb-12">
+          <Card className="bg-white/60 backdrop-blur-xl border-border/50 shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
             <CardContent className="p-0 flex flex-col md:flex-row">
               <div className="relative w-full md:w-1/2 h-48 md:h-64 bg-gradient-to-br from-emerald-400 to-teal-400 overflow-hidden">
                 <img
@@ -184,7 +184,10 @@ export default function LandingHome() {
               </div>
             </CardContent>
           </Card>
+        </div>
 
+        {/* Grid de Secciones: 4 por línea en PC, 2 por línea en móvil */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-12">
           {/* Tienda Section */}
           <Card className="bg-white/60 backdrop-blur-xl border-border/50 shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
             <CardContent className="p-0">
@@ -196,14 +199,13 @@ export default function LandingHome() {
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
               </div>
-              <div className="p-2 md:p-6">
-                <h2 className="text-lg md:text-2xl font-bold mb-1 md:mb-2 flex items-center gap-2">
+              <div className="p-3 md:p-6">
+                <h2 className="text-base md:text-2xl font-bold mb-1 md:mb-2 flex items-center gap-2">
                   <Store className="size-4 md:size-5 text-blue-600" />
                   Tienda
                 </h2>
                 <p className="text-gray-600 text-xs md:text-sm mb-2 md:mb-4 hidden md:block">
-                  Explora nuestra colección de productos K-POP: álbumes,
-                  figuras, merchandise y mucho más. Envíos a todo México.
+                  Explora nuestra colección de productos K-POP: álbumes, figuras y más.
                 </p>
                 <Button
                   onClick={() => navigate("/tienda")}
@@ -228,14 +230,13 @@ export default function LandingHome() {
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
               </div>
-              <div className="p-2 md:p-6">
-                <h2 className="text-lg md:text-2xl font-bold mb-1 md:mb-2 flex items-center gap-2">
+              <div className="p-3 md:p-6">
+                <h2 className="text-base md:text-2xl font-bold mb-1 md:mb-2 flex items-center gap-2">
                   <Images className="size-4 md:size-5 text-orange-600" />
                   Galerías
                 </h2>
                 <p className="text-gray-600 text-xs md:text-sm mb-2 md:mb-4 hidden md:block">
-                  Disfruta de las mejores fotos y momentos de tus idols en
-                  nuestras galerías exclusivas.
+                  Disfruta de las mejores fotos y momentos de tus idols.
                 </p>
                 <Button
                   onClick={() => navigate("/galerias")}
@@ -244,6 +245,65 @@ export default function LandingHome() {
                   <Images className="size-3 md:size-4" />
                   <span className="hidden md:inline">Ver Galerías</span>
                   <span className="md:hidden">Galerías</span>
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Biografías Section */}
+          <Card className="bg-white/60 backdrop-blur-xl border-border/50 shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
+            <CardContent className="p-0">
+              <div className="relative h-32 md:h-48 bg-gradient-to-br from-pink-400 to-rose-400 overflow-hidden">
+                <img
+                  src="https://d2xsxph8kpxj0f.cloudfront.net/310519663442540562/eG7tCpxgJHL2beNG2g3VYE/BIOGRAFIAS_f7f8f9f0.png"
+                  alt="K-POP Artists"
+                  className="w-full h-full object-cover object-top"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
+              </div>
+              <div className="p-3 md:p-6">
+                <h2 className="text-base md:text-2xl font-bold mb-1 md:mb-2 flex items-center gap-2">
+                  <Users className="size-4 md:size-5 text-pink-600" />
+                  Biografías
+                </h2>
+                <p className="text-gray-600 text-xs md:text-sm mb-2 md:mb-4 hidden md:block">
+                  Conoce la historia y trayectoria de tus artistas favoritos.
+                </p>
+                <Button
+                  onClick={() => navigate("/biografias")}
+                  className="w-full gap-1 md:gap-2 bg-gradient-to-r from-pink-600 to-rose-600 hover:from-pink-700 hover:to-rose-700 text-white text-xs md:text-sm py-1 md:py-2"
+                >
+                  <Users className="size-3 md:size-4" />
+                  <span className="hidden md:inline">Ver Biografías</span>
+                  <span className="md:hidden">Biografías</span>
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Rifas Section (Oculta pero lista para activar) */}
+          <Card className="hidden bg-white/60 backdrop-blur-xl border-border/50 shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
+            <CardContent className="p-0">
+              <div className="relative h-32 md:h-48 bg-gradient-to-br from-purple-400 to-pink-400 overflow-hidden">
+                <img
+                  src="https://http2.mlstatic.com/D_NQ_NP_2X_867895-MLA99578718932_122025-F.webp"
+                  alt="Rifa BTS Album"
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
+              </div>
+              <div className="p-3 md:p-6">
+                <h2 className="text-base md:text-2xl font-bold mb-1 md:mb-2 flex items-center gap-2">
+                  <Sparkles className="size-4 md:size-5 text-purple-600" />
+                  Rifas
+                </h2>
+                <Button
+                  onClick={() => navigate("/rifa")}
+                  className="w-full gap-1 md:gap-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-xs md:text-sm py-1 md:py-2"
+                >
+                  <span className="hidden md:inline">Ver Rifas</span>
+                  <span className="md:hidden">Rifas</span>
+                  <ArrowRight className="size-3 md:size-4" />
                 </Button>
               </div>
             </CardContent>
