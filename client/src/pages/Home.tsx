@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useRef, useEffect } from "react";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -33,6 +33,7 @@ import {
   ShieldCheck,
   Clock,
   Eye,
+  Download,
 } from "lucide-react";
 import { useLocation } from "wouter";
 
@@ -46,6 +47,55 @@ export default function Home() {
   const [buyerEmail, setBuyerEmail] = useState("");
   const [isCheckingOut, setIsCheckingOut] = useState(false);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+
+  // Diploma state
+  const [diplomaName, setDiplomaName] = useState("");
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const diplomaImage = new Image();
+  diplomaImage.src = "/assets/certificadoARMYBTS.jpeg";
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+
+    diplomaImage.onload = () => {
+      canvas.width = diplomaImage.width;
+      canvas.height = diplomaImage.height;
+      ctx.drawImage(diplomaImage, 0, 0);
+      if (diplomaName) {
+        ctx.font = "bold 60px Arial"; // Ajusta la fuente y tamaño según el diseño del diploma
+        ctx.fillStyle = "black";
+        ctx.textAlign = "center";
+        ctx.fillText(diplomaName, canvas.width / 2, canvas.height / 2 + 20); // Ajusta la posición Y
+      }
+    };
+
+    // Redraw if name changes and image is already loaded
+    if (diplomaImage.complete) {
+      canvas.width = diplomaImage.width;
+      canvas.height = diplomaImage.height;
+      ctx.drawImage(diplomaImage, 0, 0);
+      if (diplomaName) {
+        ctx.font = "bold 60px Arial";
+        ctx.fillStyle = "black";
+        ctx.textAlign = "center";
+        ctx.fillText(diplomaName, canvas.width / 2, canvas.height / 2 + 20);
+      }
+    }
+  }, [diplomaName]);
+
+  const handleDownloadDiploma = () => {
+    const canvas = canvasRef.current;
+    if (canvas) {
+      const link = document.createElement("a");
+      link.download = `Diploma_ARMY_${diplomaName || ""}.png`;
+      link.href = canvas.toDataURL("image/png");
+      link.click();
+    }
+  };
 
   const ticketsQuery = trpc.tickets.list.useQuery(undefined, {
     refetchInterval: 15000,
@@ -239,6 +289,28 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Diploma Generator Section */}
+      <section className="container py-16 text-center">
+        <h2 className="text-3xl font-bold tracking-tight mb-8">Genera tu Diploma ARMY</h2>
+        <div className="max-w-2xl mx-auto bg-white p-6 rounded-lg shadow-xl">
+          <div className="relative w-full aspect-[3/2] mb-6">
+            <canvas ref={canvasRef} className="w-full h-full object-contain"></canvas>
+          </div>
+          <div className="flex flex-col sm:flex-row gap-4">
+            <Input
+              type="text"
+              placeholder="Ingresa tu nombre aquí"
+              value={diplomaName}
+              onChange={(e) => setDiplomaName(e.target.value)}
+              className="flex-grow"
+            />
+            <Button onClick={handleDownloadDiploma} disabled={!diplomaName.trim()} className="w-full sm:w-auto">
+              <Download className="size-4 mr-2" /> Descargar Diploma
+            </Button>
+          </div>
+        </div>
+      </section>
+
       {/* Product Carousel */}
       <section className="container py-10">
         <div className="max-w-xs mx-auto">
@@ -287,247 +359,140 @@ export default function Home() {
               Tus datos
             </h3>
             <Input
-              placeholder="Tu nombre"
+              placeholder="Tu nombre completo"
               value={buyerName}
               onChange={(e) => setBuyerName(e.target.value)}
-              className="bg-white/80 backdrop-blur-sm border-border/50 focus:border-primary transition-all"
             />
             <Input
-              placeholder="Tu teléfono (10 dígitos)"
-              type="tel"
-              inputMode="numeric"
+              placeholder="Tu número de teléfono (10 dígitos)"
               value={buyerPhone}
-              onChange={(e) => {
-                const cleaned = e.target.value.replace(/\D/g, "");
-                if (cleaned.length <= 10) {
-                  setBuyerPhone(cleaned);
-                }
-              }}
+              onChange={(e) => setBuyerPhone(e.target.value)}
+              type="tel"
               maxLength={10}
-              minLength={10}
-              className="bg-white/80 backdrop-blur-sm border-border/50 focus:border-primary transition-all"
             />
             <Input
-              placeholder="Tu email (opcional)"
-              type="email"
+              placeholder="Tu correo electrónico (opcional)"
               value={buyerEmail}
               onChange={(e) => setBuyerEmail(e.target.value)}
-              className="bg-white/80 backdrop-blur-sm border-border/50 focus:border-primary transition-all"
+              type="email"
             />
           </CardContent>
         </Card>
       </section>
 
       {/* Ticket Selection */}
-      <section className="container pb-8">
-        <div className="max-w-md mx-auto space-y-6">
-          <div className="text-center">
-            <h2 className="text-xl font-bold">Selecciona tus boletos</h2>
-            <p className="text-sm text-muted-foreground mt-1">
-              Busca tu número favorito o genera al azar
-            </p>
-            <p className="text-xs text-muted-foreground mt-1">
-              Máximo 30 boletos por pedido
-            </p>
-          </div>
-
-          {/* Search */}
-          <Card className="bg-white/60 backdrop-blur-xl border-border/50 shadow-lg">
-            <CardContent className="p-5">
-              <div className="flex gap-2">
-                <Input
-                  placeholder="Ej: 007"
-                  maxLength={3}
-                  value={searchValue}
-                  onChange={(e) => setSearchValue(e.target.value.replace(/\D/g, ""))}
-                  onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-                  className="bg-white/80 backdrop-blur-sm border-border/50 text-center text-lg font-semibold tracking-widest"
-                />
-                <Button onClick={handleSearch} className="shrink-0 shadow-lg">
-                  <Search className="size-4 mr-1" />
-                  Buscar
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Auto Generate */}
-          <Card className="bg-white/60 backdrop-blur-xl border-border/50 shadow-lg">
-            <CardContent className="p-5">
-              <div className="flex gap-2">
-                <Input
-                  type="number"
-                  min={1}
-                  max={30}
-                  placeholder="Cantidad"
-                  value={autoCount}
-                  onChange={(e) => setAutoCount(e.target.value)}
-                  onKeyDown={(e) => e.key === "Enter" && handleAutoGenerate()}
-                  className="bg-white/80 backdrop-blur-sm border-border/50 text-center text-lg font-semibold"
-                />
-                <Button
-                  onClick={handleAutoGenerate}
-                  variant="secondary"
-                  className="shrink-0 shadow-lg"
-                >
-                  <Shuffle className="size-4 mr-1" />
-                  Al azar
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </section>
-
-      {/* Selected Tickets Panel */}
-      <section className="container pb-10">
-        <Card className="max-w-md mx-auto bg-white/70 backdrop-blur-xl border-border/50 shadow-xl">
-          <CardContent className="p-6">
-            <h3 className="font-semibold text-base mb-4 flex items-center gap-2">
-              <Ticket className="size-5 text-primary" />
-              Boletos seleccionados
-              {selectedTickets.length > 0 && (
-                <Badge variant="secondary" className="ml-auto">
-                  {selectedTickets.length}
-                </Badge>
-              )}
+      <section className="container pb-16">
+        <Card className="max-w-md mx-auto bg-white/60 backdrop-blur-xl border-border/50 shadow-lg">
+          <CardContent className="p-6 space-y-4">
+            <h3 className="font-semibold text-lg flex items-center gap-2">
+              <Shuffle className="size-5 text-primary" />
+              Selecciona tus boletos
             </h3>
+            <div className="flex gap-2">
+              <Input
+                placeholder="Buscar boleto (ej. 007)"
+                value={searchValue}
+                onChange={(e) => setSearchValue(e.target.value)}
+                maxLength={3}
+                className="w-full"
+              />
+              <Button onClick={handleSearch} disabled={!searchValue.trim()}>
+                <Search className="size-4" />
+              </Button>
+            </div>
+            <div className="flex gap-2">
+              <Input
+                placeholder="Generar N boletos al azar"
+                value={autoCount}
+                onChange={(e) => setAutoCount(e.target.value)}
+                type="number"
+                min={1}
+                max={30 - selectedTickets.length}
+                className="w-full"
+              />
+              <Button onClick={handleAutoGenerate} disabled={!autoCount || parseInt(autoCount) < 1}>
+                <Shuffle className="size-4" />
+              </Button>
+            </div>
 
-            {selectedTickets.length === 0 ? (
-              <p className="text-sm text-muted-foreground text-center py-6">
-                Aún no has seleccionado boletos
-              </p>
-            ) : (
-              <div className="flex flex-wrap gap-2 mb-4">
-                {selectedTickets.map((num) => (
-                  <Badge
-                    key={num}
-                    variant="outline"
-                    className="text-sm font-mono font-semibold px-3 py-1.5 bg-primary/5 border-primary/20 hover:bg-destructive/10 hover:border-destructive/30 cursor-pointer transition-all group"
-                    onClick={() => removeTicket(num)}
-                  >
-                    {num}
-                    <XCircle className="size-3.5 ml-1 opacity-0 group-hover:opacity-100 transition-opacity text-destructive" />
-                  </Badge>
-                ))}
+            {selectedTickets.length > 0 && (
+              <div className="mt-4">
+                <p className="text-sm font-medium mb-2">Boletos seleccionados ({selectedTickets.length}):</p>
+                <div className="flex flex-wrap gap-2">
+                  {selectedTickets.map((num) => (
+                    <Badge
+                      key={num}
+                      variant="secondary"
+                      className="bg-primary/10 text-primary hover:bg-primary/20 cursor-pointer"
+                      onClick={() => removeTicket(num)}
+                    >
+                      {num} <XCircle className="size-3 ml-1" />
+                    </Badge>
+                  ))}
+                </div>
               </div>
             )}
 
-            <div className="border-t border-border/50 pt-4 mt-4">
-              {selectedTickets.length > 0 && selectedTickets.length < 4 && (
-                <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 mb-4 text-sm text-amber-800">
-                  <p className="font-semibold mb-1">⚠️ Compra mínima: 4 boletos</p>
-                  <p className="text-xs">Necesitas seleccionar al menos 4 boletos para completar tu compra. Actualmente tienes {selectedTickets.length}.</p>
-                </div>
-              )}
-              <div className="flex items-center justify-between mb-4">
-                <span className="text-sm text-muted-foreground">Total</span>
-                <span className="text-2xl font-extrabold bg-gradient-to-r from-purple-600 to-fuchsia-500 bg-clip-text text-transparent">
-                  {`$${totalPrice} MXN`}
-                </span>
-              </div>
-              <Button
-                onClick={handleCheckout}
-                disabled={isCheckingOut || selectedTickets.length < 4 || selectedTickets.length > 30}
-                className="w-full h-12 text-base font-bold shadow-xl bg-gradient-to-r from-purple-600 to-fuchsia-500 hover:from-purple-700 hover:to-fuchsia-600 transition-all"
-              >
-                {isCheckingOut ? (
-                  <>
-                    <Loader2 className="size-5 mr-2 animate-spin" />
-                    Procesando...
-                  </>
-                ) : (
-                  <>
-                    <CreditCard className="size-5 mr-2" />
-                    Pagar con tarjeta
-                  </>
-                )}
-              </Button>
-              <div className="flex items-center justify-center gap-4 mt-3 text-xs text-muted-foreground">
-                <span className="flex items-center gap-1">
-                  <ShieldCheck className="size-3" />
-                  Pago seguro con Stripe
-                </span>
-                <span className="flex items-center gap-1">
-                  <Clock className="size-3" />
-                  Reserva 10 min
-                </span>
-              </div>
+            <div className="text-right text-sm font-medium mt-4">
+              Total: ${totalPrice.toFixed(2)}
             </div>
+
+            <Button
+              onClick={handleCheckout}
+              disabled={selectedTickets.length < 4 || isCheckingOut}
+              className="w-full gap-2"
+            >
+              {isCheckingOut ? (
+                <Loader2 className="size-4 animate-spin" />
+              ) : (
+                <CreditCard className="size-4" />
+              )}
+              Comprar Boletos
+            </Button>
           </CardContent>
         </Card>
       </section>
 
       {/* Confirm Dialog */}
       <Dialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
-        <DialogContent className="bg-white/95 backdrop-blur-xl border-border/50 max-w-sm">
+        <DialogContent>
           <DialogHeader>
-            <DialogTitle className="text-xl flex items-center gap-2">
-              <CheckCircle2 className="size-6 text-primary" />
-              Confirmar compra
-            </DialogTitle>
+            <DialogTitle>Confirmar Compra</DialogTitle>
             <DialogDescription>
-              Revisa los detalles antes de proceder al pago
+              Estás a punto de comprar {selectedTickets.length} boletos por un total de ${totalPrice.toFixed(2)}.
+              <br />
+              Nombre: {buyerName}
+              <br />
+              Teléfono: {buyerPhone}
+              {buyerEmail && (
+                <>
+                  <br />
+                  Email: {buyerEmail}
+                </>
+              )}
+              <br />
+              ¿Deseas continuar?
             </DialogDescription>
           </DialogHeader>
-          <div className="space-y-3 py-2">
-            <div className="flex justify-between text-sm">
-              <span className="text-muted-foreground">Nombre</span>
-              <span className="font-medium">{buyerName}</span>
-            </div>
-            <div className="flex justify-between text-sm">
-              <span className="text-muted-foreground">Teléfono</span>
-              <span className="font-medium">{buyerPhone}</span>
-            </div>
-            <div className="flex justify-between text-sm">
-              <span className="text-muted-foreground">Boletos</span>
-              <span className="font-mono font-medium text-right max-w-[200px] break-all">
-                {selectedTickets.join(", ")}
-              </span>
-            </div>
-            <div className="flex justify-between text-sm">
-              <span className="text-muted-foreground">Cantidad</span>
-              <span className="font-medium">{selectedTickets.length}</span>
-            </div>
-            <div className="border-t border-border/50 pt-3 flex justify-between">
-              <span className="font-semibold">Total</span>
-              <span className="text-xl font-extrabold bg-gradient-to-r from-purple-600 to-fuchsia-500 bg-clip-text text-transparent">
-                ${totalPrice} MXN
-              </span>
-            </div>
-          </div>
-          <DialogFooter className="flex-col gap-2">
-            <Button
-              onClick={confirmCheckout}
-              className="w-full h-11 shadow-xl bg-gradient-to-r from-purple-600 to-fuchsia-500 hover:from-purple-700 hover:to-fuchsia-600"
-            >
-              <CreditCard className="size-4 mr-2" />
-              Ir a pagar
-            </Button>
-            <Button
-              variant="outline"
-              onClick={() => setShowConfirmDialog(false)}
-              className="w-full"
-            >
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowConfirmDialog(false)}>
               Cancelar
+            </Button>
+            <Button onClick={confirmCheckout} disabled={isCheckingOut}>
+              {isCheckingOut ? (
+                <Loader2 className="size-4 animate-spin" />
+              ) : (
+                "Confirmar"
+              )}
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
       {/* Footer */}
-      <footer className="bg-muted/50 backdrop-blur-sm border-t border-border/50 mt-10">
-        <div className="container py-10 text-center">
-          <p className="text-sm font-medium text-foreground mb-4">
-            &copy; 2026 DEDIKA STUDIO
-          </p>
-          <p className="text-xs text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-            Aviso: Esta rifa es con fines de entretenimiento y no constituye venta directa de productos. 
-            ETER KPOP MX no se responsabiliza por compras, envíos ni garantías de productos externos. 
-            La realización de esta rifa está sujeta a la venta mínima del 50% de los boletos. 
-            Si no se alcanza este mínimo, los boletos serán reembolsados y la rifa no se realizará. 
-            Al participar, aceptas los términos aquí descritos y que el producto pertenece a sus respectivos propietarios.
-          </p>
+      <footer className="py-8 bg-card border-t border-border/50 text-center text-muted-foreground text-sm">
+        <div className="container">
+          <p>&copy; {new Date().getFullYear()} {RAFFLE_CONFIG.storeName}. Todos los derechos reservados.</p>
         </div>
       </footer>
     </div>
