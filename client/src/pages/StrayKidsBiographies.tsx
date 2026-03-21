@@ -28,11 +28,12 @@ export default function StrayKidsBiographies() {
     birth: "3 de octubre de 1997",
     origin: "Seúl, Corea del Sur (creció en Australia)",
     mbti: "ENFJ",
-    image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=1000&auto=format&fit=crop",
-    bio: "Líder y cerebro detrás de Stray Kids. Forma parte de 3RACHA, el equipo de producción del grupo. Entrenó durante 7 años en JYP antes de debutar.",
-    curiosities: "Habla inglés, coreano, japonés y un poco de chino. Es muy cercano a BamBam de GOT7.",
-    soloCareer: "Múltiples canciones en SKZ-RECORD y SKZ-PLAYER. Producción de casi toda la discografía del grupo.",
-    achievements: "Uno de los ídolos con más canciones acreditadas en KOMCA."
+    image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=1000&auto=format&fit=crop",    fullBio: {
+      preDebut: "Líder y cerebro detrás de Stray Kids. Forma parte de 3RACHA, el equipo de producción del grupo. Entrenó durante 7 años en JYP antes de debutar.",
+      soloCareer: "Múltiples canciones en SKZ-RECORD y SKZ-PLAYER. Producción de casi toda la discografía del grupo.",
+      achievements: "Uno de los ídolos con más canciones acreditadas en KOMCA.",
+      curiosities: "Habla inglés, coreano, japonés y un poco de chino. Es muy cercano a BamBam de GOT7."
+    }
   },
   {
     id: "felix",
@@ -42,11 +43,12 @@ export default function StrayKidsBiographies() {
     birth: "15 de septiembre de 2000",
     origin: "Sídney, Australia",
     mbti: "ENFP",
-    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=1000&auto=format&fit=crop",
-    bio: "Conocido por su voz extremadamente profunda y sus visuales únicos. A pesar de ser eliminado en el programa Stray Kids, regresó por demanda popular.",
-    curiosities: "Es cinturón negro de tercer grado en taekwondo. Le encanta hornear brownies para los miembros y el staff.",
-    soloCareer: "Canciones solistas como 'Deep End'. Embajador de Louis Vuitton.",
-    achievements: "Icono de la moda global y reconocido por su labor filantrópica con UNICEF."
+    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=1000&auto=format&fit=crop",    fullBio: {
+      preDebut: "Conocido por su voz extremadamente profunda y sus visuales únicos. A pesar de ser eliminado en el programa Stray Kids, regresó por demanda popular.",
+      soloCareer: "Canciones solistas como 'Deep End'. Embajador de Louis Vuitton.",
+      achievements: "Icono de la moda global y reconocido por su labor filantrópica con UNICEF.",
+      curiosities: "Es cinturón negro de tercer grado en taekwondo. Le encanta hornear brownies para los miembros y el staff."
+    }
   },
   {
     id: "hyunjin",
@@ -56,11 +58,12 @@ export default function StrayKidsBiographies() {
     birth: "20 de marzo de 2000",
     origin: "Seúl, Corea del Sur",
     mbti: "ESTP",
-    image: "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?q=80&w=1000&auto=format&fit=crop",
-    bio: "Reconocido como uno de los mejores bailarines de la cuarta generación. Su presencia escénica y versatilidad lo han convertido en un referente del K-Pop.",
-    curiosities: "Tiene un perro llamado Kkami. Le apasiona la pintura y el dibujo artístico.",
-    soloCareer: "Embajador global de Versace. Múltiples coreografías originales.",
-    achievements: "Considerado uno de los 'Artist of the Month' más vistos en Studio Choom."
+    image: "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?q=80&w=1000&auto=format&fit=crop",    fullBio: {
+      preDebut: "Reconocido como uno de los mejores bailarines de la cuarta generación. Su presencia escénica y versatilidad lo han convertido en un referente del K-Pop.",
+      soloCareer: "Embajador global de Versace. Múltiples coreografías originales.",
+      achievements: "Considerado uno de los 'Artist of the Month' más vistos en Studio Choom.",
+      curiosities: "Tiene un perro llamado Kkami. Le apasiona la pintura y el dibujo artístico."
+    }
   },
   {
     id: "han",
@@ -70,11 +73,12 @@ export default function StrayKidsBiographies() {
     birth: "14 de septiembre de 2000",
     origin: "Incheon, Corea del Sur",
     mbti: "ISTP",
-    image: "https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?q=80&w=1000&auto=format&fit=crop",
-    bio: "Miembro de 3RACHA y un 'all-rounder' excepcional. Puede rapear a gran velocidad y alcanzar notas vocales impresionantes.",
-    curiosities: "Vivió y estudió en Malasia. Su comida favorita es la tarta de queso.",
-    soloCareer: "Productor prolífico con numerosas canciones acreditadas.",
-    achievements: "Uno de los artistas más jóvenes en la lista de KOMCA."
+    image: "https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?q=80&w=1000&auto=format&fit=crop",    fullBio: {
+      preDebut: "Miembro de 3RACHA y un 'all-rounder' excepcional. Puede rapear a gran velocidad y alcanzar notas vocales impresionantes.",
+      soloCareer: "Productor prolífico con numerosas canciones acreditadas.",
+      achievements: "Uno de los artistas más jóvenes en la lista de KOMCA.",
+      curiosities: "Vivió y estudió en Malasia. Su comida favorita es la tarta de queso."
+    }
   }
 ];
 

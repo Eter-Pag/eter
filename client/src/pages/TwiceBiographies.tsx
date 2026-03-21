@@ -28,11 +28,12 @@ export default function TwiceBiographies() {
     birth: "22 de septiembre de 1995",
     origin: "Seúl, Corea del Sur",
     mbti: "ISTP",
-    image: "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?q=80&w=1000&auto=format&fit=crop",
-    bio: "La integrante mayor de TWICE y la primera en debutar como solista. Es conocida por su energía brillante y su 'bunny smile'.",
-    curiosities: "Es muy amiga de Jisoo y Jennie de BLACKPINK. Su número favorito es el 9.",
-    soloCareer: "Mini-álbumes 'IM NAYEON' (2022) y 'NA' (2024).",
-    achievements: "Primera integrante de TWICE en entrar al Billboard 200 como solista."
+    image: "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?q=80&w=1000&auto=format&fit=crop",    fullBio: {
+      preDebut: "La integrante mayor de TWICE y la primera en debutar como solista. Es conocida por su energía brillante y su 'bunny smile'.",
+      soloCareer: "Mini-álbumes 'IM NAYEON' (2022) y 'NA' (2024).",
+      achievements: "Primera integrante de TWICE en entrar al Billboard 200 como solista.",
+      curiosities: "Es muy amiga de Jisoo y Jennie de BLACKPINK. Su número favorito es el 9."
+    }
   },
   {
     id: "jihyo",
@@ -42,11 +43,12 @@ export default function TwiceBiographies() {
     birth: "1 de febrero de 1997",
     origin: "Guri, Gyeonggi, Corea del Sur",
     mbti: "ESFP",
-    image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=1000&auto=format&fit=crop",
-    bio: "Entrenó durante 10 años en JYP antes de debutar. Es admirada por su potente voz y su liderazgo ejemplar.",
-    curiosities: "Su nombre de nacimiento era Park Jisoo. Le gusta nadar y hacer ejercicio.",
-    soloCareer: "Debut solista con el mini-álbum 'ZONE' en 2023.",
-    achievements: "Reconocida como una de las mejores vocalistas de su generación."
+    image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=1000&auto=format&fit=crop",    fullBio: {
+      preDebut: "Entrenó durante 10 años en JYP antes de debutar. Es admirada por su potente voz y su liderazgo ejemplar.",
+      soloCareer: "Debut solista con el mini-álbum 'ZONE' en 2023.",
+      achievements: "Reconocida como una de las mejores vocalistas de su generación.",
+      curiosities: "Su nombre de nacimiento era Park Jisoo. Le gusta nadar y hacer ejercicio."
+    }
   },
   {
     id: "momo",
@@ -56,11 +58,12 @@ export default function TwiceBiographies() {
     birth: "9 de noviembre de 1996",
     origin: "Kyotanabe, Kioto, Japón",
     mbti: "INFP",
-    image: "https://images.unsplash.com/photo-1517841905240-472988babdf9?q=80&w=1000&auto=format&fit=crop",
-    bio: "Considerada una de las mejores bailarinas de la industria del K-Pop. Fue añadida a TWICE al final de SIXTEEN por su talento excepcional.",
-    curiosities: "Le encanta comer, especialmente jokbal. Tiene tres perros llamados Petco, Pudding y Lucky.",
-    soloCareer: "Miembro de la sub-unidad MISAMO. Múltiples colaboraciones de baile.",
-    achievements: "Reconocida globalmente por su técnica de baile y presencia escénica."
+    image: "https://images.unsplash.com/photo-1517841905240-472988babdf9?q=80&w=1000&auto=format&fit=crop",    fullBio: {
+      preDebut: "Considerada una de las mejores bailarinas de la industria del K-Pop. Fue añadida a TWICE al final de SIXTEEN por su talento excepcional.",
+      soloCareer: "Miembro de la sub-unidad MISAMO. Múltiples colaboraciones de baile.",
+      achievements: "Reconocida globalmente por su técnica de baile y presencia escénica.",
+      curiosities: "Le encanta comer, especialmente jokbal. Tiene tres perros llamados Petco, Pudding y Lucky."
+    }
   },
   {
     id: "sana",
@@ -70,11 +73,12 @@ export default function TwiceBiographies() {
     birth: "29 de diciembre de 1996",
     origin: "Tennoji-ku, Osaka, Japón",
     mbti: "ENFP",
-    image: "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?q=80&w=1000&auto=format&fit=crop",
-    bio: "Famosa por su personalidad optimista y su icónico 'Shy Shy Shy'. Es una de las integrantes más queridas por su carisma natural.",
-    curiosities: "Es hija única. Le gusta coleccionar perfumes y lociones corporales.",
-    soloCareer: "Miembro de la sub-unidad MISAMO. Embajadora de Prada.",
-    achievements: "Icono viral en múltiples ocasiones por su encanto y visuales."
+    image: "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?q=80&w=1000&auto=format&fit=crop",    fullBio: {
+      preDebut: "Famosa por su personalidad optimista y su icónico 'Shy Shy Shy'. Es una de las integrantes más queridas por su carisma natural.",
+      soloCareer: "Miembro de la sub-unidad MISAMO. Embajadora de Prada.",
+      achievements: "Icono viral en múltiples ocasiones por su encanto y visuales.",
+      curiosities: "Es hija única. Le gusta coleccionar perfumes y lociones corporales."
+    }
   }
 ];
 

@@ -28,11 +28,12 @@ export default function BlackpinkBiographies() {
     birth: "3 de enero de 1995",
     origin: "Gunpo, Gyeonggi, Corea del Sur",
     mbti: "ISTP",
-    image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=1000&auto=format&fit=crop",
-    bio: "Jisoo debutó como solista el 31 de marzo de 2023 con el álbum 'ME'. En 2024, fundó su propia agencia, BLISOO, y se unió a Warner Music para su carrera global. Es conocida por su elegancia y talento actoral, habiendo protagonizado el drama 'Snowdrop'.",
-    curiosities: "Tiene un perro llamado Dalgom. Es cinturón blanco en taekwondo. Es muy cercana a Nayeon de TWICE.",
-    soloCareer: "Álbum 'ME' con el éxito 'Flower'. Proyectos actorales destacados.",
-    achievements: "Embajadora global de Dior y Cartier. Primera solista de K-pop en ganar múltiples premios en programas musicales con su debut."
+    image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=1000&auto=format&fit=crop",    fullBio: {
+      preDebut: "Jisoo debutó como solista el 31 de marzo de 2023 con el álbum 'ME'. En 2024, fundó su propia agencia, BLISOO, y se unió a Warner Music para su carrera global. Es conocida por su elegancia y talento actoral, habiendo protagonizado el drama 'Snowdrop'.",
+      soloCareer: "Álbum 'ME' con el éxito 'Flower'. Proyectos actorales destacados.",
+      achievements: "Embajadora global de Dior y Cartier. Primera solista de K-pop en ganar múltiples premios en programas musicales con su debut.",
+      curiosities: "Tiene un perro llamado Dalgom. Es cinturón blanco en taekwondo. Es muy cercana a Nayeon de TWICE."
+    }
   },
   {
     id: "jennie",
@@ -42,11 +43,12 @@ export default function BlackpinkBiographies() {
     birth: "16 de enero de 1996",
     origin: "Seúl, Corea del Sur",
     mbti: "INFP",
-    image: "https://images.unsplash.com/photo-1517841905240-472988babdf9?q=80&w=1000&auto=format&fit=crop",
-    bio: "Jennie fue la primera integrante en debutar como solista con 'SOLO' en 2018. Fundó su propia discográfica, ODD ATELIER (OA), en 2023. Vivió en Nueva Zelanda durante 5 años, lo que le dio fluidez en inglés.",
-    curiosities: "Le encantan los perros, tiene dos llamados Kai y Kuma. Es conocida como la 'Human Chanel'.",
-    soloCareer: "Sencillos 'SOLO', 'You & Me' y colaboraciones internacionales como 'One of the Girls'.",
-    achievements: "Embajadora global de Chanel y Calvin Klein. Primera solista coreana en presentarse en Coachella."
+    image: "https://images.unsplash.com/photo-1517841905240-472988babdf9?q=80&w=1000&auto=format&fit=crop",    fullBio: {
+      preDebut: "Jennie fue la primera integrante en debutar como solista con 'SOLO' en 2018. Fundó su propia discográfica, ODD ATELIER (OA), en 2023. Vivió en Nueva Zelanda durante 5 años, lo que le dio fluidez en inglés.",
+      soloCareer: "Sencillos 'SOLO', 'You & Me' y colaboraciones internacionales como 'One of the Girls'.",
+      achievements: "Embajadora global de Chanel y Calvin Klein. Primera solista coreana en presentarse en Coachella.",
+      curiosities: "Le encantan los perros, tiene dos llamados Kai y Kuma. Es conocida como la 'Human Chanel'."
+    }
   },
   {
     id: "rose",
@@ -56,11 +58,12 @@ export default function BlackpinkBiographies() {
     birth: "11 de febrero de 1997",
     origin: "Auckland, Nueva Zelanda",
     mbti: "ENFP",
-    image: "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?q=80&w=1000&auto=format&fit=crop",
-    bio: "Rosé debutó como solista en 2021 con '-R-'. En 2024, firmó con THE BLACK LABEL y Atlantic Records. Es reconocida por su voz única y su habilidad para tocar la guitarra y el piano.",
-    curiosities: "Tiene un perro rescatado llamado Hank. Sabe hablar coreano, inglés y japonés con fluidez.",
-    soloCareer: "Álbum '-R-' con 'On The Ground' y 'Gone'. Colaboración 'APT.' con Bruno Mars.",
-    achievements: "Embajadora global de Saint Laurent y Tiffany & Co. Récord Guinness por la mayor cantidad de vistas en 24h para un solista de K-pop."
+    image: "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?q=80&w=1000&auto=format&fit=crop",    fullBio: {
+      preDebut: "Rosé debutó como solista en 2021 con '-R-'. En 2024, firmó con THE BLACK LABEL y Atlantic Records. Es reconocida por su voz única y su habilidad para tocar la guitarra y el piano.",
+      soloCareer: "Álbum '-R-' con 'On The Ground' y 'Gone'. Colaboración 'APT.' con Bruno Mars.",
+      achievements: "Embajadora global de Saint Laurent y Tiffany & Co. Récord Guinness por la mayor cantidad de vistas en 24h para un solista de K-pop.",
+      curiosities: "Tiene un perro rescatado llamado Hank. Sabe hablar coreano, inglés y japonés con fluidez."
+    }
   },
   {
     id: "lisa",
@@ -70,11 +73,12 @@ export default function BlackpinkBiographies() {
     birth: "27 de marzo de 1997",
     origin: "Provincia de Buriram, Tailandia",
     mbti: "ESFJ",
-    image: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=1000&auto=format&fit=crop",
-    bio: "Lisa debutó como solista en 2021 con 'Lalisa'. En 2024, fundó LLOUD y firmó con RCA Records. Es la primera artista no coreana de YG Entertainment y una de las bailarinas más influyentes del mundo.",
-    curiosities: "Tiene 5 gatos y un perro (la 'L Family'). Habla tailandés, coreano, inglés y japonés.",
-    soloCareer: "Sencillos 'Lalisa', 'Money', 'Rockstar', 'New Woman' y 'Moonlit Floor'.",
-    achievements: "Embajadora global de Celine y Bulgari. Ganadora de múltiples premios MTV VMA como Mejor K-Pop."
+    image: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?q=80&w=1000&auto=format&fit=crop",    fullBio: {
+      preDebut: "Lisa debutó como solista en 2021 con 'Lalisa'. En 2024, fundó LLOUD y firmó con RCA Records. Es la primera artista no coreana de YG Entertainment y una de las bailarinas más influyentes del mundo.",
+      soloCareer: "Sencillos 'Lalisa', 'Money', 'Rockstar', 'New Woman' y 'Moonlit Floor'.",
+      achievements: "Embajadora global de Celine y Bulgari. Ganadora de múltiples premios MTV VMA como Mejor K-Pop.",
+      curiosities: "Tiene 5 gatos y un perro (la 'L Family'). Habla tailandés, coreano, inglés y japonés."
+    }
   }
 ];
 

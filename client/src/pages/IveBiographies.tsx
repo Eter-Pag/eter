@@ -28,11 +28,12 @@ export default function IveBiographies() {
     birth: "31 de agosto de 2004",
     origin: "Seúl, Corea del Sur",
     mbti: "E???",
-    image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=1000&auto=format&fit=crop",
-    bio: "Ex-integrante de IZ*ONE (centro). Es un icono de la moda y una de las ídolos más populares de la cuarta generación.",
-    curiosities: "Habla inglés con fluidez. Es conocida como la 'It Girl' de Corea.",
-    soloCareer: "Embajadora global de Miu Miu e Innisfree. MC recurrente en eventos importantes.",
-    achievements: "Ganadora de Produce 48 a los 13 años."
+    image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=1000&auto=format&fit=crop",    fullBio: {
+      preDebut: "Ex-integrante de IZ*ONE (centro). Es un icono de la moda y una de las ídolos más populares de la cuarta generación.",
+      soloCareer: "Embajadora global de Miu Miu e Innisfree. MC recurrente en eventos importantes.",
+      achievements: "Ganadora de Produce 48 a los 13 años.",
+      curiosities: "Habla inglés con fluidez. Es conocida como la 'It Girl' de Corea."
+    }
   },
   {
     id: "yujin",
@@ -42,11 +43,12 @@ export default function IveBiographies() {
     birth: "1 de septiembre de 2003",
     origin: "Daejeon, Corea del Sur",
     mbti: "ISTP",
-    image: "https://images.unsplash.com/photo-1517841905240-472988babdf9?q=80&w=1000&auto=format&fit=crop",
-    bio: "Ex-integrante de IZ*ONE. Es conocida por su versatilidad, carisma en el escenario y su participación en programas de variedades.",
-    curiosities: "Es muy atlética y buena en los deportes. Habla inglés y japonés básico.",
-    soloCareer: "Embajadora de Fendi. Protagonista del programa 'Earth Arcade'.",
-    achievements: "Líder exitosa que llevó a IVE a ganar múltiples Daesangs en su primer año."
+    image: "https://images.unsplash.com/photo-1517841905240-472988babdf9?q=80&w=1000&auto=format&fit=crop",    fullBio: {
+      preDebut: "Ex-integrante de IZ*ONE. Es conocida por su versatilidad, carisma en el escenario y su participación en programas de variedades.",
+      soloCareer: "Embajadora de Fendi. Protagonista del programa 'Earth Arcade'.",
+      achievements: "Líder exitosa que llevó a IVE a ganar múltiples Daesangs en su primer año.",
+      curiosities: "Es muy atlética y buena en los deportes. Habla inglés y japonés básico."
+    }
   },
   {
     id: "rei",
@@ -56,11 +58,12 @@ export default function IveBiographies() {
     birth: "3 de febrero de 2004",
     origin: "Nagoya, Japón",
     mbti: "INFJ",
-    image: "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?q=80&w=1000&auto=format&fit=crop",
-    bio: "La primera integrante japonesa de Starship Entertainment. Es conocida por su estilo único y su fluidez en coreano.",
-    curiosities: "Le encanta dibujar y decorar cosas. Sus fans la llaman 'Kim Rei' por lo bien que habla coreano.",
-    soloCareer: "Musa de la marca de cosméticos Bonajour.",
-    achievements: "Reconocida por su tono de rap distintivo y su creatividad."
+    image: "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?q=80&w=1000&auto=format&fit=crop",    fullBio: {
+      preDebut: "La primera integrante japonesa de Starship Entertainment. Es conocida por su estilo único y su fluidez en coreano.",
+      soloCareer: "Musa de la marca de cosméticos Bonajour.",
+      achievements: "Reconocida por su tono de rap distintivo y su creatividad.",
+      curiosities: "Le encanta dibujar y decorar cosas. Sus fans la llaman 'Kim Rei' por lo bien que habla coreano."
+    }
   },
   {
     id: "liz",
@@ -70,11 +73,12 @@ export default function IveBiographies() {
     birth: "21 de noviembre de 2004",
     origin: "Jeju, Corea del Sur",
     mbti: "INFP",
-    image: "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?q=80&w=1000&auto=format&fit=crop",
-    bio: "Conocida por su potente voz y sus adorables hoyuelos. Es una de las vocalistas más destacadas de la cuarta generación.",
-    curiosities: "Es una persona tímida y tranquila. Le encantan los gatos.",
-    soloCareer: "Participó en el video musical 'This Christmas' de Taeyeon.",
-    achievements: "Elogiada por su técnica vocal estable y emotiva."
+    image: "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?q=80&w=1000&auto=format&fit=crop",    fullBio: {
+      preDebut: "Conocida por su potente voz y sus adorables hoyuelos. Es una de las vocalistas más destacadas de la cuarta generación.",
+      soloCareer: "Participó en el video musical 'This Christmas' de Taeyeon.",
+      achievements: "Elogiada por su técnica vocal estable y emotiva.",
+      curiosities: "Es una persona tímida y tranquila. Le encantan los gatos."
+    }
   }
 ];
 

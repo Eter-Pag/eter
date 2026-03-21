@@ -28,11 +28,12 @@ export default function TxtBiographies() {
     birth: "5 de diciembre de 2000",
     origin: "Ansan, Gyeonggi, Corea del Sur",
     mbti: "ISFP",
-    image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=1000&auto=format&fit=crop",
-    bio: "El líder amable y carismático de TXT. Es conocido por su altura impresionante y sus visuales de 'flower boy'.",
-    curiosities: "Es un gran fan de la música K-Pop. Le encanta el pan y la leche de almendras.",
-    soloCareer: "MC de Music Bank junto a Arin de Oh My Girl (2020-2021).",
-    achievements: "Lideró a TXT a ser el primer grupo de cuarta generación en encabezar Lollapalooza."
+    image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=1000&auto=format&fit=crop",    fullBio: {
+      preDebut: "El líder amable y carismático de TXT. Es conocido por su altura impresionante y sus visuales de 'flower boy'.",
+      soloCareer: "MC de Music Bank junto a Arin de Oh My Girl (2020-2021).",
+      achievements: "Lideró a TXT a ser el primer grupo de cuarta generación en encabezar Lollapalooza.",
+      curiosities: "Es un gran fan de la música K-Pop. Le encanta el pan y la leche de almendras."
+    }
   },
   {
     id: "yeonjun",
@@ -42,11 +43,12 @@ export default function TxtBiographies() {
     birth: "13 de septiembre de 1999",
     origin: "Seúl, Corea del Sur",
     mbti: "ENFP",
-    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=1000&auto=format&fit=crop",
-    bio: "Conocido como el '4th Gen It Boy'. Fue el aprendiz número 1 en JYP y BigHit en todas las categorías.",
-    curiosities: "Vivió en EE. UU. durante 2 años. Es un apasionado de la moda.",
-    soloCareer: "Debut solista con 'GGUM' en 2024. Embajador de Privé Alliance.",
-    achievements: "Primer integrante de TXT en debutar oficialmente como solista."
+    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=1000&auto=format&fit=crop",    fullBio: {
+      preDebut: "Conocido como el '4th Gen It Boy'. Fue el aprendiz número 1 en JYP y BigHit en todas las categorías.",
+      soloCareer: "Debut solista con 'GGUM' en 2024. Embajador de Privé Alliance.",
+      achievements: "Primer integrante de TXT en debutar oficialmente como solista.",
+      curiosities: "Vivió en EE. UU. durante 2 años. Es un apasionado de la moda."
+    }
   },
   {
     id: "beomgyu",
@@ -56,11 +58,12 @@ export default function TxtBiographies() {
     birth: "13 de marzo de 2001",
     origin: "Daegu, Corea del Sur",
     mbti: "ISFJ",
-    image: "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?q=80&w=1000&auto=format&fit=crop",
-    bio: "El creador de ambiente del grupo. Es conocido por su energía inagotable y su habilidad para tocar la guitarra.",
-    curiosities: "Fue reclutado en su ciudad natal, Daegu. Le gusta mucho la fotografía.",
-    soloCareer: "Participación activa en la composición y producción de canciones del grupo.",
-    achievements: "Reconocido por su carisma en programas de variedades y su presencia escénica."
+    image: "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?q=80&w=1000&auto=format&fit=crop",    fullBio: {
+      preDebut: "El creador de ambiente del grupo. Es conocido por su energía inagotable y su habilidad para tocar la guitarra.",
+      soloCareer: "Participación activa en la composición y producción de canciones del grupo.",
+      achievements: "Reconocido por su carisma en programas de variedades y su presencia escénica.",
+      curiosities: "Fue reclutado en su ciudad natal, Daegu. Le gusta mucho la fotografía."
+    }
   },
   {
     id: "taehyun",
@@ -70,11 +73,12 @@ export default function TxtBiographies() {
     birth: "5 de febrero de 2002",
     origin: "Seúl, Corea del Sur",
     mbti: "ESTP",
-    image: "https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?q=80&w=1000&auto=format&fit=crop",
-    bio: "Conocido por su inteligencia y su voz potente y estable. Es uno de los vocalistas más técnicos de su generación.",
-    curiosities: "Habla inglés con fluidez. Le gusta la magia y el boxeo.",
-    soloCareer: "Colaboraciones vocales y participación en la escritura de letras.",
-    achievements: "Elogiado por su madurez y profesionalismo desde el debut."
+    image: "https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?q=80&w=1000&auto=format&fit=crop",    fullBio: {
+      preDebut: "Conocido por su inteligencia y su voz potente y estable. Es uno de los vocalistas más técnicos de su generación.",
+      soloCareer: "Colaboraciones vocales y participación en la escritura de letras.",
+      achievements: "Elogiado por su madurez y profesionalismo desde el debut.",
+      curiosities: "Habla inglés con fluidez. Le gusta la magia y el boxeo."
+    }
   }
 ];
 
