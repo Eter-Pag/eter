@@ -1,320 +1,366 @@
-import { useState, useRef, useEffect } from "react";
+import { useLocation } from "wouter";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { ArrowLeft, Calendar, MapPin, Star, ChevronDown, Music, Award, BookOpen, Heart, Shield } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { 
-  User, 
-  Calendar, 
-  MapPin, 
-  Star, 
-  Music, 
-  Trophy, 
-  Info, 
-  X,
-  Sparkles,
-  Heart,
-  Globe
-} from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
-
-const members = [
-  {
-    id: "rm",
-    name: "RM",
-    realName: "Kim Nam-joon",
-    position: "Rapero Líder, Productor, Líder",
-    birth: "12 de septiembre de 1994",
-    origin: "Seúl, Corea del Sur",
-    mbti: "INTJ",
-    image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=1000&auto=format&fit=crop",
-    bio: "Líder de BTS y mente creativa detrás de muchos conceptos del grupo. Es conocido por su inteligencia, profundidad lírica y visión artística.",
-    curiosities: "Habla inglés, japonés y coreano con fluidez. Es un gran coleccionista de arte contemporáneo.",
-    soloCareer: "Mixtapes 'RM' (2015), 'Mono' (2018). Álbum solista 'Indigo' (2022).",
-    achievements: "Embajador global de UNICEF. Reconocido como uno de los raperos más influyentes del K-Pop."
-  },
-  {
-    id: "jin",
-    name: "Jin",
-    realName: "Kim Seok-jin",
-    position: "Vocalista Líder, Visual",
-    birth: "4 de diciembre de 1992",
-    origin: "Anyang, Gyeonggi, Corea del Sur",
-    mbti: "ISFJ",
-    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=1000&auto=format&fit=crop",
-    bio: "El mayor de BTS, conocido por su voz dulce y su belleza clásica. Es el 'visual' del grupo y un pilar emocional para los miembros.",
-    curiosities: "Es muy bueno cocinando. Tiene un gato llamado Jjangu. Completó su servicio militar en 2024.",
-    soloCareer: "Sencillo 'The Astronaut' (2022). Álbum solista 'Happy' (2024).",
-    achievements: "Embajador de Gucci. Reconocido por su carisma en programas de variedades."
-  },
-  {
-    id: "suga",
-    name: "SUGA",
-    realName: "Min Yoon-gi",
-    position: "Rapero Principal, Productor",
-    birth: "9 de marzo de 1993",
-    origin: "Daegu, Corea del Sur",
-    mbti: "ISFP",
-    image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=1000&auto=format&fit=crop",
-    bio: "Productor talentoso y rapero técnico de BTS. Es conocido por su estilo único y su contribución significativa a la producción musical del grupo.",
-    curiosities: "Tiene un gato llamado Holly. Es un apasionado de los videojuegos. Completó su servicio militar en 2023.",
-    soloCareer: "Mixtapes 'Agust D' (2016), 'D-2' (2020). Álbum 'D-Day' (2023).",
-    achievements: "Productor acreditado en múltiples canciones de BTS. Embajador de Louis Vuitton."
-  },
-  {
-    id: "jhope",
-    name: "J-Hope",
-    realName: "Jung Ho-seok",
-    position: "Bailarín Líder, Rapero, Vocalista",
-    birth: "18 de febrero de 1994",
-    origin: "Gwangju, Corea del Sur",
-    mbti: "ENFP",
-    image: "https://images.unsplash.com/photo-1517841905240-472988babdf9?q=80&w=1000&auto=format&fit=crop",
-    bio: "Conocido como el 'Sol' de BTS por su personalidad radiante y energía inagotable. Es el bailarín principal y una fuente de inspiración para el grupo.",
-    curiosities: "Es muy cercano a todos los miembros. Le encanta bailar y hacer ejercicio. Completó su servicio militar en 2023.",
-    soloCareer: "Mixtape 'Hope World' (2018). Álbum solista 'Jack in the Box' (2022).",
-    achievements: "Embajador de Prada. Reconocido por su técnica de baile excepcional."
-  },
-  {
-    id: "jimin",
-    name: "Jimin",
-    realName: "Park Ji-min",
-    position: "Vocalista Principal, Bailarín Principal",
-    birth: "13 de octubre de 1995",
-    origin: "Busan, Corea del Sur",
-    mbti: "ENFP",
-    image: "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?q=80&w=1000&auto=format&fit=crop",
-    bio: "Vocalista y bailarín excepcional, conocido por su flexibilidad, control corporal y presencia escénica magnética.",
-    curiosities: "Es muy perfeccionista con sus coreografías. Tiene un gato llamado Meonji. Está en servicio militar actualmente.",
-    soloCareer: "Sencillo 'With You' (2023). Álbum solista 'FACE' (2023).",
-    achievements: "Embajador global de Dior y Calvin Klein. Récord de vistas en Spotify para solista de K-pop."
-  },
-  {
-    id: "v",
-    name: "V",
-    realName: "Kim Tae-hyung",
-    position: "Vocalista Principal, Visual",
-    birth: "30 de diciembre de 1995",
-    origin: "Daegu, Corea del Sur",
-    mbti: "ENFP",
-    image: "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?q=80&w=1000&auto=format&fit=crop",
-    bio: "Conocido por su voz única y profunda, así como por sus visuales impactantes. Es un artista versátil con talento para la actuación.",
-    curiosities: "Es muy cercano a Jungkook. Le encanta la fotografía y el arte. Está en servicio militar actualmente.",
-    soloCareer: "Sencillo 'Singularity' (2018). Álbum solista 'Layover' (2023).",
-    achievements: "Embajador global de Celine. Protagonista del drama 'Hwarang'."
-  },
-  {
-    id: "jungkook",
-    name: "Jungkook",
-    realName: "Jeon Jung-kook",
-    position: "Vocalista Principal, Bailarín, Rapero",
-    birth: "1 de septiembre de 1997",
-    origin: "Busan, Corea del Sur",
-    mbti: "ISFP",
-    image: "https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?q=80&w=1000&auto=format&fit=crop",
-    bio: "El miembro más joven de BTS, conocido como el 'Golden Maknae' por su versatilidad excepcional en canto, baile y rap.",
-    curiosities: "Es muy cercano a V. Tiene un gato llamado Bam. Es un apasionado de los videojuegos y el fitness.",
-    soloCareer: "Sencillo 'Euphoria' (2018). Álbum solista 'GOLDEN' (2023).",
-    achievements: "Embajador global de Calvin Klein y Prada. Reconocido como uno de los artistas más versátiles de su generación."
-  }
-];
+import { useState } from "react";
 
 export default function BtsBiographies() {
-  const [selectedMember, setSelectedMember] = useState<string | null>(null);
-  const bioRef = useRef<HTMLDivElement>(null);
+  const [, navigate] = useLocation();
+  const [expandedMemberId, setExpandedMemberId] = useState<string | null>(null);
 
-  const toggleMember = (id: string) => {
-    setSelectedMember(selectedMember === id ? null : id);
+  const members = [
+    {
+      id: "rm",
+      stageName: "RM",
+      realName: "Kim Nam-joon",
+      position: "Líder, Rapero Principal",
+      birthday: "12 de Septiembre, 1994",
+      birthplace: "Ilsan, Gyeonggi-do, Corea del Sur",
+      mbti: "ENTP",
+      image: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=800&q=80",
+      color: "bg-blue-600",
+      fullBio: {
+        preDebut: "RM comenzó como rapero underground bajo el nombre 'Runch Randa'. Fue parte del grupo Dae Nam Hyup y colaboró con Zico antes de unirse a Big Hit. Fue el primer miembro de BTS, reclutado por su impresionante habilidad lírica y un IQ de 148.",
+        soloCareer: "Lanzó su primer mixtape 'RM' en 2015, seguido por el aclamado 'mono.' en 2018, que alcanzó el #1 en iTunes en 121 países. Su debut oficial como solista fue con 'Indigo' (2022), un álbum que explora su identidad como artista y humano. En 2024 lanzó 'Right Place, Wrong Person'.",
+        achievements: "Es el artista coreano más joven con más créditos en la KOMCA (más de 200 canciones). Ha dado tres discursos ante la ONU y es un gran promotor del arte coreano, donando millones a museos y fundaciones.",
+        curiosities: "Aprendió inglés viendo la serie 'Friends'. Es conocido por su torpeza física (apodado 'Dios de la Destrucción'), pero su mente es una de las más brillantes de la industria. Ama la naturaleza y el 'Namjooning' (pasear por museos y parques).",
+        military: "Inició su servicio militar en diciembre de 2023 y se espera su regreso para junio de 2025."
+      }
+    },
+    {
+      id: "jin",
+      stageName: "Jin",
+      realName: "Kim Seok-jin",
+      position: "Sub-Vocalista, Visual",
+      birthday: "4 de Diciembre, 1992",
+      birthplace: "Anyang, Gyeonggi-do, Corea del Sur",
+      mbti: "INTP",
+      image: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=800&q=80",
+      color: "bg-pink-500",
+      fullBio: {
+        preDebut: "Jin fue descubierto por un agente de Big Hit mientras bajaba de un autobús por su increíble apariencia. En ese momento estudiaba actuación en la Universidad Konkuk y no tenía experiencia previa en canto o baile, lo que hace su progreso aún más admirable.",
+        soloCareer: "Sus solos en BTS como 'Awake', 'Epiphany' y 'Moon' son himnos de amor propio. Debutó oficialmente con 'The Astronaut' (2022), un regalo para ARMY co-escrito con Coldplay. En 2024 lanzó su álbum 'Happy', explorando sonidos rock y pop-punk.",
+        achievements: "Conocido como 'Worldwide Handsome'. Ha sido elogiado por críticos vocales por su 'voz de plata' y su técnica estable. Es un exitoso empresario, dueño de un restaurante japonés junto a su hermano.",
+        curiosities: "Es famoso por sus 'dad jokes' (chistes de papá) y sus besos voladores. Es un gamer apasionado (especialmente de MapleStory). Su risa de 'limpiavidrios' es icónica entre los fans.",
+        military: "Fue el primer miembro en completar su servicio militar, regresando triunfalmente en junio de 2024."
+      }
+    },
+    {
+      id: "suga",
+      stageName: "SUGA / Agust D",
+      realName: "Min Yoon-gi",
+      position: "Rapero Líder",
+      birthday: "9 de Marzo, 1993",
+      birthplace: "Buk-gu, Daegu, Corea del Sur",
+      mbti: "ISTP",
+      image: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=800&q=80",
+      color: "bg-slate-800",
+      fullBio: {
+        preDebut: "Comenzó como rapero y productor underground en Daegu bajo el nombre 'Gloss'. Pasó por muchas dificultades económicas antes del debut, llegando a elegir entre comer o pagar el autobús. Se unió a Big Hit originalmente como productor.",
+        soloCareer: "Bajo su alias Agust D, lanzó los mixtapes 'Agust D' (2016) y 'D-2' (2020). Su trilogía culminó con el álbum oficial 'D-DAY' (2023), seguido de una exitosa gira mundial en solitario, siendo el primer miembro de BTS en realizar un tour mundial solo.",
+        achievements: "Productor de élite que ha trabajado con artistas como IU, PSY, Halsey y Epik High. Ganador de múltiples premios 'Hot Trend' por su producción. Es miembro pleno de la KOMCA.",
+        curiosities: "Dice que en su próxima vida quiere ser una piedra para no tener que moverse. Es un experto en baloncesto. Sus letras son famosas por abordar crudamente la salud mental y las presiones sociales.",
+        military: "Inició su servicio como agente de servicio social en septiembre de 2023 debido a una cirugía previa en el hombro."
+      }
+    },
+    {
+      id: "j-hope",
+      stageName: "J-Hope",
+      realName: "Jung Ho-seok",
+      position: "Bailarín Principal, Rapero",
+      birthday: "18 de Febrero, 1994",
+      birthplace: "Gwangju, Corea del Sur",
+      mbti: "INFJ",
+      image: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=800&q=80",
+      color: "bg-green-600",
+      fullBio: {
+        preDebut: "Era un bailarín callejero muy famoso en Gwangju con el grupo 'Neuron'. Ganó varios concursos nacionales de baile antes de unirse a Big Hit. Casi deja el grupo antes del debut, pero RM convenció a la empresa de que BTS necesitaba a J-Hope.",
+        soloCareer: "Lanzó su mixtape 'Hope World' en 2018. Fue el primer miembro en debutar oficialmente con un álbum de estudio, 'Jack In The Box' (2022), mostrando un lado más oscuro y conceptual. En 2024 lanzó el proyecto documental y álbum 'HOPE ON THE STREET VOL.1'.",
+        achievements: "Primer artista coreano en encabezar el festival Lollapalooza como acto principal. Es considerado uno de los mejores bailarines de la historia del K-Pop, dirigiendo personalmente los ensayos de BTS.",
+        curiosities: "Su nombre artístico viene de su deseo de ser la esperanza de los fans. Es extremadamente ordenado y limpio. Tiene un miedo increíble a las montañas rusas y a los insectos.",
+        military: "Completó su servicio militar en octubre de 2024, siendo el segundo miembro en regresar."
+      }
+    },
+    {
+      id: "jimin",
+      stageName: "Jimin",
+      realName: "Park Ji-min",
+      position: "Bailarín Principal, Vocalista Líder",
+      birthday: "13 de Octubre, 1995",
+      birthplace: "Busan, Corea del Sur",
+      mbti: "ESTP",
+      image: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=800&q=80",
+      color: "bg-amber-500",
+      fullBio: {
+        preDebut: "Fue el estudiante estrella de danza contemporánea en la Escuela Secundaria de Artes de Busan. Fue el último miembro en unirse a BTS, entrenando solo por 6 meses antes del debut debido a su talento natural y ética de trabajo extrema.",
+        soloCareer: "Sus canciones 'Lie', 'Serendipity' y 'Filter' rompieron récords en streaming. Debutó oficialmente con 'FACE' (2023), logrando que su single 'Like Crazy' fuera el primero de un solista coreano en llegar al #1 del Billboard Hot 100. En 2024 lanzó 'MUSE'.",
+        achievements: "Ha sido #1 en el ranking de reputación de marca de idols masculinos por más de 35 meses consecutivos. Es conocido por su estilo de baile que mezcla hip-hop con danza moderna.",
+        curiosities: "Es el miembro más bajo del grupo y a menudo bromean sobre el tamaño de sus manos. Es extremadamente cariñoso y siempre cuida de los demás miembros cuando están tristes.",
+        military: "Inició su servicio militar en diciembre de 2023 junto a Jungkook."
+      }
+    },
+    {
+      id: "v",
+      stageName: "V",
+      realName: "Kim Tae-hyung",
+      position: "Sub-Vocalista, Visual",
+      birthday: "30 de Diciembre, 1995",
+      birthplace: "Daegu, Corea del Sur",
+      mbti: "INFP",
+      image: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=800&q=80",
+      color: "bg-purple-600",
+      fullBio: {
+        preDebut: "Acompañó a un amigo a una audición solo por apoyo, pero los agentes le pidieron que audicionara también y fue el único que pasó ese día. Fue mantenido como el 'miembro secreto' de BTS hasta el último momento para generar misterio.",
+        soloCareer: "Famoso por su voz barítona profunda. Lanzó temas como 'Scenery' y 'Winter Bear'. Su álbum debut 'Layover' (2023) fusiona jazz, R&B y soul, reflejando sus gustos personales. En 2024 lanzó el single digital 'FRI(END)S'.",
+        achievements: "Ha ganado múltiples títulos como 'El rostro más hermoso del mundo'. Debutó como actor en el drama 'Hwarang'. Es un ícono de la moda global y embajador de Celine y Cartier.",
+        curiosities: "Ama el jazz, la fotografía y el arte clásico (especialmente Van Gogh). Inventó la frase 'I Purple You' (Borahae), que se convirtió en el símbolo de la unión entre BTS y ARMY.",
+        military: "Se unió a las fuerzas especiales de la Policía Militar en diciembre de 2023."
+      }
+    },
+    {
+      id: "jungkook",
+      stageName: "Jungkook",
+      realName: "Jeon Jung-kook",
+      position: "Vocalista Principal, Centro, Maknae",
+      birthday: "1 de Septiembre, 1997",
+      birthplace: "Busan, Corea del Sur",
+      mbti: "ISFP",
+      image: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=800&q=80",
+      color: "bg-red-600",
+      fullBio: {
+        preDebut: "Participó en el programa 'Superstar K' y, aunque no ganó, recibió ofertas de 7 agencias diferentes. Eligió Big Hit después de ver a RM rapear, pensando que era 'genial'. Fue enviado a Los Ángeles antes del debut para perfeccionar su baile.",
+        soloCareer: "El 'Golden Maknae' rompió internet con 'Seven' (2023), que debutó en el #1 de Billboard. Su álbum 'GOLDEN' consolidó su estatus como estrella pop global, colaborando con artistas como Jack Harlow, Latto y Usher.",
+        achievements: "Primer artista coreano en actuar en la ceremonia de apertura de una Copa del Mundo (Qatar 2022). Posee múltiples récords Guinness por su éxito masivo en Spotify y Billboard.",
+        curiosities: "Es cinturón negro en Taekwondo. Le encanta dibujar, editar videos (G.C.F) y los deportes. Es conocido por ser extremadamente competitivo y por aprender cualquier habilidad casi instantáneamente.",
+        military: "Inició su servicio militar en diciembre de 2023 junto a Jimin."
+      }
+    },
+  ];
+
+  const toggleMember = (memberId: string) => {
+    setExpandedMemberId(expandedMemberId === memberId ? null : memberId);
   };
 
-  useEffect(() => {
-    if (selectedMember && bioRef.current) {
-      setTimeout(() => {
-        bioRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-      }, 100);
-    }
-  }, [selectedMember]);
-
   return (
-    <div className="min-h-screen bg-gradient-to-b from-black via-zinc-900 to-black text-white py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="text-center mb-16">
-          <motion.h1 
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-5xl md:text-7xl font-extrabold tracking-tighter mb-4 bg-clip-text text-transparent bg-gradient-to-r from-purple-500 to-white"
-          >
-            BTS
-          </motion.h1>
-          <p className="text-zinc-400 text-lg max-w-2xl mx-auto">
-            Los 7 Bangtan Boys que revolucionaron el mundo. Haz clic en cualquier integrante para descubrir su historia completa.
+    <div className="min-h-screen bg-slate-50">
+      {/* Header */}
+      <header className="sticky top-0 z-50 bg-white/90 backdrop-blur-lg border-b border-slate-200 shadow-sm">
+        <div className="container flex items-center justify-between h-16 px-4">
+          <div className="flex items-center gap-4">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => navigate("/biografias")}
+              className="rounded-full hover:bg-slate-100"
+            >
+              <ArrowLeft className="size-5" />
+            </Button>
+            <h1 className="font-bold text-xl tracking-tight text-slate-900">BTS: Biografía Completa</h1>
+          </div>
+          <Badge className="bg-purple-600 hover:bg-purple-700 text-white border-none px-3 py-1">
+            7 Leyendas
+          </Badge>
+        </div>
+      </header>
+
+      {/* Hero Section */}
+      <section className="relative h-[45vh] md:h-[60vh] overflow-hidden">
+        <img
+          src="https://images.unsplash.com/photo-1501386761578-eac5c94b800a?w=1600&q=80"
+          alt="BTS Group"
+          className="w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent" />
+        <div className="absolute inset-0 flex flex-col items-center justify-end pb-12 text-white p-6 text-center">
+          <h2 className="text-5xl md:text-8xl font-black mb-4 tracking-tighter drop-shadow-2xl">BTS</h2>
+          <p className="max-w-3xl text-lg md:text-2xl text-slate-200 font-medium leading-relaxed">
+            La historia de siete jóvenes que cambiaron el mundo a través de la música, el amor propio y la perseverancia.
           </p>
         </div>
+      </section>
 
-        {/* Members Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-7 gap-4 mb-16">
-          {members.map((member) => (
-            <motion.div
-              key={member.id}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="cursor-pointer"
-              onClick={() => toggleMember(member.id)}
-            >
-              <Card 
-                className={`overflow-hidden border-2 transition-all duration-300 ${
-                  selectedMember === member.id 
-                    ? 'border-purple-500 ring-4 ring-purple-500/40 shadow-lg shadow-purple-500/50' 
-                    : 'border-zinc-800 hover:border-purple-600'
-                } bg-zinc-900/50 backdrop-blur-sm`}
+      {/* Main Content */}
+      <main className="container py-16 px-4 max-w-6xl mx-auto">
+        {/* Members Grid - Accordion Style */}
+        <div className="space-y-6">
+          {/* Grid de Miembros */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-12">
+            {members.map((member) => (
+              <Card
+                key={member.id}
+                className="group overflow-hidden border-none shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer bg-white"
+                onClick={() => toggleMember(member.id)}
               >
-                <div className="relative aspect-square">
-                  <img 
-                    src={member.image} 
-                    alt={member.name}
-                    className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-500"
+                <div className="relative aspect-[3/4] overflow-hidden">
+                  <img
+                    src={member.image}
+                    alt={member.stageName}
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
-                  <div className="absolute bottom-0 left-0 right-0 p-3 text-center">
-                    <h3 className="text-lg font-bold text-white">{member.name}</h3>
+                  <div className={`absolute inset-0 opacity-20 ${member.color}`} />
+                  <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/90 to-transparent text-white">
+                    <p className="text-xs font-bold uppercase tracking-widest opacity-80 mb-1">{member.position}</p>
+                    <h4 className="text-xl font-black">{member.stageName}</h4>
+                  </div>
+                  <div className="absolute top-3 right-3 bg-white/90 backdrop-blur rounded-full p-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <ChevronDown className={`size-5 text-slate-900 transition-transform ${expandedMemberId === member.id ? 'rotate-180' : ''}`} />
                   </div>
                 </div>
-                <div className="p-2 flex justify-center bg-black/60">
-                  <Button 
-                    className={`text-xs font-bold px-3 py-1 transition-all ${
-                      selectedMember === member.id
-                        ? 'bg-purple-600 hover:bg-purple-700 text-white'
-                        : 'bg-purple-600/60 hover:bg-purple-600 text-white'
-                    }`}
-                    size="sm"
-                  >
-                    {selectedMember === member.id ? "VIENDO" : "VER BIO"}
-                  </Button>
-                </div>
               </Card>
-            </motion.div>
-          ))}
+            ))}
+          </div>
+
+          {/* Expanded Biography Section */}
+          {expandedMemberId && (
+            <div className="animate-in fade-in slide-in-from-top-4 duration-500">
+              <Card className="border-none shadow-2xl bg-white overflow-hidden">
+                <CardContent className="p-0">
+                  {members
+                    .filter((m) => m.id === expandedMemberId)
+                    .map((member) => (
+                      <div key={member.id} className="grid grid-cols-1 lg:grid-cols-3 gap-8 p-8 md:p-12">
+                        {/* Left: Image and Basic Info */}
+                        <div className="lg:col-span-1">
+                          <div className="relative rounded-3xl overflow-hidden shadow-xl aspect-[3/4] mb-6">
+                            <img
+                              src={member.image}
+                              alt={member.stageName}
+                              className="w-full h-full object-cover"
+                            />
+                            <div className={`absolute inset-0 opacity-30 ${member.color}`} />
+                            <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/90 to-transparent text-white">
+                              <h3 className="text-3xl font-black mb-1">{member.stageName}</h3>
+                              <p className="text-purple-300 font-bold tracking-widest uppercase text-xs">{member.position}</p>
+                            </div>
+                          </div>
+
+                          <div className="space-y-3">
+                            <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100">
+                              <Calendar className="size-4 text-purple-600 shrink-0" />
+                              <div>
+                                <p className="text-xs text-slate-400 font-bold uppercase">Nacimiento</p>
+                                <p className="text-xs font-bold text-slate-700">{member.birthday}</p>
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100">
+                              <MapPin className="size-4 text-blue-600 shrink-0" />
+                              <div>
+                                <p className="text-xs text-slate-400 font-bold uppercase">Origen</p>
+                                <p className="text-xs font-bold text-slate-700">{member.birthplace}</p>
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100">
+                              <Star className="size-4 text-amber-600 shrink-0" />
+                              <div>
+                                <p className="text-xs text-slate-400 font-bold uppercase">MBTI</p>
+                                <p className="text-xs font-bold text-slate-700">{member.mbti}</p>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Right: Tabs */}
+                        <div className="lg:col-span-2">
+                          <Tabs defaultValue="bio" className="w-full">
+                            <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 h-auto p-1 bg-slate-100 rounded-xl mb-6">
+                              <TabsTrigger value="bio" className="rounded-lg py-2 text-xs md:text-sm data-[state=active]:bg-white data-[state=active]:shadow-sm">
+                                <BookOpen className="size-3 md:size-4 mr-1" /> Bio
+                              </TabsTrigger>
+                              <TabsTrigger value="solo" className="rounded-lg py-2 text-xs md:text-sm data-[state=active]:bg-white data-[state=active]:shadow-sm">
+                                <Music className="size-3 md:size-4 mr-1" /> Solo
+                              </TabsTrigger>
+                              <TabsTrigger value="achievements" className="rounded-lg py-2 text-xs md:text-sm data-[state=active]:bg-white data-[state=active]:shadow-sm">
+                                <Award className="size-3 md:size-4 mr-1" /> Logros
+                              </TabsTrigger>
+                              <TabsTrigger value="extra" className="rounded-lg py-2 text-xs md:text-sm data-[state=active]:bg-white data-[state=active]:shadow-sm">
+                                <Heart className="size-3 md:size-4 mr-1" /> Extra
+                              </TabsTrigger>
+                            </TabsList>
+
+                            <div className="space-y-6 min-h-[350px]">
+                              <TabsContent value="bio" className="mt-0 space-y-4 animate-in fade-in duration-500">
+                                <div className="flex items-center gap-3 mb-4">
+                                  <div className="h-6 w-1 bg-purple-600 rounded-full" />
+                                  <h4 className="text-lg font-bold text-slate-900">Trayectoria y Origen</h4>
+                                </div>
+                                <p className="text-slate-600 text-sm md:text-base leading-relaxed">
+                                  {member.fullBio.preDebut}
+                                </p>
+                                <div className="p-4 bg-slate-50 rounded-xl border border-slate-100 flex items-start gap-3">
+                                  <Shield className="size-5 text-purple-600 mt-0.5 shrink-0" />
+                                  <div>
+                                    <h5 className="font-bold text-slate-900 text-sm mb-1">Servicio Militar</h5>
+                                    <p className="text-slate-600 text-xs md:text-sm">{member.fullBio.military}</p>
+                                  </div>
+                                </div>
+                              </TabsContent>
+
+                              <TabsContent value="solo" className="mt-0 space-y-4 animate-in fade-in duration-500">
+                                <div className="flex items-center gap-3 mb-4">
+                                  <div className="h-6 w-1 bg-blue-600 rounded-full" />
+                                  <h4 className="text-lg font-bold text-slate-900">Carrera Solista</h4>
+                                </div>
+                                <p className="text-slate-600 text-sm md:text-base leading-relaxed">
+                                  {member.fullBio.soloCareer}
+                                </p>
+                              </TabsContent>
+
+                              <TabsContent value="achievements" className="mt-0 space-y-4 animate-in fade-in duration-500">
+                                <div className="flex items-center gap-3 mb-4">
+                                  <div className="h-6 w-1 bg-amber-500 rounded-full" />
+                                  <h4 className="text-lg font-bold text-slate-900">Logros e Impacto</h4>
+                                </div>
+                                <p className="text-slate-600 text-sm md:text-base leading-relaxed">
+                                  {member.fullBio.achievements}
+                                </p>
+                              </TabsContent>
+
+                              <TabsContent value="extra" className="mt-0 space-y-4 animate-in fade-in duration-500">
+                                <div className="flex items-center gap-3 mb-4">
+                                  <div className="h-6 w-1 bg-pink-500 rounded-full" />
+                                  <h4 className="text-lg font-bold text-slate-900">Curiosidades</h4>
+                                </div>
+                                <p className="text-slate-600 text-sm md:text-base leading-relaxed">
+                                  {member.fullBio.curiosities}
+                                </p>
+                              </TabsContent>
+                            </div>
+                          </Tabs>
+                        </div>
+                      </div>
+                    ))}
+                </CardContent>
+              </Card>
+            </div>
+          )}
         </div>
 
-        {/* Biography Content (Split View) */}
-        <AnimatePresence mode="wait">
-          {selectedMember && (
-            <motion.div
-              ref={bioRef}
-              key={selectedMember}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 20 }}
-              transition={{ duration: 0.4, ease: "easeOut" }}
-              className="mb-12"
-            >
-              {members.filter(m => m.id === selectedMember).map((member) => (
-                <Card key={member.id} className="bg-gradient-to-br from-zinc-900/90 to-black border-purple-500/50 backdrop-blur-md shadow-2xl shadow-purple-500/20 overflow-hidden">
-                  <CardContent className="p-0">
-                    <div className="flex flex-col lg:flex-row">
-                      {/* Left Column: Image & Quick Info */}
-                      <div className="lg:w-2/5 bg-black/60 p-6 sm:p-8 space-y-6 border-b lg:border-b-0 lg:border-r border-purple-500/20">
-                        <div className="relative rounded-2xl overflow-hidden border-4 border-purple-500/50 shadow-purple-500/20 shadow-2xl">
-                          <img src={member.image} alt={member.name} className="w-full aspect-square object-cover" />
-                          <div className="absolute top-4 right-4">
-                            <Badge className="bg-purple-600 text-white px-3 py-1 text-sm font-bold">
-                              {member.mbti}
-                            </Badge>
-                          </div>
-                        </div>
-                        
-                        <div className="space-y-3">
-                          <div className="flex items-center gap-3 p-3 bg-purple-600/10 rounded-xl border border-purple-500/30 hover:border-purple-500/60 transition-colors">
-                            <User className="text-purple-400 w-5 h-5 flex-shrink-0" />
-                            <div className="min-w-0">
-                              <p className="text-xs text-zinc-400 uppercase font-bold">Nombre Real</p>
-                              <p className="font-medium text-sm truncate">{member.realName}</p>
-                            </div>
-                          </div>
-                          <div className="flex items-center gap-3 p-3 bg-purple-600/10 rounded-xl border border-purple-500/30 hover:border-purple-500/60 transition-colors">
-                            <Calendar className="text-purple-400 w-5 h-5 flex-shrink-0" />
-                            <div className="min-w-0">
-                              <p className="text-xs text-zinc-400 uppercase font-bold">Nacimiento</p>
-                              <p className="font-medium text-sm">{member.birth}</p>
-                            </div>
-                          </div>
-                          <div className="flex items-center gap-3 p-3 bg-purple-600/10 rounded-xl border border-purple-500/30 hover:border-purple-500/60 transition-colors">
-                            <MapPin className="text-purple-400 w-5 h-5 flex-shrink-0" />
-                            <div className="min-w-0">
-                              <p className="text-xs text-zinc-400 uppercase font-bold">Origen</p>
-                              <p className="font-medium text-sm">{member.origin}</p>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
+        {/* Final Group Section */}
+        <section className="mt-16 bg-gradient-to-br from-purple-900 to-slate-900 rounded-3xl p-10 md:p-16 text-white shadow-2xl overflow-hidden relative">
+          <div className="absolute top-0 right-0 w-96 h-96 bg-purple-500/20 blur-[100px] rounded-full -mr-48 -mt-48" />
+          <div className="relative z-10 max-w-3xl">
+            <h3 className="text-3xl md:text-5xl font-black mb-6 leading-tight">BTS: El Legado de la Eternidad</h3>
+            <p className="text-lg text-slate-300 leading-relaxed mb-6">
+              Desde su debut en 2013, BTS ha demostrado que la música no tiene fronteras, idiomas ni límites. A través de su mensaje de "Love Yourself", han salvado vidas y unido a millones de personas bajo un mismo nombre: ARMY.
+            </p>
+            <div className="flex flex-wrap gap-3">
+              <Badge variant="outline" className="text-white border-white/20 px-3 py-1 text-sm">#BTS</Badge>
+              <Badge variant="outline" className="text-white border-white/20 px-3 py-1 text-sm">#ARMY</Badge>
+              <Badge variant="outline" className="text-white border-white/20 px-3 py-1 text-sm">#KPOP_LEGENDS</Badge>
+            </div>
+          </div>
+        </section>
+      </main>
 
-                      {/* Right Column: Detailed Tabs */}
-                      <div className="lg:w-3/5 p-6 sm:p-8">
-                        <div className="flex items-start justify-between mb-6">
-                          <div>
-                            <h2 className="text-3xl sm:text-4xl font-bold mb-2 flex items-center gap-3">
-                              {member.name} <Sparkles className="text-purple-400 w-7 h-7" />
-                            </h2>
-                            <p className="text-purple-400 font-medium text-base">{member.position}</p>
-                          </div>
-                          <Button 
-                            onClick={() => setSelectedMember(null)}
-                            variant="ghost" 
-                            size="sm"
-                            className="text-zinc-400 hover:text-red-500 hover:bg-red-500/10 rounded-full"
-                          >
-                            <X className="w-5 h-5" />
-                          </Button>
-                        </div>
-
-                        <Tabs defaultValue="bio" className="w-full">
-                          <TabsList className="grid w-full grid-cols-4 bg-black/50 p-1 rounded-xl border border-purple-500/30 mb-6">
-                            <TabsTrigger value="bio" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white rounded-lg text-xs sm:text-sm">Bio</TabsTrigger>
-                            <TabsTrigger value="solo" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white rounded-lg text-xs sm:text-sm">Solo</TabsTrigger>
-                            <TabsTrigger value="achievements" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white rounded-lg text-xs sm:text-sm">Logros</TabsTrigger>
-                            <TabsTrigger value="facts" className="data-[state=active]:bg-purple-600 data-[state=active]:text-white rounded-lg text-xs sm:text-sm">Curiosidades</TabsTrigger>
-                          </TabsList>
-                          
-                          <div className="min-h-[250px]">
-                            <TabsContent value="bio" className="space-y-4 animate-in fade-in slide-in-from-bottom-4">
-                              <div className="flex items-start gap-4">
-                                <Info className="text-purple-400 w-6 h-6 mt-1 flex-shrink-0" />
-                                <p className="text-zinc-300 leading-relaxed">{member.bio}</p>
-                              </div>
-                            </TabsContent>
-
-                            <TabsContent value="solo" className="space-y-4 animate-in fade-in slide-in-from-bottom-4">
-                              <div className="flex items-start gap-4">
-                                <Music className="text-purple-400 w-6 h-6 mt-1 flex-shrink-0" />
-                                <p className="text-zinc-300 leading-relaxed">{member.soloCareer}</p>
-                              </div>
-                            </TabsContent>
-
-                            <TabsContent value="achievements" className="space-y-4 animate-in fade-in slide-in-from-bottom-4">
-                              <div className="flex items-start gap-4">
-                                <Trophy className="text-purple-400 w-6 h-6 mt-1 flex-shrink-0" />
-                                <p className="text-zinc-300 leading-relaxed">{member.achievements}</p>
-                              </div>
-                            </TabsContent>
-
-                            <TabsContent value="facts" className="space-y-4 animate-in fade-in slide-in-from-bottom-4">
-                              <div className="flex items-start gap-4">
-                                <Heart className="text-purple-400 w-6 h-6 mt-1 flex-shrink-0" />
-                                <p className="text-zinc-300 leading-relaxed">{member.curiosities}</p>
-                              </div>
-                            </TabsContent>
-                          </div>
-                        </Tabs>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
+      {/* Footer */}
+      <footer className="py-12 bg-white border-t border-slate-200 text-center">
+        <div className="container px-4">
+          <p className="font-bold text-slate-900 mb-2">ETER K-POP MX</p>
+          <p className="text-slate-400 text-sm">© 2026 - Biografías Oficiales de BTS. Todos los derechos reservados.</p>
+        </div>
+      </footer>
     </div>
   );
 }
