@@ -280,13 +280,13 @@ export default function NewJeansBiographies() {
         <section className="mt-16 bg-gradient-to-br from-purple-900 to-slate-900 rounded-3xl p-10 md:p-16 text-white shadow-2xl overflow-hidden relative">
           <div className="absolute top-0 right-0 w-96 h-96 bg-purple-500/20 blur-[100px] rounded-full -mr-48 -mt-48" />
           <div className="relative z-10 max-w-3xl">
-            <h3 className="text-3xl md:text-5xl font-black mb-6 leading-tight">BTS: El Legado de la Eternidad</h3>
+            <h3 className="text-3xl md:text-5xl font-black mb-6 leading-tight">NewJeans: El Legado de la Modernidad</h3>
             <p className="text-lg text-slate-300 leading-relaxed mb-6">
-              Desde su debut en 2013, BTS ha demostrado que la música no tiene fronteras, idiomas ni límites. A través de su mensaje de "Love Yourself", han salvado vidas y unido a millones de personas bajo un mismo nombre: ARMY.
+              Desde su debut en 2022, NewJeans ha redefinido la estética y el sonido del K-Pop moderno. Con su innovación audaz y frescura, han unido a millones de fans bajo un mismo nombre: HYBE.
             </p>
             <div className="flex flex-wrap gap-3">
-              <Badge variant="outline" className="text-white border-white/20 px-3 py-1 text-sm">#BTS</Badge>
-              <Badge variant="outline" className="text-white border-white/20 px-3 py-1 text-sm">#ARMY</Badge>
+              <Badge variant="outline" className="text-white border-white/20 px-3 py-1 text-sm">#NEWJEANS</Badge>
+              <Badge variant="outline" className="text-white border-white/20 px-3 py-1 text-sm">#HYBE</Badge>
               <Badge variant="outline" className="text-white border-white/20 px-3 py-1 text-sm">#KPOP_LEGENDS</Badge>
             </div>
           </div>
@@ -297,7 +297,7 @@ export default function NewJeansBiographies() {
       <footer className="py-12 bg-white border-t border-slate-200 text-center">
         <div className="container px-4">
           <p className="font-bold text-slate-900 mb-2">ETER K-POP MX</p>
-          <p className="text-slate-400 text-sm">© 2026 - Biografías Oficiales de BTS. Todos los derechos reservados.</p>
+          <p className="text-slate-400 text-sm">© 2026 - Biografías Oficiales de NewJeans. Todos los derechos reservados.</p>
         </div>
       </footer>
     </div>
