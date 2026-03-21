@@ -135,13 +135,13 @@ export default function IveBiographies() {
                 <div className="relative aspect-[3/4] overflow-hidden">
                   <img
                     src={member.image}
-                    alt={member.stageName}
+                    alt={member.name}
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                   />
                   <div className={`absolute inset-0 opacity-20 ${member.color}`} />
                   <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/90 to-transparent text-white">
                     <p className="text-xs font-bold uppercase tracking-widest opacity-80 mb-1">{member.position}</p>
-                    <h4 className="text-xl font-black">{member.stageName}</h4>
+                    <h4 className="text-xl font-black">{member.name}</h4>
                   </div>
                   <div className="absolute top-3 right-3 bg-white/90 backdrop-blur rounded-full p-2 opacity-0 group-hover:opacity-100 transition-opacity">
                     <ChevronDown className={`size-5 text-slate-900 transition-transform ${expandedMemberId === member.id ? 'rotate-180' : ''}`} />
@@ -165,12 +165,12 @@ export default function IveBiographies() {
                           <div className="relative rounded-3xl overflow-hidden shadow-xl aspect-[3/4] mb-6">
                             <img
                               src={member.image}
-                              alt={member.stageName}
+                              alt={member.name}
                               className="w-full h-full object-cover"
                             />
                             <div className={`absolute inset-0 opacity-30 ${member.color}`} />
                             <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/90 to-transparent text-white">
-                              <h3 className="text-3xl font-black mb-1">{member.stageName}</h3>
+                              <h3 className="text-3xl font-black mb-1">{member.name}</h3>
                               <p className="text-purple-300 font-bold tracking-widest uppercase text-xs">{member.position}</p>
                             </div>
                           </div>
