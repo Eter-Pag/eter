@@ -144,6 +144,7 @@ export default function LandingHome() {
             <span className="md:hidden">Rifas, productos y contenido K-POP</span>
           </p>
           <div className="flex flex-wrap justify-center gap-2 md:gap-3 mt-4 md:mt-8">
+            {/* 
             <Button
               onClick={() => navigate("/rifa")}
               className="hidden gap-1 md:gap-2 bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-xs md:text-sm py-1 md:py-2"
@@ -152,6 +153,7 @@ export default function LandingHome() {
               <span className="hidden md:inline">Ir a Rifas</span>
               <span className="md:hidden">Rifas</span>
             </Button>
+            */}
             <div className="relative" ref={dropdownRef}>
               <div
                 className={`bg-white/20 border border-white/40 text-white rounded-lg overflow-hidden transition-all duration-300 ${
@@ -304,7 +306,7 @@ export default function LandingHome() {
         </div>
 
         {/* Grid de Secciones: 4 por línea en PC, 2 por línea en móvil */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-12">
+        <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 mb-12">
           {/* Tienda Section */}
           <Card className="bg-white/60 backdrop-blur-xl border-border/50 shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
             <CardContent className="p-0">
@@ -398,7 +400,7 @@ export default function LandingHome() {
             </CardContent>
           </Card>
 
-          {/* Rifas Section */}
+          {/* Rifas Section - Temporalmente oculto 
           <Card className="bg-white/60 backdrop-blur-xl border-border/50 shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
             <CardContent className="p-0">
               <div className="relative h-32 md:h-48 bg-gradient-to-br from-pink-400 to-rose-400 overflow-hidden">
@@ -428,6 +430,7 @@ export default function LandingHome() {
               </div>
             </CardContent>
           </Card>
+          */}
         </div>
       </section>
 
