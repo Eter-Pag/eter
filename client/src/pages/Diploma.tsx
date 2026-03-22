@@ -9,27 +9,55 @@ import {
   Download,
   Award,
   ArrowLeft,
+  Check,
 } from "lucide-react";
 import { RAFFLE_CONFIG } from "@shared/raffle";
+
+// Tipos de diplomas disponibles
+interface DiplomaTemplate {
+  id: string;
+  name: string;
+  imagePath: string;
+  description: string;
+}
+
+// Lista de plantillas disponibles - actualizar con nuevos diseños
+const DIPLOMA_TEMPLATES: DiplomaTemplate[] = [
+  {
+    id: "army-bts",
+    name: "ARMY BTS",
+    imagePath: "/assets/certificadoARMYBTS.jpeg",
+    description: "Diploma oficial ARMY BTS",
+  },
+  // Aquí se añadirán más plantillas conforme se reciban las imágenes
+];
 
 export default function Diploma() {
   const [, navigate] = useLocation();
 
   // Diploma state
   const [diplomaName, setDiplomaName] = useState("");
+  const [selectedTemplate, setSelectedTemplate] = useState<DiplomaTemplate>(
+    DIPLOMA_TEMPLATES[0]
+  );
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [imageLoaded, setImageLoaded] = useState(false);
   const diplomaImageRef = useRef<HTMLImageElement | null>(null);
 
+  // Cargar la imagen del template seleccionado
   useEffect(() => {
     const img = new Image();
-    img.src = "/assets/certificadoARMYBTS.jpeg";
+    img.src = selectedTemplate.imagePath;
     img.onload = () => {
       diplomaImageRef.current = img;
       setImageLoaded(true);
     };
-  }, []);
+    img.onerror = () => {
+      setImageLoaded(false);
+    };
+  }, [selectedTemplate]);
 
+  // Dibujar el diploma en el canvas
   useEffect(() => {
     const canvas = canvasRef.current;
     const img = diplomaImageRef.current;
@@ -47,19 +75,18 @@ export default function Diploma() {
 
     // Draw name if exists
     if (diplomaName) {
-      ctx.font = "italic 40px 'Georgia', serif"; // Estilo elegante para el diploma
+      ctx.font = "italic 40px 'Georgia', serif";
       ctx.fillStyle = "#1a1a1a";
       ctx.textAlign = "center";
-      // Posición aproximada sobre la línea del nombre en el diploma
       ctx.fillText(diplomaName, canvas.width / 2, canvas.height / 2 - 10);
     }
-  }, [diplomaName, imageLoaded]);
+  }, [diplomaName, imageLoaded, selectedTemplate]);
 
   const handleDownloadDiploma = () => {
     const canvas = canvasRef.current;
     if (canvas) {
       const link = document.createElement("a");
-      link.download = `Diploma_ARMY_${diplomaName || "BTS"}.png`;
+      link.download = `Diploma_${selectedTemplate.name}_${diplomaName || "ARMY"}.png`;
       link.href = canvas.toDataURL("image/png");
       link.click();
     }
@@ -128,12 +155,49 @@ export default function Diploma() {
                   Genera tu Diploma ARMY
                 </h2>
                 <p className="text-slate-600 text-sm md:text-base mb-8 leading-relaxed">
-                  ¡Obtén tu reconocimiento oficial como ARMY! Ingresa tu nombre abajo para personalizar tu diploma de BTS, visualízalo en tiempo real y descárgalo para compartirlo.
+                  ¡Obtén tu reconocimiento oficial como ARMY! Selecciona tu diseño favorito, ingresa tu nombre y descárgalo para compartirlo.
                 </p>
                 
-                <div className="space-y-4">
+                <div className="space-y-6">
+                  {/* Selector de Plantillas */}
+                  <div className="space-y-3">
+                    <label className="text-xs font-bold uppercase tracking-wider text-slate-400 ml-1">
+                      Elige tu Diploma
+                    </label>
+                    <div className="grid grid-cols-2 gap-2">
+                      {DIPLOMA_TEMPLATES.map((template) => (
+                        <button
+                          key={template.id}
+                          onClick={() => setSelectedTemplate(template)}
+                          className={`relative p-3 rounded-lg border-2 transition-all ${
+                            selectedTemplate.id === template.id
+                              ? "border-purple-600 bg-purple-50"
+                              : "border-slate-200 bg-white hover:border-purple-300"
+                          }`}
+                        >
+                          <div className="flex items-center justify-between">
+                            <div className="text-left">
+                              <p className="text-xs font-bold text-slate-900">
+                                {template.name}
+                              </p>
+                              <p className="text-[10px] text-slate-500 mt-1">
+                                {template.description}
+                              </p>
+                            </div>
+                            {selectedTemplate.id === template.id && (
+                              <Check className="size-4 text-purple-600 flex-shrink-0 ml-2" />
+                            )}
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Input de Nombre */}
                   <div className="space-y-2">
-                    <label className="text-xs font-bold uppercase tracking-wider text-slate-400 ml-1">Tu Nombre</label>
+                    <label className="text-xs font-bold uppercase tracking-wider text-slate-400 ml-1">
+                      Tu Nombre
+                    </label>
                     <Input
                       type="text"
                       placeholder="Escribe tu nombre aquí..."
@@ -144,6 +208,7 @@ export default function Diploma() {
                     />
                   </div>
                   
+                  {/* Botón de Descarga */}
                   <Button
                     onClick={handleDownloadDiploma}
                     disabled={!diplomaName.trim() || !imageLoaded}
