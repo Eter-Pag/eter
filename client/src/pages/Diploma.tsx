@@ -77,6 +77,30 @@ export default function Diploma() {
   // Diploma state
   const [diplomaName, setDiplomaName] = useState("");
   const [selectedFont, setSelectedFont] = useState<FontStyle>("cursive");
+  const [fontSize, setFontSize] = useState(BTS_DIPLOMA.namePosition.fontSize);
+
+  // Auto-ajuste de tamaño de letra según la longitud del nombre
+  useEffect(() => {
+    if (!diplomaName) {
+      setFontSize(BTS_DIPLOMA.namePosition.fontSize);
+      return;
+    }
+
+    const nameLength = diplomaName.length;
+    let newSize = BTS_DIPLOMA.namePosition.fontSize;
+
+    if (nameLength > 25) {
+      newSize = 32;
+    } else if (nameLength > 20) {
+      newSize = 36;
+    } else if (nameLength > 15) {
+      newSize = 42;
+    } else if (nameLength < 8) {
+      newSize = 56;
+    }
+
+    setFontSize(newSize);
+  }, [diplomaName]);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [imageLoaded, setImageLoaded] = useState(false);
   const diplomaImageRef = useRef<HTMLImageElement | null>(null);
@@ -116,7 +140,6 @@ export default function Diploma() {
     if (diplomaName) {
       const fontOption = FONT_OPTIONS.find((f) => f.id === selectedFont);
       const fontFamily = fontOption?.family || "Arial";
-      const fontSize = BTS_DIPLOMA.namePosition.fontSize;
       const x = (canvas.width * BTS_DIPLOMA.namePosition.x) / 100;
       const y = (canvas.height * BTS_DIPLOMA.namePosition.y) / 100;
       const maxWidth = (canvas.width * BTS_DIPLOMA.namePosition.maxWidth) / 100;
@@ -127,7 +150,7 @@ export default function Diploma() {
       ctx.textBaseline = "middle";
       ctx.fillText(diplomaName, x, y, maxWidth);
     }
-  }, [diplomaName, imageLoaded, selectedFont]);
+  }, [diplomaName, imageLoaded, selectedFont, fontSize]);
 
   const handleDownloadDiploma = async () => {
     const canvas = canvasRef.current;
@@ -289,12 +312,36 @@ export default function Diploma() {
                       placeholder="Escribe tu nombre..."
                       value={diplomaName}
                       onChange={(e) => setDiplomaName(e.target.value)}
-                      className="h-12 border-slate-300 focus:border-purple-500 focus:ring-purple-500 rounded-xl text-base font-medium px-4 bg-slate-50 hover:bg-white transition-colors"
+                      className="h-12 border-slate-200 focus:border-purple-500 focus:ring-purple-500 rounded-xl"
                       maxLength={35}
                     />
                     <p className="text-[10px] text-slate-400">
                       {diplomaName.length}/35 caracteres
                     </p>
+                  </div>
+
+                  {/* Font Size Selector */}
+                  <div className="space-y-3">
+                    <div className="flex justify-between items-center">
+                      <label className="text-xs font-bold uppercase tracking-wider text-slate-500 ml-1 block">
+                        Tamaño de Letra
+                      </label>
+                      <span className="text-xs font-bold text-purple-600 bg-purple-50 px-2 py-0.5 rounded-md">
+                        {fontSize}px
+                      </span>
+                    </div>
+                    <input
+                      type="range"
+                      min="20"
+                      max="100"
+                      value={fontSize}
+                      onChange={(e) => setFontSize(parseInt(e.target.value))}
+                      className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-purple-600"
+                    />
+                    <div className="flex justify-between text-[10px] text-slate-400 px-1">
+                      <span>Pequeño</span>
+                      <span>Grande</span>
+                    </div>
                   </div>
 
                   {/* Download Button */}
