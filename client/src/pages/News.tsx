@@ -11,9 +11,9 @@ interface NewsArticle {
   title: string;
   slug: string;
   content: string;
-  excerpt: string;
-  imageUrl: string;
-  sourceUrl: string;
+  summary?: string | null;
+  image?: string | null;
+  sourceUrl?: string | null;
   source: string;
   isPublished: boolean;
   createdAt: Date;
@@ -95,10 +95,10 @@ export default function News() {
               >
                 <CardContent className="p-0 flex flex-col md:flex-row">
                   {/* Image Section */}
-                  {article.imageUrl && (
+                  {article.image && (
                     <div className="relative w-full md:w-1/3 h-48 md:h-64 bg-gradient-to-br from-gray-300 to-gray-400 overflow-hidden">
                       <img
-                        src={article.imageUrl}
+                        src={article.image}
                         alt={article.title}
                         className="w-full h-full object-cover"
                         onError={(e) => {
@@ -110,7 +110,7 @@ export default function News() {
                   )}
 
                   {/* Content Section */}
-                  <div className={`p-6 flex flex-col justify-between ${article.imageUrl ? "md:w-2/3" : "w-full"}`}>
+                  <div className={`p-6 flex flex-col justify-between ${article.image ? "md:w-2/3" : "w-full"}`}>
                     <div>
                       <div className="flex items-center gap-2 mb-3">
                         <Calendar className="size-4 text-gray-500" />
@@ -127,7 +127,7 @@ export default function News() {
                       </h2>
 
                       <p className="text-gray-600 text-sm md:text-base mb-4 line-clamp-3">
-                        {article.excerpt}
+                        {article.summary || article.content.substring(0, 200)}
                       </p>
                     </div>
 

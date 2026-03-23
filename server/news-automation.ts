@@ -76,8 +76,7 @@ async function fetchAllkpopNews(): Promise<RawNewsItem[]> {
     const $ = cheerio.load(html);
 
     const articles: RawNewsItem[] = [];
-    $("article").slice(0, 10).each((_, el) => {
-      const title = $(el).find("h2, h3").first().text().trim();
+    $("article").slice(0, 10).each((_: number, el: any) => {      const title = $(el).find("h2, h3").first().text().trim();
       const link = $(el).find("a").first().attr("href") || "";
       const content = $(el).find("p").first().text().trim();
 
@@ -213,12 +212,11 @@ async function automateNews(): Promise<void> {
       title: selectedNews.title,
       slug,
       content: translatedContent,
-      excerpt: translatedContent.substring(0, 200),
-      imageUrl,
+      summary: translatedContent.substring(0, 200),
+      image: imageUrl || undefined,
       sourceUrl: selectedNews.link || "",
       source: selectedNews.source || "unknown",
       isPublished: true,
-      createdAt: new Date(),
     };
 
     // Save to database
