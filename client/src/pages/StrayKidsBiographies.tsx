@@ -28,7 +28,7 @@ export default function StrayKidsBiographies() {
       birthday: "3 de octubre de 1997",
       birthplace: "Seúl, Corea del Sur (Criado en Sídney, Australia)",
       mbti: "ENFJ",
-      image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=1000&auto=format&fit=crop",
+      image: "https://www.musicmundial.com/wp-content/uploads/2025/01/Bang-Chan-de-Stray-Kids-tuvo-que-cancelar-sus-actividades-debido-a-problemas-de-salud.jpg",
       color: "bg-slate-800",
       fullBio: {
         preDebut: "Bang Chan se unió a JYP Entertainment en 2010 tras una audición en Australia y entrenó durante siete años. Durante este tiempo, formó el trío de hip-hop 3RACHA junto a Changbin y Han. Fue el encargado de seleccionar personalmente a los integrantes de Stray Kids, lo que demuestra su papel fundamental en la creación del grupo.",
@@ -45,7 +45,7 @@ export default function StrayKidsBiographies() {
       birthday: "25 de octubre de 1998",
       birthplace: "Gimpo, Corea del Sur",
       mbti: "ISFP",
-      image: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=800&q=80",
+      image: "https://i.pinimg.com/originals/51/7d/a4/517da4f787fa3e7565be22f98274a69a.jpg",
       color: "bg-orange-600",
       fullBio: {
         preDebut: "Antes de unirse a JYP, Lee Know fue bailarín de respaldo para BTS durante su gira 'Wings', lo que le dio una valiosa experiencia en escenarios masivos. Entrenó solo por un año antes de debutar, siendo uno de los periodos más cortos en el grupo debido a su increíble talento natural para el baile.",
@@ -62,7 +62,7 @@ export default function StrayKidsBiographies() {
       birthday: "11 de agosto de 1999",
       birthplace: "Yongin, Corea del Sur",
       mbti: "ESTP",
-      image: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=800&q=80",
+      image: "https://upload.wikimedia.org/wikipedia/commons/d/d9/Changbin_of_Stray_Kids_at_the_40th_Golden_Disc_Awards%2C_January_10%2C_2026_%281%29.png",
       color: "bg-slate-900",
       fullBio: {
         preDebut: "Changbin comenzó su camino en el rap desde joven y se unió a JYP tras impresionar con su poderosa voz y lírica. Es miembro fundador de 3RACHA (SPEARB), donde desarrolló sus habilidades de composición y producción antes del debut oficial del grupo.",
@@ -79,7 +79,7 @@ export default function StrayKidsBiographies() {
       birthday: "20 de marzo de 2000",
       birthplace: "Seúl, Corea del Sur",
       mbti: "INFP",
-      image: "https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?q=80&w=1000&auto=format&fit=crop",
+      image: "https://i.pinimg.com/736x/3b/b7/da/3bb7da4dd47a062e9488bd25e02142f5.jpg",
       color: "bg-slate-700",
       fullBio: {
         preDebut: "Hyunjin fue reclutado por JYP mientras estaba de compras con su madre. Aunque inicialmente fue elogiado solo por su visual, trabajó incansablemente para convertirse en uno de los mejores bailarines de la agencia, ganándose el respeto de sus compañeros y entrenadores.",
@@ -96,7 +96,7 @@ export default function StrayKidsBiographies() {
       birthday: "14 de septiembre de 2000",
       birthplace: "Incheon, Corea del Sur (Criado en Malasia)",
       mbti: "ISTP",
-      image: "https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?q=80&w=1000&auto=format&fit=crop",
+      image: "https://i.pinimg.com/736x/5c/17/21/5c1721f0ce4dfabf68c7b7dc4cbb2e15.jpg",
       color: "bg-blue-900",
       fullBio: {
         preDebut: "Han vivió y estudió en Malasia antes de regresar a Corea para perseguir su sueño musical. Se unió a JYP y rápidamente se convirtió en parte de 3RACHA (J.ONE). Es conocido como un 'ace' (as) por su capacidad de destacar en rap, canto y baile simultáneamente.",
@@ -113,7 +113,7 @@ export default function StrayKidsBiographies() {
       birthday: "15 de septiembre de 2000",
       birthplace: "Sídney, Australia",
       mbti: "ESFJ",
-      image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=1000&auto=format&fit=crop",
+      image: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8c/20230930_Felix.jpg/1280px-20230930_Felix.jpg",
       color: "bg-indigo-500",
       fullBio: {
         preDebut: "Nacido y criado en Australia, Felix se mudó a Corea en 2017 tras ser reclutado por JYP. A pesar de las dificultades iniciales con el idioma coreano, su voz profunda y su carisma lo hicieron destacar. Fue eliminado brevemente durante el programa 'Stray Kids' pero regresó por demanda popular y talento.",
@@ -130,7 +130,7 @@ export default function StrayKidsBiographies() {
       birthday: "22 de septiembre de 2000",
       birthplace: "Seúl, Corea del Sur",
       mbti: "ISFJ",
-      image: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=800&q=80",
+      image: "https://e0.pxfuel.com/wallpapers/790/26/desktop-wallpaper-seungmin-stray-kids-seungmin-kim-seungmin.jpg",
       color: "bg-blue-400",
       fullBio: {
         preDebut: "Seungmin se unió a JYP en 2017 tras quedar en segundo lugar en la 13ª Audición Abierta de la agencia. Es conocido por su disciplina extrema y su dedicación a mejorar su técnica vocal, manteniendo diarios de entrenamiento detallados desde sus días de aprendiz.",
@@ -147,7 +147,7 @@ export default function StrayKidsBiographies() {
       birthday: "8 de febrero de 2001",
       birthplace: "Busan, Corea del Sur",
       mbti: "INFJ",
-      image: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=800&q=80",
+      image: "https://upload.wikimedia.org/wikipedia/commons/d/d2/I.N_of_Stray_Kids%2C_March_2%2C_2025.png",
       color: "bg-yellow-600",
       fullBio: {
         preDebut: "I.N comenzó como modelo infantil antes de interesarse por la música. Se unió a JYP y entrenó durante dos años. Durante el programa de supervivencia, trabajó duro para superar las críticas y demostrar su valor como vocalista, ganándose el corazón de todos con su sonrisa.",
