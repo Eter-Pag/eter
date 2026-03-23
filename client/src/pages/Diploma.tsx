@@ -68,18 +68,18 @@ interface DiplomaTemplate {
 // Lista de plantillas disponibles en orden secuencial
 const DIPLOMA_TEMPLATES: DiplomaTemplate[] = [
   {
-    id: "army-bts",
-    name: "ARMY BTS",
+    id: "bts-army-hq",
+    name: "BTS ARMY HQ",
     group: "BTS",
     fandom: "ARMY",
-    imagePath: "/assets/diploma_army_bts.jpeg",
-    description: "Diploma oficial ARMY BTS",
+    imagePath: "/assets/diploma_bts_army_hq.png",
+    description: "Diploma oficial BTS ARMY (Alta Calidad)",
     namePosition: {
       x: 50,
-      y: 35,
-      fontSize: 42,
-      maxWidth: 70,
-      color: "#1a1a1a",
+      y: 40,
+      fontSize: 48,
+      maxWidth: 60,
+      color: "#000000",
       fontWeight: "normal",
     },
   },
@@ -147,22 +147,7 @@ const DIPLOMA_TEMPLATES: DiplomaTemplate[] = [
       fontWeight: "normal",
     },
   },
-  {
-    id: "honor-army",
-    name: "HONOR ARMY",
-    group: "BTS",
-    fandom: "ARMY",
-    imagePath: "/assets/diploma_honor_army.jpeg",
-    description: "Diploma de Honor ARMY",
-    namePosition: {
-      x: 50,
-      y: 38,
-      fontSize: 40,
-      maxWidth: 70,
-      color: "#1a1a1a",
-      fontWeight: "normal",
-    },
-  },
+
 ];
 
 export default function Diploma() {
