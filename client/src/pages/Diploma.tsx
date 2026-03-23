@@ -288,14 +288,15 @@ export default function Diploma() {
         <div className="mb-12 md:mb-20">
           <Card className="bg-white/80 backdrop-blur-xl border-purple-200 shadow-2xl overflow-hidden border-2">
             <CardContent className="p-0 flex flex-col lg:flex-row">
-              {/* Carrusel 3D con Animación Suave */}
+              {/* Carrusel 3D con Animación Suave y Scroll Snap */}
               <div className="w-full lg:w-3/5 p-4 md:p-8 bg-slate-50 flex flex-col items-center justify-center overflow-hidden">
-                <div className="relative w-full max-w-2xl h-[350px] md:h-[450px] mb-8 flex items-center justify-center perspective">
+                <div className="relative w-full max-w-2xl h-[350px] md:h-[450px] mb-8 flex items-center justify-center perspective scroll-snap-x-mandatory scroll-smooth" style={{ scrollSnapType: 'x mandatory', overflowX: 'auto', scrollBehavior: 'smooth' }}>
                   {/* Diploma Anterior (Deslizamiento desde la izquierda) */}
                   <div 
                     className={`absolute left-0 w-24 h-32 md:w-40 md:h-56 opacity-40 scale-90 transform transition-all duration-700 ease-out z-0 cursor-pointer hover:opacity-60 ${
                       isTransitioning ? "translate-x-0" : "-translate-x-1/4"
                     }`}
+                    style={{ scrollSnapAlign: 'center' }}
                     onClick={handlePreviousDiploma}
                   >
                     <img
@@ -310,6 +311,7 @@ export default function Diploma() {
                     className={`relative w-full max-w-sm h-auto shadow-2xl rounded-lg overflow-hidden border-4 border-purple-400 z-10 transform transition-all duration-700 ease-out ${
                       isTransitioning ? "scale-95 opacity-50" : "scale-100 opacity-100"
                     }`}
+                    style={{ scrollSnapAlign: 'center', scrollSnapStop: 'always' }}
                   >
                     <canvas 
                       ref={canvasRef} 
@@ -328,6 +330,7 @@ export default function Diploma() {
                     className={`absolute right-0 w-24 h-32 md:w-40 md:h-56 opacity-40 scale-90 transform transition-all duration-700 ease-out z-0 cursor-pointer hover:opacity-60 ${
                       isTransitioning ? "translate-x-0" : "translate-x-1/4"
                     }`}
+                    style={{ scrollSnapAlign: 'center' }}
                     onClick={handleNextDiploma}
                   >
                     <img
