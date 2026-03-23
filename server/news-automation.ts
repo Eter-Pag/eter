@@ -10,7 +10,7 @@ import { eq, lt } from "drizzle-orm";
 import Parser from "rss-parser";
 import type { ScheduledTask } from "node-cron";
 import OpenAI from "openai";
-import cheerio from "cheerio";
+import { load } from "cheerio";
 
 const parser = new Parser();
 const openai = new OpenAI();
@@ -73,7 +73,7 @@ async function fetchAllkpopNews(): Promise<RawNewsItem[]> {
   try {
     const response = await fetch("https://www.allkpop.com/");
     const html = await response.text();
-    const $ = cheerio.load(html);
+    const $ = load(html);
 
     const articles: RawNewsItem[] = [];
     $("article").slice(0, 10).each((_: number, el: any) => {      const title = $(el).find("h2, h3").first().text().trim();
