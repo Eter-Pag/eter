@@ -155,7 +155,7 @@ export default function LandingHome() {
             <CardContent className="p-0 flex flex-col md:flex-row">
               <div className="relative w-full md:w-1/2 h-48 md:h-64 bg-gradient-to-br from-emerald-400 to-teal-400 overflow-hidden">
                 <img
-                  src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663454062860/OkKvFoQfhoNmWKfR.png"
+                  src="https://drive.google.com/uc?export=view&id=16_3UTSlqrB1VHVIVM4cMMea0n96vm7Is"
                   alt="Noticias K-POP"
                   className="w-full h-full object-cover"
                 />
@@ -188,7 +188,7 @@ export default function LandingHome() {
             <CardContent className="p-0">
               <div className="relative h-32 md:h-48 bg-gradient-to-br from-blue-400 to-cyan-400 overflow-hidden">
                 <img
-                  src="/assets/imagentienda.png"
+                  src="https://drive.google.com/uc?export=view&id=1fQafvzU9Nu8UqYdgKtBbWZNWuikiEm_A"
                   alt="K-POP Merchandise"
                   className="w-full h-full object-cover object-top"
                 />
@@ -219,7 +219,7 @@ export default function LandingHome() {
             <CardContent className="p-0">
               <div className="relative h-32 md:h-48 bg-gradient-to-br from-orange-400 to-red-400 overflow-hidden">
                 <img
-                  src="/assets/galerias.png"
+                  src="https://drive.google.com/uc?export=view&id=1SujXJKX9Ky9W_GJ7442kq_82NhcHq44y"
                   alt="K-POP Gallery"
                   className="w-full h-full object-cover object-top"
                 />
@@ -250,7 +250,7 @@ export default function LandingHome() {
             <CardContent className="p-0">
               <div className="relative h-32 md:h-48 bg-gradient-to-br from-purple-400 to-indigo-400 overflow-hidden">
                 <img
-                  src="/assets/BIOGRAFIAS.png"
+                  src="https://drive.google.com/uc?export=view&id=11cbj7QlmwFBh3EYMULBiho7wmvmKkm24"
                   alt="K-POP Biographies"
                   className="w-full h-full object-cover object-top"
                 />
@@ -281,7 +281,7 @@ export default function LandingHome() {
             <CardContent className="p-0">
               <div className="relative h-32 md:h-48 bg-gradient-to-br from-purple-400 to-violet-400 overflow-hidden">
                 <img
-                  src="/assets/diploma_bts_army_hq.png"
+                  src="https://drive.google.com/uc?export=view&id=1t9kxrkUfE5Tmgspqw5sg8bjW4FVr5wxC"
                   alt="Diploma ARMY"
                   className="w-full h-full object-cover object-top"
                 />
