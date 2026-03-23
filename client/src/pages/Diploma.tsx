@@ -45,12 +45,6 @@ const FONT_OPTIONS: FontOption[] = [
     family: "'Lucida Handwriting', 'Palatino Linotype', cursive",
     description: "Artística y especial",
   },
-  {
-    id: "playwrite",
-    name: "Playwrite USA",
-    family: "'Playwrite USA Traditional', cursive",
-    description: "Caligrafía escolar auténtica",
-  },
 ];
 
 // Configuración del diploma único de BTS
@@ -147,7 +141,7 @@ export default function Diploma() {
       ctx.font = `${selectedFont === "professional" ? "" : "italic"} ${fontSize}px ${fontFamily}`;
       ctx.fillStyle = BTS_DIPLOMA.namePosition.color;
       ctx.textAlign = "center";
-      ctx.textBaseline = "middle";
+      ctx.textBaseline = "bottom"; // El texto crece hacia arriba desde su base
       ctx.fillText(diplomaName, x, y, maxWidth);
     }
   }, [diplomaName, imageLoaded, selectedFont, fontSize]);
