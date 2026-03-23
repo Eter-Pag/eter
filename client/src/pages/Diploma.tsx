@@ -57,7 +57,7 @@ const BTS_DIPLOMA = {
   description: "Diploma oficial BTS ARMY",
   namePosition: {
     x: 50,
-    y: 46.5,
+    y: 46.0,
     fontSize: 48,
     maxWidth: 60,
     color: "#000000",
