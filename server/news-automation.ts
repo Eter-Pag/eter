@@ -2,11 +2,12 @@
  * News Automation Script (Enhanced with Image Extraction)
  * Recopila noticias de K-pop de Soompi y Allkpop, las traduce gratuitamente y las publica automáticamente.
  * Extrae imágenes reales de los artículos originales usando Open Graph y selectores específicos.
+ * Solo procesa UNA noticia por ejecución para evitar saturar la base de datos.
  */
 
 import { getDb } from "./db";
 import { news as newsTable, type InsertNews } from "../drizzle/schema";
-import { eq, lt } from "drizzle-orm";
+import { eq, lt, desc } from "drizzle-orm";
 import Parser from "rss-parser";
 import { load } from "cheerio";
 import { translate } from "@vitalets/google-translate-api";
@@ -73,7 +74,7 @@ async function extractImageFromUrl(url: string): Promise<string | null> {
 async function fetchSoompiNews(): Promise<RawNewsItem[]> {
   try {
     const feed = await parser.parseURL("https://www.soompi.com/feed");
-    return feed.items.slice(0, 10).map((item) => ({
+    return feed.items.slice(0, 5).map((item) => ({
       title: item.title || "",
       link: item.link || "",
       pubDate: item.pubDate,
@@ -96,7 +97,7 @@ async function fetchAllkpopNews(): Promise<RawNewsItem[]> {
     const $ = load(html);
 
     const articles: RawNewsItem[] = [];
-    $("article").slice(0, 10).each((_: number, el: any) => {
+    $("article").slice(0, 5).each((_: number, el: any) => {
       const title = $(el).find("h2, h3").first().text().trim();
       const link = $(el).find("a").first().attr("href") || "";
       const content = $(el).find("p").first().text().trim();
@@ -170,7 +171,7 @@ async function cleanupOldNews(): Promise<void> {
  * Main automation function
  */
 async function automateNews(): Promise<void> {
-  console.log("[News] Starting news automation (Enhanced Version)...");
+  console.log("[News] Starting news automation (Single Item Mode)...");
 
   try {
     const soompiNews = await fetchSoompiNews();
@@ -185,43 +186,50 @@ async function automateNews(): Promise<void> {
     const db = await getDb();
     if (!db) return;
 
-    // Process up to 3 news items
-    const newsToProcess = allNews.slice(0, 3);
+    // Get the most recent news item from DB to avoid immediate duplicates
+    const lastNews = await db.select().from(newsTable).orderBy(desc(newsTable.createdAt)).limit(5);
+    const existingTitles = lastNews.map(n => n.title.toLowerCase());
 
-    for (const item of newsToProcess) {
-      // 1. Extract real image from the article URL
-      let imageUrl = await extractImageFromUrl(item.link);
-      
-      // 2. Translate content
-      const { title: translatedTitle, content: translatedContent } = await translateNews(
-        item.title,
-        item.content || ""
-      );
+    // Find the first news item that isn't already in the last 5 entries
+    const item = allNews.find(n => !existingTitles.includes(n.title.toLowerCase()));
 
-      // 3. If no real image found, use backup
-      if (!imageUrl) {
-        imageUrl = selectBackupImage(item.title, item.content || "");
-      }
-      
-      const slug = item.title
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, "-")
-        .replace(/^-+|-+$/g, "") + "-" + Math.random().toString(36).substring(2, 5);
-
-      const newsRecord: InsertNews = {
-        title: translatedTitle,
-        slug,
-        content: translatedContent,
-        summary: translatedContent.substring(0, 200),
-        image: imageUrl || undefined,
-        sourceUrl: item.link || "",
-        source: item.source || "unknown",
-        isPublished: true,
-      };
-
-      await db.insert(newsTable).values(newsRecord);
-      console.log(`[News] Published with image: "${translatedTitle}"`);
+    if (!item) {
+      console.log("[News] No new unique news found in this round.");
+      return;
     }
+
+    // 1. Extract real image from the article URL
+    let imageUrl = await extractImageFromUrl(item.link);
+    
+    // 2. Translate content
+    const { title: translatedTitle, content: translatedContent } = await translateNews(
+      item.title,
+      item.content || ""
+    );
+
+    // 3. If no real image found, use backup
+    if (!imageUrl) {
+      imageUrl = selectBackupImage(item.title, item.content || "");
+    }
+    
+    const slug = item.title
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "") + "-" + Math.random().toString(36).substring(2, 5);
+
+    const newsRecord: InsertNews = {
+      title: translatedTitle,
+      slug,
+      content: translatedContent,
+      summary: translatedContent.substring(0, 200),
+      image: imageUrl || undefined,
+      sourceUrl: item.link || "",
+      source: item.source || "unknown",
+      isPublished: true,
+    };
+
+    await db.insert(newsTable).values(newsRecord);
+    console.log(`[News] Published Single Item: "${translatedTitle}"`);
 
     await cleanupOldNews();
   } catch (error) {
