@@ -15,7 +15,7 @@ import {
 import { RAFFLE_CONFIG } from "@shared/raffle";
 
 // Tipos de fuentes disponibles
-type FontStyle = "professional" | "cursive" | "creative";
+type FontStyle = "professional" | "cursive" | "creative" | "playwrite";
 
 interface FontOption {
   id: FontStyle;
@@ -43,6 +43,12 @@ const FONT_OPTIONS: FontOption[] = [
     name: "Creativa",
     family: "'Lucida Handwriting', 'Palatino Linotype', cursive",
     description: "Artística y especial",
+  },
+  {
+    id: "playwrite",
+    name: "Playwrite USA",
+    family: "'Playwrite USA Traditional', cursive",
+    description: "Caligrafía escolar auténtica",
   },
 ];
 
