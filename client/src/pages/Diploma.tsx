@@ -82,6 +82,8 @@ export default function Diploma() {
   const [isPrinting, setIsPrinting] = useState(false);
   const [printProgress, setPrintProgress] = useState(0);
   const [printMessage, setPrintMessage] = useState("");
+  const [showDownloadSuccess, setShowDownloadSuccess] = useState(false);
+  const [showPrintSuccess, setShowPrintSuccess] = useState(false);
 
   // Cargar la imagen del diploma
   useEffect(() => {
@@ -204,6 +206,15 @@ export default function Diploma() {
           link.download = `Diploma_BTS_ARMY_${diplomaName}.png`;
           link.href = downloadCanvas.toDataURL("image/png", 1.0);
           link.click();
+        }
+
+        // Mostrar mensaje de éxito
+        if (isForPrint) {
+          setShowPrintSuccess(true);
+          setTimeout(() => setShowPrintSuccess(false), 3000);
+        } else {
+          setShowDownloadSuccess(true);
+          setTimeout(() => setShowDownloadSuccess(false), 3000);
         }
       } finally {
         if (isForPrint) {
@@ -408,7 +419,12 @@ export default function Diploma() {
                           disabled={!diplomaName.trim() || !imageLoaded || isDownloading || isPrinting}
                           className={`w-full gap-3 bg-gradient-to-r from-purple-600 to-violet-600 hover:from-purple-700 hover:to-violet-700 text-white font-bold py-6 rounded-xl shadow-lg transition-all hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] text-base disabled:opacity-50 overflow-hidden ${isDownloading ? 'relative' : ''}`}
                         >
-                          {isDownloading ? (
+                          {showDownloadSuccess ? (
+                            <div className="flex items-center gap-2 text-white animate-in fade-in zoom-in duration-300">
+                              <Check className="size-6 text-green-400" />
+                              <span>¡Listo! Disfruta tu diploma 💜</span>
+                            </div>
+                          ) : isDownloading ? (
                             <div className="flex flex-col items-center w-full gap-1">
                               <div className="flex items-center gap-2">
                                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
@@ -440,7 +456,12 @@ export default function Diploma() {
                           variant="outline"
                           className={`w-full gap-3 border-2 border-purple-200 hover:border-purple-600 hover:bg-purple-50 text-purple-700 font-bold py-6 rounded-xl transition-all hover:scale-[1.02] active:scale-[0.98] text-base disabled:opacity-50 overflow-hidden ${isPrinting ? 'relative' : ''}`}
                         >
-                          {isPrinting ? (
+                          {showPrintSuccess ? (
+                            <div className="flex items-center gap-2 text-purple-700 animate-in fade-in zoom-in duration-300">
+                              <Check className="size-6 text-green-600" />
+                              <span>¡PDF listo para imprimir! ✨</span>
+                            </div>
+                          ) : isPrinting ? (
                             <div className="flex flex-col items-center w-full gap-1">
                               <div className="flex items-center gap-2">
                                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-purple-600"></div>
