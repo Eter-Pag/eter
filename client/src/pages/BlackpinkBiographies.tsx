@@ -45,7 +45,7 @@ export default function BlackpinkBiographies() {
       birthday: "16 de enero de 1996",
       birthplace: "Seúl, Corea del Sur",
       mbti: "INFJ",
-      image: "https://hips.hearstapps.com/hmg-prod/images/gettyimages-1257319503-64a54c233590f.jpg?crop=0.6666044776119403xw:1xh;center,top&resize=1120:*",
+      image: "https://www.rollingstone.com/wp-content/uploads/2023/07/Blackpink-Jennie-on-Dua-Lipa-Podcast.jpg?w=1581&h=1054&crop=1",
       color: "bg-slate-900",
       fullBio: {
         preDebut: "Nacida en Seúl, Jennie vivió y estudió en Auckland, Nueva Zelanda, durante cinco años antes de regresar a Corea en 2010. Se unió a YG Entertainment ese mismo año y entrenó durante casi seis años. Fue la primera integrante de BLACKPINK en ser revelada y colaboró pre-debut con artistas como G-Dragon en 'Black' y Lee Hi en 'Special'.",
@@ -62,7 +62,7 @@ export default function BlackpinkBiographies() {
       birthday: "11 de febrero de 1997",
       birthplace: "Auckland, Nueva Zelanda",
       mbti: "ENFP",
-      image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRnQS9cxwJIX7pSfwhbETfBkzmCGxbtA6o3kQ&s",
+      image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSBOHu91CXa_ZfCIDgQl0jZWywXOPDBNjz2rA&s",
       color: "bg-rose-400",
       fullBio: {
         preDebut: "Nacida en Nueva Zelanda y criada en Melbourne, Australia, Rosé audicionó para YG en 2012 tras quedar en primer lugar entre 700 participantes. Se mudó a Corea sola a los 15 años para comenzar su entrenamiento. Fue la última integrante en ser revelada y colaboró pre-debut en la canción 'Without You' de G-Dragon.",
