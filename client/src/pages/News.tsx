@@ -1,161 +1,168 @@
-import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import { useEffect, useState } from "react";
+import { useLocation } from "wouter";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { LegalFooter } from "@/components/LegalFooter";
+import { ArrowLeft, Calendar, ExternalLink, Loader2 } from "lucide-react";
+import { trpc } from "@/lib/trpc";
 
-// Simulación de datos de noticias (puedes conectarlo a tu API de tRPC después)
-const initialNews = [
-    {
-        id: 1,
-        title: "BTS anuncia nuevo proyecto especial para 2026",
-        content: "Los miembros de BTS han sorprendido a ARMY con el anuncio de un nuevo proyecto colaborativo que se lanzará en los próximos meses. Los detalles completos se revelarán en una conferencia de prensa especial.",
-        imageUrl: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=500&h=300&fit=crop",
-        sourceUrl: "https://www.bighitmusic.com",
-        createdAt: new Date(),
-        expiresAt: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000),
-    },
-    {
-        id: 2,
-        title: "Jin regresa de su servicio militar",
-        content: "Jin, el miembro más antiguo de BTS, ha completado exitosamente su servicio militar obligatorio. ARMY de todo el mundo celebra su regreso con un trending topic en redes sociales.",
-        imageUrl: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=500&h=300&fit=crop",
-        sourceUrl: "https://www.dispatch.co.kr",
-        createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
-        expiresAt: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
-    },
-    {
-        id: 3,
-        title: "Jungkook lanza nueva canción en solitario",
-        content: "Jungkook sorprende a los fans con el lanzamiento de una nueva canción en solitario que combina elementos de pop y R&B. La canción ya ha alcanzado el número 1 en múltiples plataformas de streaming.",
-        imageUrl: "https://images.unsplash.com/photo-1470225620780-dba8ba36b745?w=500&h=300&fit=crop",
-        sourceUrl: "https://www.spotify.com",
-        createdAt: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000),
-        expiresAt: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000),
-    }
-];
+interface NewsArticle {
+  id: number;
+  title: string;
+  slug: string;
+  content: string;
+  excerpt: string;
+  imageUrl: string;
+  sourceUrl: string;
+  source: string;
+  isPublished: boolean;
+  createdAt: Date;
+}
 
-export function NewsPage() {
-    const [news] = useState(initialNews);
-    const [timeLeft, setTimeLeft] = useState<Record<number, string>>({});
+export default function News() {
+  const [, navigate] = useLocation();
+  const [articles, setArticles] = useState<NewsArticle[]>([]);
+  const [loading, setLoading] = useState(true);
 
-    // Filtrar noticias vigentes
-    const activeNews = news.filter(item => new Date() < new Date(item.expiresAt));
+  // Fetch news articles
+  useEffect(() => {
+    const fetchNews = async () => {
+      try {
+        setLoading(true);
+        const result = await trpc.news.getAll.query();
+        setArticles(result as NewsArticle[]);
+      } catch (error) {
+        console.error("Error fetching news:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-    // Calcular tiempo restante para cada noticia
-    useEffect(() => {
-        const updateTimers = () => {
-            const newTimeLeft: Record<number, string> = {};
-            activeNews.forEach(item => {
-                const now = new Date();
-                const expiry = new Date(item.expiresAt);
-                const diff = expiry.getTime() - now.getTime();
-                const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-                const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                newTimeLeft[item.id] = `${days}d ${hours}h`;
-            });
-            setTimeLeft(newTimeLeft);
-        };
+    fetchNews();
+  }, []);
 
-        updateTimers();
-        const interval = setInterval(updateTimers, 60000); // Actualizar cada minuto
-        return () => clearInterval(interval);
-    }, [activeNews]);
+  const formatDate = (date: Date | string) => {
+    const d = new Date(date);
+    return d.toLocaleDateString("es-ES", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+  };
 
-    return (
-        <div className="min-h-screen bg-gradient-to-b from-gray-900 via-purple-900 to-gray-900 p-4">
-            {/* Header */}
-            <div className="max-w-2xl mx-auto mb-8">
-                <div className="text-center mb-6">
-                    <h1 className="text-4xl md:text-5xl font-bold text-purple-400 mb-2">
-                        Últimas Noticias BTS
-                    </h1>
-                    <p className="text-purple-300 text-sm">Noticias frescas cada 5 días</p>
-                </div>
-                <div className="flex justify-center gap-2 mb-4">
-                    <Badge className="bg-purple-600 hover:bg-purple-700 text-white border-none">
-                        {activeNews.length} noticias activas
-                    </Badge>
-                </div>
-            </div>
-
-            {/* News Feed */}
-            <div className="max-w-2xl mx-auto space-y-6">
-                {activeNews.length === 0 ? (
-                    <div className="text-center py-12">
-                        <p className="text-gray-400 text-lg">No hay noticias disponibles en este momento.</p>
-                        <p className="text-gray-500 text-sm mt-2">¡Vuelve pronto para más actualizaciones de BTS!</p>
-                    </div>
-                ) : (
-                    activeNews.map((item, index) => (
-                        <Card 
-                            key={item.id} 
-                            className={`relative overflow-hidden transition-all duration-300 border-none ${
-                                index === 0 
-                                    ? "ring-2 ring-purple-500 shadow-2xl shadow-purple-500/30" 
-                                    : "opacity-90 hover:opacity-100"
-                            } bg-gray-800/80 backdrop-blur-sm`}
-                        >
-                            {/* Badge de NUEVO */}
-                            {index === 0 && (
-                                <Badge className="absolute top-0 left-0 bg-gradient-to-r from-purple-600 to-pink-600 text-white px-3 py-1 rounded-none rounded-br-lg text-xs font-bold z-10 border-none">
-                                    ¡NUEVO!
-                                </Badge>
-                            )}
-
-                            {/* Imagen */}
-                            {item.imageUrl && (
-                                <div className="relative h-48 overflow-hidden bg-gray-700">
-                                    <img
-                                        src={item.imageUrl}
-                                        alt={item.title}
-                                        className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-                                    />
-                                    {/* Overlay con tiempo restante */}
-                                    <div className="absolute bottom-0 right-0 bg-black/70 px-3 py-1 text-[10px] text-purple-300 font-semibold uppercase tracking-wider">
-                                        Expira en: {timeLeft[item.id] || "Calculando..."}
-                                    </div>
-                                </div>
-                            )}
-
-                            {/* Contenido */}
-                            <CardHeader className="pb-2">
-                                <CardTitle className="text-xl md:text-2xl font-bold text-white leading-tight">
-                                    {item.title}
-                                </CardTitle>
-                                <p className="text-[10px] text-gray-400 uppercase tracking-widest">
-                                    📅 {new Date(item.createdAt).toLocaleDateString('es-ES', {
-                                        weekday: 'long',
-                                        year: 'numeric',
-                                        month: 'long',
-                                        day: 'numeric'
-                                    })}
-                                </p>
-                            </CardHeader>
-                            <CardContent>
-                                <p className="text-gray-300 text-sm leading-relaxed mb-4">
-                                    {item.content}
-                                </p>
-                                {item.sourceUrl && (
-                                    <a
-                                        href={item.sourceUrl}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="inline-flex items-center text-purple-400 hover:text-purple-300 transition-colors text-xs font-semibold"
-                                    >
-                                        Leer más en la fuente oficial →
-                                    </a>
-                                )}
-                            </CardContent>
-                        </Card>
-                    ))
-                )}
-            </div>
-
-            {/* Footer */}
-            <div className="max-w-2xl mx-auto mt-12 text-center">
-                <p className="text-gray-500 text-[10px] uppercase tracking-widest">
-                    Sistema de noticias efímeras • ÉTER K-Pop
-                </p>
-            </div>
+  return (
+    <div className="min-h-screen bg-background">
+      {/* Header */}
+      <header className="sticky top-0 z-50 bg-white/70 backdrop-blur-xl border-b border-border/50 shadow-sm">
+        <div className="container flex items-center justify-between h-14">
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => navigate("/")}
+              className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+            >
+              <ArrowLeft className="size-5 text-gray-700" />
+            </button>
+            <h1 className="font-bold text-lg">Noticias K-POP</h1>
+          </div>
         </div>
-    );
+      </header>
+
+      {/* Main Content */}
+      <section className="container py-8 md:py-12">
+        {loading ? (
+          <div className="flex items-center justify-center py-16">
+            <Loader2 className="size-8 animate-spin text-emerald-600" />
+          </div>
+        ) : articles.length === 0 ? (
+          <div className="text-center py-16">
+            <p className="text-gray-600 mb-4">
+              No hay noticias disponibles en este momento.
+            </p>
+            <Button
+              onClick={() => navigate("/")}
+              className="gap-2 bg-gradient-to-r from-emerald-600 to-teal-600"
+            >
+              <ArrowLeft className="size-4" />
+              Volver al Inicio
+            </Button>
+          </div>
+        ) : (
+          <div className="space-y-6">
+            {articles.map((article) => (
+              <Card
+                key={article.id}
+                className="bg-white/60 backdrop-blur-xl border-border/50 shadow-lg overflow-hidden hover:shadow-xl transition-shadow"
+              >
+                <CardContent className="p-0 flex flex-col md:flex-row">
+                  {/* Image Section */}
+                  {article.imageUrl && (
+                    <div className="relative w-full md:w-1/3 h-48 md:h-64 bg-gradient-to-br from-gray-300 to-gray-400 overflow-hidden">
+                      <img
+                        src={article.imageUrl}
+                        alt={article.title}
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).style.display = "none";
+                        }}
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
+                    </div>
+                  )}
+
+                  {/* Content Section */}
+                  <div className={`p-6 flex flex-col justify-between ${article.imageUrl ? "md:w-2/3" : "w-full"}`}>
+                    <div>
+                      <div className="flex items-center gap-2 mb-3">
+                        <Calendar className="size-4 text-gray-500" />
+                        <span className="text-xs text-gray-500">
+                          {formatDate(article.createdAt)}
+                        </span>
+                        <span className="text-xs bg-emerald-100 text-emerald-700 px-2 py-1 rounded-full">
+                          {article.source.toUpperCase()}
+                        </span>
+                      </div>
+
+                      <h2 className="text-xl md:text-2xl font-bold mb-3 text-gray-900">
+                        {article.title}
+                      </h2>
+
+                      <p className="text-gray-600 text-sm md:text-base mb-4 line-clamp-3">
+                        {article.excerpt}
+                      </p>
+                    </div>
+
+                    <div className="flex gap-2">
+                      <Button
+                        onClick={() => navigate(`/noticias/${article.slug}`)}
+                        className="flex-1 gap-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-sm"
+                      >
+                        Leer Completo
+                      </Button>
+                      {article.sourceUrl && (
+                        <Button
+                          onClick={() => window.open(article.sourceUrl, "_blank")}
+                          variant="outline"
+                          className="gap-2 text-sm"
+                        >
+                          <ExternalLink className="size-4" />
+                          Fuente
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        )}
+      </section>
+
+      {/* Legal Footer */}
+      <LegalFooter
+        title={`© ${new Date().getFullYear()} ETER KPOP`}
+        description="Las noticias mostradas en esta sección son recopiladas automáticamente de fuentes externas de K-pop y traducidas al español. ETER KPOP no es responsable del contenido original de las noticias."
+        storeName="ETER KPOP"
+      />
+    </div>
+  );
 }

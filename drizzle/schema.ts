@@ -139,3 +139,25 @@ export const products = mysqlTable("products", {
 
 export type Product = typeof products.$inferSelect;
 export type InsertProduct = typeof products.$inferInsert;
+
+/**
+ * News table: stores automated K-pop news articles.
+ * Articles are automatically fetched, translated, and published.
+ * Articles older than 5 days are automatically deleted.
+ */
+export const news = mysqlTable("news", {
+  id: int("id").autoincrement().primaryKey(),
+  title: varchar("title", { length: 255 }).notNull(),
+  content: text("content").notNull(),
+  summary: text("summary"),
+  image: text("image"),
+  source: varchar("source", { length: 100 }).notNull(),
+  sourceUrl: text("sourceUrl"),
+  slug: varchar("slug", { length: 255 }).notNull().unique(),
+  isPublished: boolean("isPublished").default(true).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type News = typeof news.$inferSelect;
+export type InsertNews = typeof news.$inferInsert;

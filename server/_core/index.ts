@@ -8,6 +8,7 @@ import { appRouter } from "../routers";
 import { createContext } from "./context";
 import { serveStatic, setupVite } from "./vite";
 import { webhookRouter } from "../stripe-webhook";
+import { initializeCronJobs, stopCronJobs } from "../cron-jobs";
 
 function isPortAvailable(port: number): Promise<boolean> {
   return new Promise(resolve => {
@@ -62,6 +63,16 @@ async function startServer() {
 
   server.listen(port, () => {
     console.log(`Server running on http://localhost:${port}/`);
+    initializeCronJobs();
+  });
+
+  process.on("SIGTERM", () => {
+    console.log("SIGTERM received, shutting down gracefully...");
+    stopCronJobs();
+    server.close(() => {
+      console.log("Server closed");
+      process.exit(0);
+    });
   });
 }
 

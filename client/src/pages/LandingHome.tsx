@@ -311,6 +311,7 @@ export default function LandingHome() {
 
       {/* Legal Footer */}
       <LegalFooter
+        title={`© ${new Date().getFullYear()} ${RAFFLE_CONFIG.storeName}`}
         description={`${RAFFLE_CONFIG.storeName} es una tienda especializada en productos K-POP. Todos los derechos de autor y marcas registradas pertenecen a sus respectivos propietarios. Los contenidos mostrados en este sitio son solo con fines informativos y educativos.`}
         storeName={RAFFLE_CONFIG.storeName}
       />

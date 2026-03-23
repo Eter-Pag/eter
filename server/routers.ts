@@ -4,6 +4,7 @@ import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
 import { ordersRouter } from "./routers/orders";
 import { productsRouter } from "./routers/products";
+import { newsRouter } from "./routers/news";
 import { publicProcedure, protectedProcedure, router } from "./_core/trpc";
 import { z } from "zod";
 import Stripe from "stripe";
@@ -334,7 +335,7 @@ export const appRouter = router({
       .mutation(async ({ input }) => {
         return deleteRaffle(input.id);
       }),
-  }),
+   }),
+  news: newsRouter,
 });
-
 export type AppRouter = typeof appRouter;
