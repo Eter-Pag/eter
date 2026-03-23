@@ -73,6 +73,7 @@ export default function Diploma() {
   const [diplomaName, setDiplomaName] = useState("");
   const [selectedFont, setSelectedFont] = useState<FontStyle>("cursive");
   const [fontSize, setFontSize] = useState(71); // Tamaño inicial predefinido de 71px
+  const [selectedColor, setSelectedColor] = useState("#000000"); // Color inicial negro
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [imageLoaded, setImageLoaded] = useState(false);
   const diplomaImageRef = useRef<HTMLImageElement | null>(null);
@@ -124,12 +125,12 @@ export default function Diploma() {
       const maxWidth = (canvas.width * BTS_DIPLOMA.namePosition.maxWidth) / 100;
 
       ctx.font = `${selectedFont === "professional" ? "" : "italic"} ${fontSize}px ${fontFamily}`;
-      ctx.fillStyle = BTS_DIPLOMA.namePosition.color;
+      ctx.fillStyle = selectedColor;
       ctx.textAlign = "center";
       ctx.textBaseline = "bottom"; // El texto crece hacia arriba desde su base
       ctx.fillText(diplomaName, x, y, maxWidth);
     }
-  }, [diplomaName, imageLoaded, selectedFont, fontSize]);
+  }, [diplomaName, imageLoaded, selectedFont, fontSize, selectedColor]);
 
   const handleDownloadDiploma = async (isForPrint = false) => {
     const canvas = canvasRef.current;
@@ -183,11 +184,11 @@ export default function Diploma() {
         const y = (downloadCanvas.height * BTS_DIPLOMA.namePosition.y) / 100;
         const maxWidth = (downloadCanvas.width * BTS_DIPLOMA.namePosition.maxWidth) / 100;
 
-        ctx.font = `${selectedFont === "professional" ? "" : "italic"} ${fontSize}px ${fontFamily}`;
-        ctx.fillStyle = BTS_DIPLOMA.namePosition.color;
-        ctx.textAlign = "center";
-        ctx.textBaseline = "bottom";
-        ctx.fillText(diplomaName, x, y, maxWidth);
+    ctx.font = `${selectedFont === "professional" ? "" : "italic"} ${fontSize}px ${fontFamily}`;
+    ctx.fillStyle = selectedColor;
+    ctx.textAlign = "center";
+    ctx.textBaseline = "bottom";
+    ctx.fillText(diplomaName, x, y, maxWidth);
 
         if (isForPrint) {
           // Generar PDF para impresión
@@ -402,6 +403,42 @@ export default function Diploma() {
                     <div className="flex justify-between text-[10px] text-slate-400 px-1">
                       <span>Pequeño</span>
                       <span>Grande</span>
+                    </div>
+                  </div>
+
+                  {/* Color Selector */}
+                  <div className="space-y-3">
+                    <label className="text-xs font-bold uppercase tracking-wider text-slate-500 ml-1 block">
+                      Color del Nombre
+                    </label>
+                    <div className="flex gap-4 items-center bg-slate-50 p-3 rounded-xl border border-slate-100">
+                      {[
+                        { name: "Negro", value: "#000000" },
+                        { name: "Blanco", value: "#ffffff" },
+                        { name: "Púrpura", value: "#f093ff" },
+                        { name: "Violeta", value: "#fdf1ff" },
+                      ].map((color) => (
+                        <button
+                          key={color.value}
+                          onClick={() => setSelectedColor(color.value)}
+                          className={`group relative flex flex-col items-center gap-1.5 transition-all hover:scale-110`}
+                          title={color.name}
+                        >
+                          <div 
+                            className={`size-8 rounded-full border-2 shadow-sm transition-all ${
+                              selectedColor === color.value 
+                                ? "border-purple-600 scale-110 ring-2 ring-purple-200" 
+                                : "border-slate-200"
+                            }`}
+                            style={{ backgroundColor: color.value }}
+                          />
+                          <span className={`text-[9px] font-bold uppercase tracking-tighter ${
+                            selectedColor === color.value ? "text-purple-600" : "text-slate-400"
+                          }`}>
+                            {color.name}
+                          </span>
+                        </button>
+                      ))}
                     </div>
                   </div>
 
