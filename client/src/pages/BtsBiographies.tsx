@@ -177,8 +177,8 @@ export default function BtsBiographies() {
       {/* Hero Section */}
       <section className="relative h-[45vh] md:h-[60vh] overflow-hidden">
         <img
-          src="https://images.unsplash.com/photo-1501386761578-eac5c94b800a?w=1600&q=80"
-          alt="BTS Group"
+          src="https://www.chromethemer.com/download/hd-wallpapers/bts-army-2560x1440.jpg"
+          alt="BTS ARMY"
           className="w-full h-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent" />
