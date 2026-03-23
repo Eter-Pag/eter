@@ -10,7 +10,7 @@ import {
   Users, TrendingUp, AlertTriangle, Search, RefreshCw, ShieldCheck,
   Clock, DollarSign, Package, MoreVertical, ArrowUpRight, ArrowDownRight,
   CheckCircle2, XCircle, User, Phone, Mail, ChevronRight, Download, Filter,
-  AlertCircle
+  AlertCircle, Newspaper, Zap, ExternalLink, Wrench
 } from "lucide-react";
 import { raffleThemes, type RaffleCategory } from "@shared/raffleThemes";
 import { trpc } from "@/lib/trpc";
@@ -154,6 +154,36 @@ export default function Admin() {
     buyerEmail: "",
     ticketNumbers: "",
   });
+
+  // News state
+  const { data: allNews, refetch: refetchNews } = trpc.news.adminGetAll.useQuery();
+  const deleteNewsMutation = trpc.news.delete.useMutation();
+  const runAutomationMutation = trpc.news.runAutomation.useMutation();
+  const [isRunningAutomation, setIsRunningAutomation] = useState(false);
+
+  const handleDeleteNews = async (id: number) => {
+    if (confirm("¿Estás seguro de que deseas eliminar esta noticia?")) {
+      try {
+        await deleteNewsMutation.mutateAsync({ id });
+        await refetchNews();
+      } catch (error) {
+        alert("Error al eliminar la noticia");
+      }
+    }
+  };
+
+  const handleRunAutomation = async () => {
+    setIsRunningAutomation(true);
+    try {
+      await runAutomationMutation.mutateAsync();
+      alert("Automatización ejecutada con éxito");
+      await refetchNews();
+    } catch (error) {
+      alert("Error al ejecutar la automatización");
+    } finally {
+      setIsRunningAutomation(false);
+    }
+  };
 
   const handleLogin = () => {
     if (password === ADMIN_PASSWORD) {
@@ -358,6 +388,9 @@ export default function Admin() {
           <button onClick={() => setActiveTab("products")} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors ${activeTab === "products" ? "bg-purple-50 text-purple-700" : "text-slate-500 hover:bg-slate-50"}`}>
             <Package className="size-4" /> Productos
           </button>
+          <button onClick={() => setActiveTab("news")} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors ${activeTab === "news" ? "bg-purple-50 text-purple-700" : "text-slate-500 hover:bg-slate-50"}`}>
+            <Newspaper className="size-4" /> Noticias
+          </button>
         </nav>
 
         <div className="mt-auto pt-6 border-t border-slate-100">
@@ -483,6 +516,104 @@ export default function Admin() {
                   </div>
                 </CardContent>
               </Card>
+            </div>
+          </div>
+        )}
+
+        {/* News Tab */}
+        {activeTab === "news" && (
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="lg:col-span-1 space-y-6">
+              <Card className="bg-white border-slate-200 shadow-sm">
+                <CardContent className="p-6 space-y-4">
+                  <h2 className="font-bold text-lg flex items-center gap-2">
+                    <Zap className="size-5 text-amber-500" /> Automatización
+                  </h2>
+                  <p className="text-xs text-slate-500">
+                    Ejecuta el proceso de obtención y traducción de noticias de K-pop inmediatamente.
+                  </p>
+                  <Button 
+                    onClick={handleRunAutomation} 
+                    disabled={isRunningAutomation}
+                    className="w-full bg-amber-500 hover:bg-amber-600 h-11 gap-2"
+                  >
+                    {isRunningAutomation ? <RefreshCw className="size-4 animate-spin" /> : <Zap className="size-4" />}
+                    {isRunningAutomation ? "Ejecutando..." : "Ejecutar runNewsAutomationNow()"}
+                  </Button>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-white border-slate-200 shadow-sm">
+                <CardContent className="p-6 space-y-4">
+                  <h2 className="font-bold text-lg flex items-center gap-2">
+                    <Wrench className="size-5 text-blue-600" /> Herramientas Útiles
+                  </h2>
+                  <div className="space-y-2">
+                    <a href="https://www.soompi.com" target="_blank" rel="noreferrer" className="flex items-center justify-between p-3 rounded-lg border border-slate-100 hover:bg-slate-50 transition-colors group">
+                      <span className="text-sm font-medium">Soompi (Fuente)</span>
+                      <ExternalLink className="size-4 text-slate-400 group-hover:text-blue-600" />
+                    </a>
+                    <a href="https://www.allkpop.com" target="_blank" rel="noreferrer" className="flex items-center justify-between p-3 rounded-lg border border-slate-100 hover:bg-slate-50 transition-colors group">
+                      <span className="text-sm font-medium">Allkpop (Fuente)</span>
+                      <ExternalLink className="size-4 text-slate-400 group-hover:text-blue-600" />
+                    </a>
+                    <a href="https://translate.google.com" target="_blank" rel="noreferrer" className="flex items-center justify-between p-3 rounded-lg border border-slate-100 hover:bg-slate-50 transition-colors group">
+                      <span className="text-sm font-medium">Google Translate</span>
+                      <ExternalLink className="size-4 text-slate-400 group-hover:text-blue-600" />
+                    </a>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            <div className="lg:col-span-2 space-y-4">
+              <div className="flex justify-between items-center">
+                <h2 className="font-bold text-lg">Noticias Publicadas ({allNews?.length || 0})</h2>
+                <Button variant="outline" size="sm" onClick={() => refetchNews()} className="gap-2">
+                  <RefreshCw className="size-4" /> Actualizar
+                </Button>
+              </div>
+              <div className="space-y-4">
+                {allNews?.map((article) => (
+                  <Card key={article.id} className="bg-white border-slate-200 overflow-hidden hover:shadow-md transition-all">
+                    <div className="flex p-4 gap-4">
+                      {article.image && (
+                        <img src={article.image} className="size-24 rounded-xl object-cover flex-shrink-0" />
+                      )}
+                      <div className="flex-1 min-w-0">
+                        <div className="flex justify-between items-start">
+                          <h3 className="font-bold text-slate-900 line-clamp-1">{article.title}</h3>
+                          <Badge variant="outline" className="text-[10px] uppercase">{article.source}</Badge>
+                        </div>
+                        <p className="text-xs text-slate-500 line-clamp-2 mt-1">{article.summary}</p>
+                        <div className="flex items-center gap-3 mt-3">
+                          <div className="flex items-center gap-1 text-[10px] text-slate-400">
+                            <Clock className="size-3" />
+                            {new Date(article.createdAt).toLocaleDateString()}
+                          </div>
+                          <div className="flex gap-2 ml-auto">
+                            <Button 
+                              size="sm" 
+                              variant="ghost" 
+                              onClick={() => handleDeleteNews(article.id)} 
+                              className="h-7 text-[10px] px-2 text-red-500 hover:text-red-700 hover:bg-red-50"
+                            >
+                              <Trash2 className="size-3 mr-1" /> Eliminar
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </Card>
+                ))}
+                {(!allNews || allNews.length === 0) && (
+                  <div className="text-center py-12 bg-slate-50 rounded-2xl border-2 border-dashed border-slate-200">
+                    <Newspaper className="size-12 text-slate-300 mx-auto mb-3" />
+                    <p className="text-slate-500 font-medium">No hay noticias registradas</p>
+                    <p className="text-xs text-slate-400 mt-1">Ejecuta la automatización para obtener noticias</p>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         )}

@@ -108,4 +108,49 @@ export const newsRouter = router({
         return [];
       }
     }),
+
+  /**
+   * Admin: Get all news articles (including unpublished)
+   */
+  adminGetAll: publicProcedure.query(async () => {
+    const db = await getDb();
+    if (!db) return [];
+    try {
+      return await db.select().from(newsTable).orderBy(desc(newsTable.createdAt)).limit(100);
+    } catch (error) {
+      console.error("[News Router] Error fetching all news for admin:", error);
+      return [];
+    }
+  }),
+
+  /**
+   * Admin: Delete a news article
+   */
+  delete: publicProcedure
+    .input(z.object({ id: z.number() }))
+    .mutation(async ({ input }) => {
+      const db = await getDb();
+      if (!db) throw new Error("Database not available");
+      try {
+        await db.delete(newsTable).where(eq(newsTable.id, input.id));
+        return { success: true };
+      } catch (error) {
+        console.error("[News Router] Error deleting news:", error);
+        throw new Error("Failed to delete news article");
+      }
+    }),
+
+  /**
+   * Admin: Run news automation manually
+   */
+  runAutomation: publicProcedure.mutation(async () => {
+    const { runNewsAutomationNow } = await import("../cron-jobs");
+    try {
+      await runNewsAutomationNow();
+      return { success: true };
+    } catch (error) {
+      console.error("[News Router] Error running automation:", error);
+      throw new Error("Failed to run news automation");
+    }
+  }),
 });
