@@ -99,6 +99,7 @@ export default function Diploma() {
   const [imageLoaded, setImageLoaded] = useState(false);
   const diplomaImageRef = useRef<HTMLImageElement | null>(null);
   const [isDownloading, setIsDownloading] = useState(false);
+  const [isPrinting, setIsPrinting] = useState(false);
 
   // Cargar la imagen del diploma
   useEffect(() => {
@@ -146,17 +147,48 @@ export default function Diploma() {
     }
   }, [diplomaName, imageLoaded, selectedFont, fontSize]);
 
-  const handleDownloadDiploma = async () => {
+  const handleDownloadDiploma = async (isForPrint = false) => {
     const canvas = canvasRef.current;
-    if (canvas && diplomaName.trim()) {
-      setIsDownloading(true);
+    const img = diplomaImageRef.current;
+    if (canvas && img && diplomaName.trim()) {
+      if (isForPrint) setIsPrinting(true);
+      else setIsDownloading(true);
+
       try {
+        // Para impresión, creamos un canvas temporal de mayor resolución si es necesario
+        // O simplemente nos aseguramos de que el canvas actual tenga la calidad máxima
+        const downloadCanvas = document.createElement("canvas");
+        const ctx = downloadCanvas.getContext("2d");
+        if (!ctx) return;
+
+        // Usamos las dimensiones originales de la imagen para máxima calidad
+        downloadCanvas.width = img.width;
+        downloadCanvas.height = img.height;
+
+        // Dibujar fondo
+        ctx.drawImage(img, 0, 0);
+
+        // Dibujar nombre
+        const fontOption = FONT_OPTIONS.find((f) => f.id === selectedFont);
+        const fontFamily = fontOption?.family || "Arial";
+        const x = (downloadCanvas.width * BTS_DIPLOMA.namePosition.x) / 100;
+        const y = (downloadCanvas.height * BTS_DIPLOMA.namePosition.y) / 100;
+        const maxWidth = (downloadCanvas.width * BTS_DIPLOMA.namePosition.maxWidth) / 100;
+
+        ctx.font = `${selectedFont === "professional" ? "" : "italic"} ${fontSize}px ${fontFamily}`;
+        ctx.fillStyle = BTS_DIPLOMA.namePosition.color;
+        ctx.textAlign = "center";
+        ctx.textBaseline = "bottom";
+        ctx.fillText(diplomaName, x, y, maxWidth);
+
         const link = document.createElement("a");
-        link.download = `Diploma_BTS_ARMY_${diplomaName}.png`;
-        link.href = canvas.toDataURL("image/png");
+        link.download = `Diploma_BTS_ARMY_${diplomaName}${isForPrint ? "_Para_Imprimir" : ""}.png`;
+        // Para impresión usamos calidad máxima (1.0)
+        link.href = downloadCanvas.toDataURL("image/png", 1.0);
         link.click();
       } finally {
-        setIsDownloading(false);
+        if (isForPrint) setIsPrinting(false);
+        else setIsDownloading(false);
       }
     }
   };
@@ -338,17 +370,37 @@ export default function Diploma() {
                     </div>
                   </div>
 
-                  {/* Download Button */}
-                  <Button
-                    onClick={handleDownloadDiploma}
-                    disabled={!diplomaName.trim() || !imageLoaded || isDownloading}
-                    className="w-full gap-3 bg-gradient-to-r from-purple-600 to-violet-600 hover:from-purple-700 hover:to-violet-700 text-white font-bold py-6 rounded-xl shadow-lg transition-all hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] text-base disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    <Download className="size-5" />
-                    <span>
-                      {isDownloading ? "Descargando..." : "Descargar Diploma"}
-                    </span>
-                  </Button>
+                  {/* Download Buttons Section */}
+                  <div className="space-y-4">
+                    <p className="text-center text-[11px] font-bold text-amber-600 animate-pulse">
+                      ⚠️ Por favor, revisa la vista previa antes de descargar
+                    </p>
+                    
+                    <div className="grid grid-cols-1 gap-3">
+                      <Button
+                        onClick={() => handleDownloadDiploma(false)}
+                        disabled={!diplomaName.trim() || !imageLoaded || isDownloading || isPrinting}
+                        className="w-full gap-3 bg-gradient-to-r from-purple-600 to-violet-600 hover:from-purple-700 hover:to-violet-700 text-white font-bold py-6 rounded-xl shadow-lg transition-all hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] text-base disabled:opacity-50"
+                      >
+                        <Download className="size-5" />
+                        <span>
+                          {isDownloading ? "Descargando..." : "Descargar Diploma"}
+                        </span>
+                      </Button>
+
+                      <Button
+                        onClick={() => handleDownloadDiploma(true)}
+                        disabled={!diplomaName.trim() || !imageLoaded || isDownloading || isPrinting}
+                        variant="outline"
+                        className="w-full gap-3 border-2 border-purple-200 hover:border-purple-600 hover:bg-purple-50 text-purple-700 font-bold py-6 rounded-xl transition-all hover:scale-[1.02] active:scale-[0.98] text-base disabled:opacity-50"
+                      >
+                        <Award className="size-5" />
+                        <span>
+                          {isPrinting ? "Preparando..." : "Descargar para Impresión"}
+                        </span>
+                      </Button>
+                    </div>
+                  </div>
 
                   {/* Info Box */}
                   <div className="bg-gradient-to-br from-blue-50 to-cyan-50 border border-blue-200 rounded-xl p-4">
