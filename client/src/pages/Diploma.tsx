@@ -212,10 +212,10 @@ export default function Diploma() {
         // Mostrar mensaje de éxito
         if (isForPrint) {
           setShowPrintSuccess(true);
-          setTimeout(() => setShowPrintSuccess(false), 3000);
+          setTimeout(() => setShowPrintSuccess(false), 7000);
         } else {
           setShowDownloadSuccess(true);
-          setTimeout(() => setShowDownloadSuccess(false), 3000);
+          setTimeout(() => setShowDownloadSuccess(false), 7000);
         }
       } finally {
         if (isForPrint) {
