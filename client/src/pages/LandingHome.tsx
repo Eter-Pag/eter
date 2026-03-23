@@ -190,7 +190,7 @@ export default function LandingHome() {
                 <img
                   src="/assets/imagentienda.png"
                   alt="K-POP Merchandise"
-                  className="w-full h-full object-cover object-center"
+                  className="w-full h-full object-cover object-top"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
               </div>
@@ -281,7 +281,7 @@ export default function LandingHome() {
             <CardContent className="p-0">
               <div className="relative h-32 md:h-48 bg-gradient-to-br from-purple-400 to-violet-400 overflow-hidden">
                 <img
-                  src="/assets/certificadoARMYBTS.jpeg"
+                  src="/assets/diploma_bts_army_hq.png"
                   alt="Diploma ARMY"
                   className="w-full h-full object-cover object-top"
                 />
