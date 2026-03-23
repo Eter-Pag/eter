@@ -177,8 +177,8 @@ export default function BtsBiographies() {
       {/* Hero Section */}
       <section className="relative h-[45vh] md:h-[60vh] overflow-hidden">
         <img
-          src="https://www.billboard.com/wp-content/uploads/2026/03/bts-netflix-trailer-2026-billboard-1800.jpg?w=1024"
-          alt="BTS Billboard 2026"
+          src="https://images.unsplash.com/photo-1501386761578-eac5c94b800a?w=1600&q=80"
+          alt="BTS Group"
           className="w-full h-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent" />

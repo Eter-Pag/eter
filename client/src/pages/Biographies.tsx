@@ -12,7 +12,7 @@ export default function Biographies() {
       name: "BTS",
       group: "Grupo de 7 miembros",
       description: "Bangtan Sonyeondan, conocidos como BTS, es un grupo surcoreano de música pop que revolucionó la industria musical global.",
-      image: "https://images.unsplash.com/photo-1612833603922-3bb74c1288b3?q=80&w=1000&auto=format&fit=crop",
+      image: "https://www.billboard.com/wp-content/uploads/2026/03/bts-netflix-trailer-2026-billboard-1800.jpg?w=1024",
       debut: "2013",
       members: 7,
       path: "/biografias/bts"
