@@ -46,7 +46,7 @@ export default function BtsBiographies() {
       birthday: "4 de Diciembre, 1992",
       birthplace: "Anyang, Gyeonggi-do, Corea del Sur",
       mbti: "INTP",
-      image: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=800&q=80",
+      image: "https://image.starnewskorea.com/21/2026/03/2026031407241350590_1.jpg",
       color: "bg-pink-500",
       fullBio: {
         preDebut: "Jin fue descubierto por un agente de Big Hit mientras bajaba de un autobús por su increíble apariencia. En ese momento estudiaba actuación en la Universidad Konkuk y no tenía experiencia previa en canto o baile, lo que hace su progreso aún más admirable.",
