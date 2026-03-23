@@ -385,8 +385,9 @@ export default function Diploma() {
 
                   {/* Download Buttons Section */}
                   <div className="space-y-4">
-                    <p className="text-center text-[11px] font-bold text-amber-600 animate-pulse">
-                      ⚠️ Por favor, revisa la vista previa antes de descargar
+                    <p className="text-center text-[11px] font-medium text-purple-500 flex items-center justify-center gap-1.5">
+                      <Sparkles className="size-3" />
+                      Asegúrate de que todo se vea perfecto en la vista previa
                     </p>
                     
                     <div className="grid grid-cols-1 gap-3">
