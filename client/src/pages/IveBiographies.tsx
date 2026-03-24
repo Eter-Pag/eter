@@ -28,7 +28,7 @@ export default function IveBiographies() {
       birth: "1 de septiembre de 2003",
       origin: "Daejeon, Corea del Sur",
       mbti: "ISTP",
-      image: "https://i.pinimg.com/564x/33/66/2a/33662a81d112b243b5581511203623be.jpg",
+      image: "https://i.redd.it/yujin-at-kcon-la-2025-d1-250802-v0-go3ta2tbaihf1.jpg?width=1602&format=pjpg&auto=webp&s=e39dcb06ad73f9fcd576178e399d7fc7d433b66a",
       color: "bg-red-300",
       fullBio: {
         preDebut: "Ex-integrante de IZ*ONE. Conocida por su versatilidad, carisma y liderazgo.",
@@ -62,7 +62,7 @@ export default function IveBiographies() {
       birth: "3 de febrero de 2004",
       origin: "Nagoya, Japón",
       mbti: "INFJ",
-      image: "https://i.pinimg.com/564x/41/50/21/415021f2385447b205a921ea80344033.jpg",
+      image: "https://i.pinimg.com/736x/8a/b1/74/8ab17486dd8d83efb9ac1bdfec52e64f.jpg",
       color: "bg-green-300",
       fullBio: {
         preDebut: "Primera artista japonesa en debutar bajo Starship Entertainment. Conocida por su estilo único.",
@@ -79,7 +79,7 @@ export default function IveBiographies() {
       birth: "31 de agosto de 2004",
       origin: "Seúl, Corea del Sur",
       mbti: "E???",
-      image: "https://i.pinimg.com/564x/a3/31/64/a33164172049d5453325953322a72292.jpg",
+      image: "https://i.pinimg.com/736x/6f/2f/0f/6f2f0f7b0ec69af6490d4b740784e6a8.jpg",
       color: "bg-pink-300",
       fullBio: {
         preDebut: "Ex-integrante y centro de IZ*ONE. Un icono de la moda y una de las ídolos más populares.",
@@ -96,7 +96,7 @@ export default function IveBiographies() {
       birth: "21 de noviembre de 2004",
       origin: "Jeju, Corea del Sur",
       mbti: "INFP",
-      image: "https://i.pinimg.com/564x/b1/a6/93/b1a69363410759336473b8e04555891d.jpg",
+      image: "https://cdn.kbizoom.com/media/2025/12/03021234/7et8pb8udm4pitz9t8qm1ykcdyjgdvvywoukvloses4-liz-ive-transformation-scaled.jpeg",
       color: "bg-cyan-300",
       fullBio: {
         preDebut: "Conocida por su potente voz y sus adorables hoyuelos. Apareció en el MV 'This Christmas' de Taeyeon.",
