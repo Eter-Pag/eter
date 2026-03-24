@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { LegalFooter } from "@/components/LegalFooter";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Badge as UIBadge } from "../components/ui/badge";
+// Badge component replaced by styled div to avoid build errors in Railway
 import { ArrowLeft, Calendar, ExternalLink, Loader2, ChevronDown, ChevronUp, Maximize2, Globe } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 
@@ -125,9 +125,9 @@ export default function News() {
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
                       <div className="absolute top-3 left-3">
-                        <UIBadge className="bg-emerald-500/80 backdrop-blur-md text-white border-none text-[10px] uppercase tracking-widest">
+                        <div className="bg-emerald-500/80 backdrop-blur-md text-white border-none text-[10px] uppercase tracking-widest">
                           {article.source}
-                        </UIBadge>
+                        </div>
                       </div>
                     </div>
                   )}
@@ -175,9 +175,9 @@ export default function News() {
                             
                             <div className="p-8 md:p-12 -mt-12 relative bg-white/80 backdrop-blur-sm rounded-t-[3rem]">
                               <div className="flex items-center gap-3 mb-6">
-                                <UIBadge className="bg-emerald-100 text-emerald-700 border-none px-3 py-1 font-black uppercase tracking-widest text-[10px]">
+                                <div className="bg-emerald-100 text-emerald-700 border-none px-3 py-1 font-black uppercase tracking-widest text-[10px]">
                                   {article.source}
-                                </UIBadge>
+                                </div>
                                 <div className="flex items-center gap-2 text-gray-400 font-bold text-xs uppercase tracking-widest">
                                   <Calendar className="size-4" />
                                   {formatDate(article.createdAt)}
