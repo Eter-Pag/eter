@@ -22,7 +22,7 @@ export default function Biographies() {
       name: "BLACKPINK",
       group: "Grupo de 4 miembros",
       description: "BLACKPINK es un grupo femenino surcoreano que se ha convertido en un fenómeno global con su música y estilo único.",
-      image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=1000&auto=format&fit=crop",
+      image: "https://4kwallpapers.com/images/wallpapers/blackpink-lisa-jisoo-jennie-rose-k-pop-singers-korean-2560x1440-8881.jpg",
       debut: "2016",
       members: 4,
       path: "/biografias/blackpink"

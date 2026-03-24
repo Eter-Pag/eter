@@ -119,7 +119,7 @@ export default function BlackpinkBiographies() {
       {/* Hero Section */}
       <section className="relative h-[40vh] md:h-[60vh] overflow-hidden">
         <img
-          src="https://images.unsplash.com/photo-1493225255756-d9584f8606e9?w=1600&q=80"
+          src="https://4kwallpapers.com/images/wallpapers/blackpink-lisa-jisoo-jennie-rose-k-pop-singers-korean-2560x1440-8881.jpg"
           alt="BLACKPINK Group"
           className="w-full h-full object-cover"
         />
