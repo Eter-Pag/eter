@@ -371,7 +371,8 @@ export const appRouter = router({
             fecha: new Date().toISOString(),
           };
 
-          await fetch(RAFFLE_CONFIG.googleSheetsApi, {
+          const STORIES_SHEETS_API = "https://script.google.com/macros/s/AKfycbzOJeE4kmAOr2kxGkKrdQgLsvZBNq-GgQLGEHNbrbfBlPIypoh0cDh7xso66Kc1PDru/exec";
+          await fetch(STORIES_SHEETS_API, {
             method: "POST",
             body: JSON.stringify(payload),
             headers: { "Content-Type": "application/json" },
