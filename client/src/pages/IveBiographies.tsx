@@ -145,7 +145,7 @@ export default function IveBiographies() {
       </header>
 
       <section className="relative h-[45vh] md:h-[60vh] overflow-hidden">
-        <img src="https://images.unsplash.com/photo-1501386761578-eac5c94b800a?w=1600&q=80" alt="IVE Group" className="w-full h-full object-cover object-top" />
+        <img src="https://4kwallpapers.com/images/wallpapers/ive-k-pop-an-yujin-2560x1440-23394.jpg" alt="IVE Group" className="w-full h-full object-cover object-top" />
         <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent" />
         <div className="absolute inset-0 flex flex-col items-center justify-end pb-12 text-white p-6 text-center">
           <h2 className="text-5xl md:text-8xl font-black mb-4 tracking-tighter drop-shadow-2xl">IVE</h2>

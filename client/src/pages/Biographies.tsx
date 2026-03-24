@@ -62,7 +62,7 @@ export default function Biographies() {
       name: "IVE",
       group: "Grupo de 6 miembros",
       description: "IVE es un grupo femenino surcoreano que ha ganado popularidad rápidamente con sus éxitos musicales.",
-      image: "https://images.unsplash.com/photo-1517841905240-472988babdf9?q=80&w=1000&auto=format&fit=crop",
+      image: "https://4kwallpapers.com/images/wallpapers/ive-k-pop-an-yujin-2560x1440-23394.jpg",
       debut: "2021",
       members: 6,
       path: "/biografias/ive"
