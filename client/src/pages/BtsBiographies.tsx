@@ -100,7 +100,7 @@ export default function BtsBiographies() {
       birthday: "18 de Febrero, 1994",
       birthplace: "Gwangju, Corea del Sur",
       mbti: "INFJ",
-      image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSGIYYsQ8M1fE3exEy-UtsoN3NVKrQ6SDu--g&s",
+      image: "https://bangtannow.com/wp-content/uploads/2025/02/Jung-Hoseok-575x1024.jpg",
       color: "bg-green-600",
       fullBio: {
         preDebut: "Era un bailarín callejero muy famoso en Gwangju con el grupo 'Neuron'. Ganó varios concursos nacionales de baile antes de unirse a Big Hit. Casi deja el grupo antes del debut, pero RM convenció a la empresa de que BTS necesitaba a J-Hope.",
@@ -118,7 +118,7 @@ export default function BtsBiographies() {
       birthday: "13 de Octubre, 1995",
       birthplace: "Busan, Corea del Sur",
       mbti: "ESTP",
-      image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQjhINt3dExFXGyQ5J7E8RPVvAZYggXdEG-ZA&s",
+      image: "https://cdn.shopify.com/s/files/1/0469/3927/5428/files/Bildschirmfoto_2025-06-02_um_12.49.36.png?v=1748861467",
       color: "bg-amber-500",
       fullBio: {
         preDebut: "Fue el estudiante estrella de danza contemporánea en la Escuela Secundaria de Artes de Busan. Fue el último miembro en unirse a BTS, entrenando solo por 6 meses antes del debut debido a su talento natural y ética de trabajo extrema.",
