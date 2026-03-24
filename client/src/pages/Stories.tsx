@@ -6,7 +6,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Send, Heart, MessageCircle, Sparkles, Globe, ChevronDown } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { ArrowLeft, Send, Heart, MessageCircle, Sparkles, Globe, ChevronDown, Maximize2 } from "lucide-react";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -215,7 +216,7 @@ export default function Stories() {
                           </div>
                           
                           <div className="space-y-4 flex-grow">
-                            <p className="text-slate-700 text-sm leading-relaxed font-medium italic line-clamp-4">
+                            <p className="text-slate-700 text-sm leading-relaxed font-medium italic line-clamp-3">
                               "{story.historia_es}"
                             </p>
                             
@@ -224,10 +225,69 @@ export default function Stories() {
                                 <Globe className="size-3" />
                                 Coreano
                               </div>
-                              <p className="text-slate-900 font-bold text-xs leading-relaxed font-kr line-clamp-3">
+                              <p className="text-slate-900 font-bold text-xs leading-relaxed font-kr line-clamp-2">
                                 {story.historia_ko}
                               </p>
                             </div>
+
+                            <Dialog>
+                              <DialogTrigger asChild>
+                                <Button 
+                                  variant="ghost" 
+                                  className="w-full mt-2 h-8 text-[10px] font-black uppercase tracking-widest text-slate-600 hover:text-purple-600 hover:bg-white/50 rounded-xl gap-2"
+                                >
+                                  <Maximize2 className="size-3" />
+                                  Leer historia completa
+                                </Button>
+                              </DialogTrigger>
+                              <DialogContent className="max-w-2xl bg-white/95 backdrop-blur-2xl border-none shadow-2xl rounded-[2.5rem] p-0 overflow-hidden">
+                                <div className={`h-3 bg-gradient-to-r ${colorClass.split(' ')[0]} ${colorClass.split(' ')[1]}`} />
+                                <div className="p-8 md:p-12 space-y-8 max-h-[80vh] overflow-y-auto custom-scrollbar">
+                                  <div className="flex items-center gap-4">
+                                    <div className="size-14 bg-slate-100 rounded-2xl flex items-center justify-center text-slate-900 font-black text-xl shadow-sm">
+                                      {story.nombre.charAt(0).toUpperCase()}
+                                    </div>
+                                    <div>
+                                      <DialogTitle className="text-2xl font-black text-slate-900 uppercase tracking-tight">
+                                        {story.nombre}
+                                      </DialogTitle>
+                                      <p className="text-xs text-slate-400 font-bold uppercase tracking-widest">
+                                        {new Date(story.fecha).toLocaleDateString('es-MX', { 
+                                          day: 'numeric', 
+                                          month: 'long',
+                                          year: 'numeric'
+                                        })}
+                                      </p>
+                                    </div>
+                                  </div>
+
+                                  <div className="space-y-8">
+                                    <div className="relative">
+                                      <div className="absolute -left-4 top-0 bottom-0 w-1 bg-purple-100 rounded-full" />
+                                      <p className="text-slate-700 text-lg leading-relaxed font-medium italic pl-4">
+                                        "{story.historia_es}"
+                                      </p>
+                                    </div>
+
+                                    <div className="pt-8 border-t border-slate-100">
+                                      <div className="flex items-center gap-2 text-xs font-black text-purple-500 uppercase tracking-widest mb-4">
+                                        <Globe className="size-4" />
+                                        Traducción al Coreano
+                                      </div>
+                                      <p className="text-slate-900 font-bold text-xl leading-relaxed font-kr bg-slate-50 p-6 rounded-3xl">
+                                        {story.historia_ko}
+                                      </p>
+                                    </div>
+                                  </div>
+
+                                  <div className="flex items-center justify-center gap-4 pt-4">
+                                    <Heart className="size-6 text-pink-500 fill-current" />
+                                    <Sparkles className="size-6 text-purple-500" />
+                                    <Heart className="size-6 text-pink-500 fill-current" />
+                                  </div>
+                                </div>
+                              </DialogContent>
+                            </Dialog>
                           </div>
 
                           <div className="mt-6 flex items-center justify-between text-slate-300 group-hover:text-pink-400 transition-colors">
