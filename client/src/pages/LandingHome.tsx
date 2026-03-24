@@ -262,9 +262,9 @@ export default function LandingHome() {
                 </p>
                 <Button
                   disabled
-                  className="w-full gap-1 md:gap-2 bg-slate-200 text-slate-500 cursor-not-allowed text-xs md:text-sm py-1 md:py-2 opacity-70"
+                  className="w-full gap-1 md:gap-2 bg-slate-200 text-slate-500 text-xs md:text-sm py-1 md:py-2 cursor-not-allowed"
                 >
-                  <Images className="size-3 md:size-4" />
+                  <Clock className="size-3 md:size-4" />
                   <span>Próximamente</span>
                 </Button>
               </div>
