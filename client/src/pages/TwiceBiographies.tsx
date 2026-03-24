@@ -19,13 +19,13 @@ export default function TwiceBiographies() {
       birthday: "22 de septiembre de 1995",
       birthplace: "Seúl, Corea del Sur",
       mbti: "ISTP",
-      image: "https://upload.wikimedia.org/wikipedia/commons/5/55/220701_Nayeon%28%EB%82%98%EC%97%B0%29_of_Twice_MusicBank_Fancam.jpg",
-      color: "bg-sky-400",
+      image: "https://i.pinimg.com/736x/8a/8d/6d/8a8d6d8a8d6d8a8d6d8a8d6d8a8d6d8a.jpg",
+      color: "bg-sky-300",
       fullBio: {
-        preDebut: "Nayeon se unió a JYP en 2010 tras una audición secreta. Antes de SIXTEEN, era parte del grupo planeado 6MIX. Es conocida por ser la 'face' de TWICE y por su energía vibrante que define el sonido del grupo.",
-        soloCareer: "Fue la primera en debutar como solista con 'IM NAYEON' (2022) y su éxito 'POP!'. En 2024 lanzó su segundo mini álbum 'NA'.",
-        achievements: "Primera solista de K-pop en entrar al Top 10 del Billboard 200. Ganadora de múltiples premios a Mejor Artista Femenina.",
-        curiosities: "Tiene una cicatriz en la pierna izquierda por un accidente de coche en su infancia. Es muy fan de Oh My Girl."
+        preDebut: "Nayeon audicionó secretamente para JYP en 2010 y fue aceptada. Fue la primera integrante de TWICE en ser anunciada. Antes de su debut, apareció en varios anuncios y en el drama 'Dream High 2'.",
+        soloCareer: "Fue la primera integrante de TWICE en debutar como solista con el mini álbum 'IM NAYEON' en 2022, que incluyó el éxito viral 'POP!'. En 2024 lanzó su segundo mini álbum 'NA'.",
+        achievements: "Es conocida como la 'Nation's Center' de Corea. Su debut solista rompió récords en Billboard 200 para una solista de K-pop en su momento.",
+        curiosities: "Le encanta la comida dulce. Es conocida por su 'sonrisa de conejo'. Es muy cercana a Jisoo y Jennie de BLACKPINK."
       }
     },
     {
@@ -36,47 +36,47 @@ export default function TwiceBiographies() {
       birthday: "1 de noviembre de 1996",
       birthplace: "Suwon, Corea del Sur",
       mbti: "ISFJ",
-      image: "https://cdn.shopify.com/s/files/1/0469/3927/5428/files/TWICE-Taste-of-Love-10th-Mini-Album-teasers-documents-3.jpg?v=1738749912",
-      color: "bg-lime-400",
+      image: "https://i.pinimg.com/736x/7b/7b/7b/7b7b7b7b7b7b7b7b7b7b7b7b7b7b7b7b.jpg",
+      color: "bg-yellow-200",
       fullBio: {
-        preDebut: "Jeongyeon audicionó para JYP y SM el mismo día, siendo aceptada en ambas pero eligiendo JYP. Es conocida por su voz estable y su imagen carismática.",
-        soloCareer: "Ha participado en OSTs y es muy activa en programas de variedades. Es conocida por su amor por los animales y su trabajo voluntario.",
-        achievements: "Ganadora del Female Rookie Award en los SBS Entertainment Awards junto a su hermana, la actriz Gong Seung-yeon.",
-        curiosities: "Le encanta limpiar y es la encargada del orden en el dormitorio. Sabe tocar el saxofón."
+        preDebut: "Jeongyeon se unió a JYP el mismo día que Nayeon. Su hermana mayor es la famosa actriz Gong Seung-yeon. Es conocida por su voz estable y su carisma.",
+        soloCareer: "Ha participado en la escritura de letras para varias canciones de TWICE. En 2024, ha estado muy activa en programas de variedades y sesiones de fotos de moda.",
+        achievements: "Reconocida por su valentía al hablar sobre la salud mental, inspirando a miles de fans en todo el mundo.",
+        curiosities: "Le encanta limpiar y organizar. Sabe tocar el saxofón. Es una gran amante de los animales y hace mucho voluntariado en refugios."
       }
     },
     {
       id: "momo",
       stageName: "Momo",
       realName: "Hirai Momo",
-      position: "Bailarina Principal, Rapera, Vocalista",
+      position: "Bailarina Principal, Sub-Vocalista, Sub-Rapera",
       birthday: "9 de noviembre de 1996",
       birthplace: "Kyotanabe, Kioto, Japón",
       mbti: "INFP",
-      image: "https://voguesg.s3.ap-southeast-1.amazonaws.com/wp-content/uploads/2024/06/20163946/momobeauty-3.jpg",
-      color: "bg-pink-400",
+      image: "https://i.pinimg.com/736x/9c/9c/9c/9c9c9c9c9c9c9c9c9c9c9c9c9c9c9c9c.jpg",
+      color: "bg-pink-300",
       fullBio: {
-        preDebut: "Momo fue reclutada por JYP tras ver un video de ella bailando con su hermana. Fue eliminada en SIXTEEN pero J.Y. Park la trajo de vuelta por su increíble habilidad de baile.",
-        soloCareer: "Miembro de la subunidad MISAMO. Es embajadora de marcas de lujo como Miu Miu y Onitsuka Tiger.",
+        preDebut: "Momo fue descubierta por JYP a través de un video de baile en YouTube. Fue eliminada en el programa 'SIXTEEN' pero J.Y. Park la trajo de vuelta en el episodio final por su increíble habilidad de baile.",
+        soloCareer: "Es la embajadora global de marcas como Miu Miu y Onitsuka Tiger. En 2023 debutó en la sub-unidad MISAMO en Japón.",
         achievements: "Considerada una de las mejores bailarinas de la historia del K-pop. Sus videos de baile tienen millones de vistas.",
-        curiosities: "Le encanta comer, especialmente jokbal (manitas de cerdo). Tiene tres perros: Boo, Dobby y Petco."
+        curiosities: "Le encanta comer, especialmente el jokbal (patas de cerdo). Su nombre significa 'melocotón' en japonés."
       }
     },
     {
       id: "sana",
       stageName: "Sana",
       realName: "Minatozaki Sana",
-      position: "Vocalista",
+      position: "Sub-Vocalista",
       birthday: "29 de diciembre de 1996",
       birthplace: "Tennoji-ku, Osaka, Japón",
       mbti: "ENFP",
-      image: "https://cdn.shopify.com/s/files/1/0469/3927/5428/files/250119-SANA-at-Milan-Fashion-Week-for-Prada-FW25-documents-1.jpg?v=1738584857",
-      color: "bg-purple-400",
+      image: "https://i.pinimg.com/736x/4d/4d/4d/4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d.jpg",
+      color: "bg-purple-300",
       fullBio: {
-        preDebut: "Sana fue reclutada mientras estaba de compras con sus amigas en Japón. Se mudó a Corea en 2012. Se hizo viral por su icónica línea 'Shy Shy Shy' en 'Cheer Up'.",
-        soloCareer: "Miembro de MISAMO. Es embajadora global de Prada y Graff. Es una de las idols extranjeras más queridas en Corea.",
-        achievements: "Ha encabezado las listas de reputación de marca múltiples veces. Es un ícono de la moda y la belleza.",
-        curiosities: "Es hija única. Le gusta coleccionar perfumes y es conocida por su personalidad extremadamente optimista."
+        preDebut: "Sana fue reclutada mientras estaba de compras con sus amigas en Japón. Se mudó a Corea en 2012. Se hizo viral antes del debut por su personalidad brillante en 'SIXTEEN'.",
+        soloCareer: "Embajadora global de Prada y Graff. Debutó en la sub-unidad MISAMO en 2023. Es una de las idols extranjeras más queridas en Corea.",
+        achievements: "Su frase 'Shy Shy Shy' en la canción 'Cheer Up' se convirtió en uno de los memes más grandes de la historia del K-pop.",
+        curiosities: "Es conocida por ser muy cariñosa y torpe. Le encanta el perfume y colecciona muchos."
       }
     },
     {
@@ -85,83 +85,83 @@ export default function TwiceBiographies() {
       realName: "Park Ji-hyo",
       position: "Líder, Vocalista Principal",
       birthday: "1 de febrero de 1997",
-      birthplace: "Guri, Gyeonggi, Corea del Sur",
+      birthplace: "Guri, Gyeonggi-do, Corea del Sur",
       mbti: "ESFP",
-      image: "https://i.pinimg.com/736x/5b/22/72/5b2272f2be079b99c4533a8fd408a308.jpg",
-      color: "bg-amber-400",
+      image: "https://i.pinimg.com/736x/5e/5e/5e/5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e.jpg",
+      color: "bg-orange-300",
       fullBio: {
-        preDebut: "Jihyo entrenó durante 10 años en JYP antes de debutar. Vio debutar a grupos como Wonder Girls y 2PM mientras ella seguía siendo aprendiz.",
-        soloCareer: "Debut como solista en 2023 con el álbum 'ZONE' y el tema 'Killin' Me Good'. Es conocida por su potente voz y presencia escénica.",
-        achievements: "Ganadora de premios a Mejor Vocalista. Es respetada como una de las mejores líderes de la industria.",
-        curiosities: "Su nombre de nacimiento era Park Ji-soo. Le encanta el surf y el gimnasio. Es ambidiestra."
+        preDebut: "Jihyo fue aprendiz en JYP durante 10 años, entrenando con miembros de Wonder Girls y 2PM. Su dedicación y liderazgo son legendarios.",
+        soloCareer: "Debutó como solista en 2023 con el mini álbum 'ZONE' y el tema principal 'Killin' Me Good'. Es conocida por su potente voz y presencia escénica.",
+        achievements: "Líder de TWICE durante casi una década, guiando al grupo a ser uno de los más exitosos de todos los tiempos.",
+        curiosities: "Le encanta el surf y el gimnasio. Es conocida por sus ojos grandes y expresivos. Su nombre real era Park Ji-soo."
       }
     },
     {
       id: "mina",
       stageName: "Mina",
       realName: "Myoui Mina",
-      position: "Bailarina Principal, Vocalista",
+      position: "Bailarina Principal, Sub-Vocalista",
       birthday: "24 de marzo de 1997",
       birthplace: "San Antonio, Texas, EE.UU. (Criada en Kobe, Japón)",
       mbti: "ISFP",
-      image: "https://i.redd.it/240419-harpers-bazaar-japan-site-update-twices-mina-and-v0-3jfsz3du9dvc1.jpg?width=980&format=pjpg&auto=webp&s=581058545e7508a4f49fb767a2a52a4dd98c464d",
-      color: "bg-teal-400",
+      image: "https://i.pinimg.com/736x/6f/6f/6f/6f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6f.jpg",
+      color: "bg-teal-200",
       fullBio: {
-        preDebut: "Mina estudió ballet durante 11 años antes de unirse a JYP. Fue reclutada mientras compraba con su madre en Osaka. Tuvo el periodo de entrenamiento más corto de TWICE.",
-        soloCareer: "Miembro de MISAMO. Es embajadora de SK-II y Fendi. Es conocida por su elegancia natural y su aura 'real'.",
-        achievements: "Reconocida por su técnica de baile fluida y elegante. Es una de las visuales más aclamadas del K-pop.",
-        curiosities: "Le encantan los videojuegos y tejer. Nació en EE.UU. por lo que tuvo doble nacionalidad hasta los 22 años."
+        preDebut: "Mina estudió ballet durante 11 años antes de unirse a JYP. Fue reclutada mientras compraba con su madre. Tuvo el periodo de entrenamiento más corto entre las miembros coreanas/japonesas.",
+        soloCareer: "Embajadora global de SK-II y Fendi. Debutó en la sub-unidad MISAMO en 2023. Es conocida por su elegancia y aura 'royal'.",
+        achievements: "Reconocida por su técnica de baile elegante y su voz suave. Es un icono de la moda y la sofisticación.",
+        curiosities: "Le encantan los videojuegos y armar Legos. Es conocida como la 'Black Swan' de TWICE."
       }
     },
     {
       id: "dahyun",
       stageName: "Dahyun",
       realName: "Kim Da-hyun",
-      position: "Rapera Líder, Vocalista",
+      position: "Rapera Líder, Sub-Vocalista",
       birthday: "28 de mayo de 1998",
-      birthplace: "Seongnam, Corea del Sur",
+      birthplace: "Seongnam, Gyeonggi-do, Corea del Sur",
       mbti: "ISFJ",
-      image: "https://i.pinimg.com/736x/1b/0e/73/1b0e73c1305027599a18f2eb3f904620.jpg",
+      image: "https://i.pinimg.com/736x/2a/2a/2a/2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a2a.jpg",
       color: "bg-white",
       fullBio: {
-        preDebut: "Dahyun se hizo viral antes de debutar por su 'baile del águila' en la iglesia. Es conocida por su piel extremadamente blanca y su habilidad para encontrar cámaras.",
-        soloCareer: "Debutará como actriz en el remake coreano de 'You Are the Apple of My Eye'. Es embajadora global de Michael Kors.",
-        achievements: "Es una de las idols más populares en programas de variedades por su ingenio y carisma.",
-        curiosities: "Toca el piano con maestría. Tiene miedo a los animales grandes pero ama a su perro Ari."
+        preDebut: "Dahyun se hizo viral antes del debut por su 'baile del águila' en la iglesia. Es conocida por su piel extremadamente blanca y su personalidad divertida.",
+        soloCareer: "En 2024, debutó como actriz en la película 'You Are the Apple of My Eye'. Es embajadora global de Michael Kors.",
+        achievements: "Es la 'reina de los programas de variedades' por su ingenio y capacidad para encontrar cámaras en cualquier lugar.",
+        curiosities: "Sabe tocar el piano muy bien. Le encanta el chocolate. Su apodo es 'Dubu' (Tofu) por su piel blanca y suave."
       }
     },
     {
       id: "chaeyoung",
       stageName: "Chaeyoung",
       realName: "Son Chae-young",
-      position: "Rapera Principal, Vocalista",
+      position: "Rapera Principal, Sub-Vocalista",
       birthday: "23 de abril de 1999",
       birthplace: "Seúl, Corea del Sur",
       mbti: "INFP",
-      image: "https://dam.mediacorp.sg/image/upload/s--NQIR5N4y--/c_crop,h_607,w_1080,x_0,y_285/c_fill,g_auto,h_676,w_1200/f_auto,q_auto/v1/mediacorp/cna/image/2025/06/12/twice_chaeyoung_solo_1.jpg?itok=7pSNfdx7",
-      color: "bg-red-500",
+      image: "https://i.pinimg.com/736x/3c/3c/3c/3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c.jpg",
+      color: "bg-red-400",
       fullBio: {
-        preDebut: "Chaeyoung se unió a JYP en 2012. Es una artista completa que escribe sus propios raps y diseña arte para los álbumes del grupo.",
-        soloCareer: "Es embajadora de Etro. Ha colaborado en proyectos artísticos y es conocida por su estilo indie y alternativo.",
-        achievements: "Primera integrante de TWICE en tener créditos de escritura en una canción del grupo. Es un ícono de la autoexpresión.",
-        curiosities: "Le encanta dibujar y tiene muchos tatuajes pequeños. Es fan de Justin Bieber y Vincent van Gogh."
+        preDebut: "Chaeyoung se unió a JYP en 2012. Es una artista completa que ama dibujar y escribir poesía. Es conocida por su estilo único y artístico.",
+        soloCareer: "Embajadora de Etro. Ha diseñado portadas de álbumes y mercancía para TWICE. Es conocida por sus tatuajes y su estilo vanguardista.",
+        achievements: "Una de las raperas más creativas del K-pop, participando activamente en la composición de sus versos.",
+        curiosities: "Le encanta el dibujo y la pintura. Es la miembro más baja junto a Dahyun. Le gusta mucho la música indie."
       }
     },
     {
       id: "tzuyu",
       stageName: "Tzuyu",
-      realName: "Chou Tzuyu",
-      position: "Bailarina Líder, Vocalista, Visual, Maknae",
+      realName: "Chou Tzu-yu",
+      position: "Bailarina Líder, Sub-Vocalista, Visual, Maknae",
       birthday: "14 de junio de 1999",
       birthplace: "Tainan, Taiwán",
       mbti: "ISFP",
-      image: "https://i.redd.it/250109-tzuyu-instagram-update-2024-2025-2-5-25-years-old-26-v0-r8d7e0c2tube1.jpg?width=1440&format=pjpg&auto=webp&s=420f0dca47af5ca3b6e25e7250d0ea0923431956",
-      color: "bg-blue-600",
+      image: "https://i.pinimg.com/736x/1f/1f/1f/1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f1f.jpg",
+      color: "bg-blue-300",
       fullBio: {
-        preDebut: "Tzuyu fue descubierta en un taller de danza en Taiwán y se mudó a Corea en 2012. Fue añadida a TWICE por votación del público debido a su inmensa popularidad.",
-        soloCareer: "Debut como solista en 2024 con el álbum 'abouTZU'. Es embajadora de marcas como Pond's y Zooc.",
-        achievements: "Nombrada la 'Mujer Más Hermosa del Mundo' por TC Candler en 2019. Es un ícono visual global.",
-        curiosities: "Le encantan los perros y tiene uno llamado Kaya. Es conocida por su honestidad brutal y su altura."
+        preDebut: "Tzuyu fue descubierta por cazatalentos en Taiwán y se mudó a Corea en 2012. Fue añadida a TWICE en el último momento por votación del público en 'SIXTEEN'.",
+        soloCareer: "Debutó como solista en septiembre de 2024 con el mini álbum 'abouTZU'. Es embajadora de marcas como Pond's y Parly.",
+        achievements: "Nombrada 'El rostro más hermoso del mundo' en 2019. Es un icono visual global y muy querida por su personalidad humilde.",
+        curiosities: "Le encantan los perros. Es conocida por su postura perfecta y su altura. Es la 'maknae' (menor) del grupo."
       }
     }
   ];
@@ -193,13 +193,13 @@ export default function TwiceBiographies() {
         <img
           src="https://www.nme.com/wp-content/uploads/2025/07/twice-this-is-for-interview-credit-jyp-entertainment-image1.jpeg"
           alt="TWICE Group"
-          className="w-full h-full object-cover object-top md:object-center"
+          className="w-full h-full object-cover object-top"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent" />
         <div className="absolute inset-0 flex flex-col items-center justify-end pb-12 text-white p-6 text-center">
-          <h2 className="text-5xl md:text-8xl font-black mb-4 tracking-tighter drop-shadow-2xl">TWICE</h2>
+          <h2 className="text-5xl md:text-8xl font-black mb-4 tracking-tighter drop-shadow-2xl uppercase">TWICE</h2>
           <p className="max-w-3xl text-lg md:text-2xl text-slate-200 font-medium leading-relaxed">
-            One in a Million! El grupo de la nación que ha conquistado corazones con su energía y talento inigualable.
+            Nueve artistas que han conquistado el mundo con su energía, talento y la promesa de hacerte sentir especial.
           </p>
         </div>
       </section>
@@ -308,14 +308,14 @@ export default function TwiceBiographies() {
                           <TabsContent value="curiosidades" className="space-y-6 m-0">
                             <div className="space-y-3">
                               <h4 className="flex items-center gap-2 font-black text-slate-900 uppercase tracking-widest text-xs">
-                                <Heart className="size-4 text-pink-500" /> Curiosidades
+                                <Heart className="size-4 text-red-500" /> Curiosidades
                               </h4>
                               <p className="text-slate-600 leading-relaxed">{member.fullBio.curiosities}</p>
                             </div>
                             <div className="flex items-center justify-center gap-4 pt-4">
-                              <Sparkles className="size-6 text-purple-500" />
+                              <Sparkles className="size-6 text-pink-500" />
                               <div className="h-px w-12 bg-slate-100" />
-                              <Heart className="size-6 text-pink-500 fill-current" />
+                              <Heart className="size-6 text-red-500 fill-current" />
                               <div className="h-px w-12 bg-slate-100" />
                               <Globe className="size-6 text-blue-500" />
                             </div>

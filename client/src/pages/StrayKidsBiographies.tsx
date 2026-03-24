@@ -171,23 +171,25 @@ export default function StrayKidsBiographies() {
         </div>
       </header>
 
-      <main className="container py-12 px-4 max-w-6xl mx-auto">
-        {/* Hero Section */}
-        <div className="text-center mb-16">
-          <div className="inline-flex items-center gap-2 bg-slate-100 text-slate-700 rounded-full px-4 py-1.5 mb-6 text-sm font-bold">
-            <Star className="size-4 fill-current" />
-            Líderes de la 4ta Generación
-          </div>
-          <h2 className="text-4xl md:text-6xl font-black text-slate-900 mb-6 tracking-tight">
-            Stray Kids Everywhere All Around The World
-          </h2>
-          <p className="text-slate-600 text-lg max-w-2xl mx-auto leading-relaxed">
-            Descubre la historia de los ocho miembros que están redefiniendo el sonido del K-Pop con su estilo único y autoproducido.
+      {/* Hero Section */}
+      <section className="relative h-[40vh] md:h-[60vh] overflow-hidden">
+        <img
+          src="https://images.alphacoders.com/132/1327633.jpeg"
+          alt="Stray Kids Group"
+          className="w-full h-full object-cover object-top"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent" />
+        <div className="absolute inset-0 flex flex-col items-center justify-end pb-12 text-white p-6 text-center">
+          <h2 className="text-5xl md:text-8xl font-black mb-4 tracking-tighter drop-shadow-2xl uppercase">Stray Kids</h2>
+          <p className="max-w-3xl text-lg md:text-2xl text-slate-200 font-medium leading-relaxed">
+            Los líderes de la cuarta generación que han revolucionado el K-Pop con su sonido único y su energía inigualable.
           </p>
         </div>
+      </section>
 
-        {/* Members Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      {/* Main Content */}
+      <main className="container py-16 px-4 max-w-6xl mx-auto">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {members.map((member) => (
             <Dialog key={member.id}>
               <DialogTrigger asChild>
@@ -200,7 +202,8 @@ export default function StrayKidsBiographies() {
                       <img
                         src={member.image}
                         alt={member.stageName}
-         className="w-full h-full object-cover object-top md:object-center transition-transform duration-700 group-hover:scale-110"                      />
+                        className="w-full h-full object-cover object-top md:object-center transition-transform duration-700 group-hover:scale-110"
+                      />
                       <div className={`absolute inset-0 opacity-20 ${member.color}`} />
                       <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/90 via-black/40 to-transparent text-white">
                         <p className="text-[10px] font-bold uppercase tracking-widest opacity-80 mb-1">{member.position}</p>
@@ -223,7 +226,7 @@ export default function StrayKidsBiographies() {
                     <img 
                       src={member.image} 
                       alt={member.stageName}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-cover object-top md:object-center"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent md:bg-gradient-to-r" />
                     <div className="absolute bottom-8 left-8">
@@ -263,7 +266,7 @@ export default function StrayKidsBiographies() {
                           <TabsContent value="historia" className="space-y-6 m-0">
                             <div className="space-y-3">
                               <h4 className="flex items-center gap-2 font-black text-slate-900 uppercase tracking-widest text-xs">
-                                <Music className="size-4 text-purple-500" /> Pre-Debut
+                                <Music className="size-4 text-orange-500" /> Pre-Debut
                               </h4>
                               <p className="text-slate-600 leading-relaxed">{member.fullBio.preDebut}</p>
                             </div>
@@ -287,14 +290,14 @@ export default function StrayKidsBiographies() {
                           <TabsContent value="curiosidades" className="space-y-6 m-0">
                             <div className="space-y-3">
                               <h4 className="flex items-center gap-2 font-black text-slate-900 uppercase tracking-widest text-xs">
-                                <Heart className="size-4 text-pink-500" /> Curiosidades
+                                <Heart className="size-4 text-red-500" /> Curiosidades
                               </h4>
                               <p className="text-slate-600 leading-relaxed">{member.fullBio.curiosities}</p>
                             </div>
                             <div className="flex items-center justify-center gap-4 pt-4">
-                              <Sparkles className="size-6 text-purple-500" />
+                              <Sparkles className="size-6 text-orange-500" />
                               <div className="h-px w-12 bg-slate-100" />
-                              <Heart className="size-6 text-pink-500 fill-current" />
+                              <Heart className="size-6 text-red-500 fill-current" />
                               <div className="h-px w-12 bg-slate-100" />
                               <Globe className="size-6 text-blue-500" />
                             </div>

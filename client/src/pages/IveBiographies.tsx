@@ -142,7 +142,7 @@ export default function IveBiographies() {
         <img
           src="https://4kwallpapers.com/images/wallpapers/ive-k-pop-an-yujin-2560x1440-23394.jpg"
           alt="IVE Group"
-          className="w-full h-full object-cover object-top md:object-center"
+          className="w-full h-full object-cover object-top"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent" />
         <div className="absolute inset-0 flex flex-col items-center justify-end pb-12 text-white p-6 text-center">

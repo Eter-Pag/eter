@@ -1,7 +1,7 @@
 import { useLocation } from "wouter";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Calendar, MapPin, Star, Music, Award, BookOpen, Heart, Shield, Maximize2, Sparkles, Globe } from "lucide-react";
+import { ArrowLeft, Calendar, MapPin, Star, Music, Award, BookOpen, Heart, Maximize2, Sparkles, Globe } from "lucide-react";
 import { Badge } from "../components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -136,7 +136,7 @@ export default function BtsBiographies() {
         curiosities: "Es cinturón negro en Taekwondo. Le encanta dibujar, editar videos (G.C.F) y los deportes. Es conocido por ser extremadamente competitivo y por aprender cualquier habilidad casi instantáneamente.",
         military: "Inició su servicio militar en diciembre de 2023 junto a Jimin."
       }
-    },
+    }
   ];
 
   return (
@@ -161,23 +161,25 @@ export default function BtsBiographies() {
         </div>
       </header>
 
-      <main className="container py-12 px-4 max-w-6xl mx-auto">
-        {/* Hero Section */}
-        <div className="text-center mb-16">
-          <div className="inline-flex items-center gap-2 bg-purple-100 text-purple-700 rounded-full px-4 py-1.5 mb-6 text-sm font-bold">
-            <Star className="size-4 fill-current" />
-            El grupo más grande del mundo
-          </div>
-          <h2 className="text-4xl md:text-6xl font-black text-slate-900 mb-6 tracking-tight">
-            Beyond The Scene
-          </h2>
-          <p className="text-slate-600 text-lg max-w-2xl mx-auto leading-relaxed">
-            Conoce la historia individual de los siete miembros que cambiaron la industria musical global para siempre.
+      {/* Hero Section */}
+      <section className="relative h-[40vh] md:h-[60vh] overflow-hidden">
+        <img
+          src="https://wallpaperaccess.com/full/1209511.jpg"
+          alt="BTS Group"
+          className="w-full h-full object-cover object-top"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent" />
+        <div className="absolute inset-0 flex flex-col items-center justify-end pb-12 text-white p-6 text-center">
+          <h2 className="text-5xl md:text-8xl font-black mb-4 tracking-tighter drop-shadow-2xl uppercase">BTS</h2>
+          <p className="max-w-3xl text-lg md:text-2xl text-slate-200 font-medium leading-relaxed">
+            Los íconos globales que redefinieron la música y el amor propio, conectando a millones de personas en todo el mundo.
           </p>
         </div>
+      </section>
 
-        {/* Members Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      {/* Main Content */}
+      <main className="container py-16 px-4 max-w-6xl mx-auto">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {members.map((member) => (
             <Dialog key={member.id}>
               <DialogTrigger asChild>
@@ -196,7 +198,6 @@ export default function BtsBiographies() {
                       <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/90 via-black/40 to-transparent text-white">
                         <p className="text-[10px] font-bold uppercase tracking-widest opacity-80 mb-1">{member.position}</p>
                         <h4 className="text-2xl font-black tracking-tight">{member.stageName}</h4>
-                        <p className="text-white/80 text-sm font-medium">{member.realName}</p>
                       </div>
                       <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
                         <div className="bg-white/20 backdrop-blur-md p-2 rounded-xl">
@@ -207,7 +208,7 @@ export default function BtsBiographies() {
                   </Card>
                 </motion.div>
               </DialogTrigger>
-              
+
               <DialogContent className="max-w-4xl bg-white border-none shadow-2xl rounded-[2.5rem] p-0 overflow-hidden">
                 <div className="flex flex-col md:flex-row h-[90vh] md:h-[80vh]">
                   {/* Image Sidebar */}
@@ -273,12 +274,6 @@ export default function BtsBiographies() {
                                 <Award className="size-4 text-blue-500" /> Logros Destacados
                               </h4>
                               <p className="text-slate-600 leading-relaxed">{member.fullBio.achievements}</p>
-                            </div>
-                            <div className="space-y-3">
-                              <h4 className="flex items-center gap-2 font-black text-slate-900 uppercase tracking-widest text-xs">
-                                <Shield className="size-4 text-red-500" /> Servicio Militar
-                              </h4>
-                              <p className="text-slate-600 leading-relaxed">{member.fullBio.military}</p>
                             </div>
                           </TabsContent>
 
