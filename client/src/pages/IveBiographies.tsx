@@ -96,7 +96,7 @@ export default function IveBiographies() {
       birth: "21 de noviembre de 2004",
       origin: "Jeju, Corea del Sur",
       mbti: "INFP",
-      image: "https://cdn.kbizoom.com/media/2025/12/03021234/7et8pb8udm4pitz9t8qm1ykcdyjgdvvywoukvloses4-liz-ive-transformation-scaled.jpeg",
+      image: "https://i.redd.it/ive-liz-has-been-announced-as-the-new-face-of-korean-casual-v0-fhupqnjszppf1.jpg?width=1080&format=pjpg&auto=webp&s=98bd3a7b1840ebdde20d0d61b52c6f0a1d336f03",
       color: "bg-cyan-300",
       fullBio: {
         preDebut: "Conocida por su potente voz y sus adorables hoyuelos. Apareció en el MV 'This Christmas' de Taeyeon.",
