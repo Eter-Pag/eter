@@ -52,7 +52,7 @@ export default function Home() {
   const [diplomaName, setDiplomaName] = useState("");
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const diplomaImage = new Image();
-  diplomaImage.src = "/assets/certificadoARMYBTS.jpeg";
+  diplomaImage.src = "/assets/diploma.png";
 
   useEffect(() => {
     const canvas = canvasRef.current;
