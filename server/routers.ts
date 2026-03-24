@@ -35,12 +35,15 @@ import {
   markTicketsSold,
   getTicketStats,
   deleteOrder,
+  createStory,
+  getAllStories,
 } from "./db";
 import { RAFFLE_PRODUCT } from "./products";
 import { orders } from "../drizzle/schema";
 import { eq } from "drizzle-orm";
 
 import { sendWhatsAppConfirmation } from "./whatsapp";
+import { translate } from "@vitalets/google-translate-api";
 
 // Use TEST keys as requested
 const stripeSecretKey = process.env.STRIPE_SECRET_KEY || "";
@@ -337,5 +340,49 @@ export const appRouter = router({
       }),
    }),
   news: newsRouter,
+  stories: router({
+    list: publicProcedure.query(async () => {
+      return getAllStories();
+    }),
+    submit: publicProcedure
+      .input(z.object({
+        name: z.string().min(1),
+        content: z.string().min(10),
+      }))
+      .mutation(async ({ input }) => {
+        try {
+          // 1. Traducir al coreano
+          const translation = await translate(input.content, { to: "ko" });
+          const contentKo = translation.text;
+
+          // 2. Guardar en BD
+          const storyId = await createStory({
+            name: input.name,
+            content: input.content,
+            contentKo,
+          });
+
+          // 3. Sincronizar con Google Sheets
+          const payload = {
+            tipo: "historia",
+            nombre: input.name,
+            historia_es: input.content,
+            historia_ko: contentKo,
+            fecha: new Date().toISOString(),
+          };
+
+          await fetch(RAFFLE_CONFIG.googleSheetsApi, {
+            method: "POST",
+            body: JSON.stringify(payload),
+            headers: { "Content-Type": "application/json" },
+          }).catch(err => console.error("[Sheets] Error syncing story:", err));
+
+          return { success: true, storyId };
+        } catch (error) {
+          console.error("[Stories] Error submitting story:", error);
+          throw new Error("Error al enviar tu historia. Por favor, intenta de nuevo.");
+        }
+      }),
+  }),
 });
 export type AppRouter = typeof appRouter;

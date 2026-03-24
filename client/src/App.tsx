@@ -23,6 +23,7 @@ import TwiceBiographies from "./pages/TwiceBiographies";
 import NewJeansBiographies from "./pages/NewJeansBiographies";
 import IveBiographies from "./pages/IveBiographies";
 import TxtBiographies from "./pages/TxtBiographies";
+import Stories from "./pages/Stories";
 import PurchaseHistory from "./pages/PurchaseHistory";
 import News from "./pages/News";
 import Diploma from "./pages/Diploma";
@@ -60,6 +61,7 @@ function Router() {
       <Route path="/biografias/newjeans" component={NewJeansBiographies} />
       <Route path="/biografias/ive" component={IveBiographies} />
       <Route path="/biografias/txt" component={TxtBiographies} />
+      <Route path="/historias" component={Stories} />
       <Route path="/mi-historial" component={PurchaseHistory} />
       <Route path="/noticias" component={News} />
       <Route path="/diploma" component={Diploma} />
