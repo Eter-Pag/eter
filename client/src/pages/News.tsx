@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { LegalFooter } from "@/components/LegalFooter";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, Calendar, ExternalLink, Loader2, ChevronDown, ChevronUp, Maximize2, Globe } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 

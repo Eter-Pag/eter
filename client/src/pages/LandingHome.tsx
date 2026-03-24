@@ -318,7 +318,7 @@ export default function LandingHome() {
             <CardContent className="p-0">
               <div className="relative h-32 md:h-48 bg-gradient-to-br from-pink-400 to-purple-400 overflow-hidden">
                 <img 
-                  src="/HISTORIAS.png" 
+                  src="https://lh3.googleusercontent.com/d/1_Bc-X7xfBNUcvhwi5M9XsNvUaHJzkw3t" 
                   alt="Muro de Ilusiones" 
                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                 />
