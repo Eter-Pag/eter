@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { LegalFooter } from "@/components/LegalFooter";
+import { StoriesWall } from "@/components/StoriesWall";
 import { useLocation } from "wouter";
 import { useState, useRef, useEffect } from "react";
 import {
@@ -318,6 +319,8 @@ export default function LandingHome() {
       </section>
 
       {/* Legal Footer */}
+      <StoriesWall />
+
       <LegalFooter
         title={`© ${new Date().getFullYear()} ${RAFFLE_CONFIG.storeName}`}
         description={`${RAFFLE_CONFIG.storeName} es una tienda especializada en productos K-POP. Todos los derechos de autor y marcas registradas pertenecen a sus respectivos propietarios. Los contenidos mostrados en este sitio son solo con fines informativos y educativos.`}
