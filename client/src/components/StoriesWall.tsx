@@ -27,7 +27,34 @@ export function StoriesWall() {
     );
   }
 
-  if (recentStories.length === 0) return null;
+  // Si no hay historias, mostramos un mensaje invitando a crear la primera
+  if (recentStories.length === 0) {
+    return (
+      <section className="py-24 bg-gradient-to-b from-white to-slate-50 overflow-hidden">
+        <div className="container px-4">
+          <div className="text-center mb-16">
+            <div className="inline-flex items-center gap-2 bg-purple-100 text-purple-700 rounded-full px-4 py-1.5 mb-6 text-sm font-bold">
+              <Sparkles className="size-4" />
+              Muro de Ilusiones
+            </div>
+            <h2 className="text-4xl md:text-5xl font-black text-slate-900 mb-6 tracking-tight">
+              Sueños que cruzan fronteras
+            </h2>
+            <p className="text-slate-600 text-lg max-w-2xl mx-auto leading-relaxed mb-10">
+              Aún no hay historias en nuestro muro. ¡Sé la primera persona en enviar un mensaje a Corea!
+            </p>
+            <Button 
+              onClick={() => navigate("/historias")}
+              className="h-14 px-10 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold rounded-2xl shadow-xl transition-all hover:scale-105 active:scale-95 gap-3"
+            >
+              Escribir mi historia
+              <ArrowRight className="size-5" />
+            </Button>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="py-24 bg-gradient-to-b from-white to-slate-50 overflow-hidden">
