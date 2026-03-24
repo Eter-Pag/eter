@@ -260,24 +260,24 @@ export default function Admin() {
       if (editingRaffleId) {
         await updateRaffleMutation.mutateAsync({
           id: parseInt(editingRaffleId),
-          title: raffleFormData.title,
-          description: raffleFormData.description,
-          image: raffleFormData.image,
-          totalTickets: raffleFormData.totalTickets,
-          pricePerTicket: raffleFormData.pricePerTicket,
-          drawDate: raffleFormData.drawDate,
+          title: raffleFormData.title!,
+          description: raffleFormData.description!,
+          image: raffleFormData.image!,
+          totalTickets: raffleFormData.totalTickets!,
+          pricePerTicket: raffleFormData.pricePerTicket!,
+          drawDate: raffleFormData.drawDate!,
           webhookUrl: raffleFormData.webhookUrl,
           category: raffleFormData.category || "otro",
         });
         setEditingRaffleId(null);
       } else {
         await createRaffleMutation.mutateAsync({
-          title: raffleFormData.title,
-          description: raffleFormData.description,
-          image: raffleFormData.image,
-          totalTickets: raffleFormData.totalTickets,
-          pricePerTicket: raffleFormData.pricePerTicket,
-          drawDate: raffleFormData.drawDate,
+          title: raffleFormData.title!,
+          description: raffleFormData.description!,
+          image: raffleFormData.image!,
+          totalTickets: raffleFormData.totalTickets!,
+          pricePerTicket: raffleFormData.pricePerTicket!,
+          drawDate: raffleFormData.drawDate!,
           webhookUrl: raffleFormData.webhookUrl,
           category: raffleFormData.category || "otro",
           raffleNumber: nextRaffleNumber,

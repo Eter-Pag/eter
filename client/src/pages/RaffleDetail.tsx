@@ -30,7 +30,7 @@ export default function RaffleDetail() {
     { id: parseInt(params?.id || "0") },
     { enabled: !!params?.id }
   );
-  const createCheckoutMutation = trpc.raffles.createCheckout.useMutation();
+  const createCheckoutMutation = trpc.checkout.create.useMutation();
 
   useEffect(() => {
     if (dbRaffle) {
@@ -68,9 +68,10 @@ export default function RaffleDetail() {
     setIsLoading(true);
     try {
       const response = await createCheckoutMutation.mutateAsync({
-        raffleId: parseInt(raffle.id),
         ticketNumbers: selectedTickets.map(t => String(t).padStart(3, "0")),
-        totalAmount: Math.round(selectedTickets.length * raffle.pricePerTicket * 100),
+        buyerName: "Comprador Provisional",
+        buyerPhone: "5512345678",
+        buyerEmail: undefined,
       });
       
       if (response.checkoutUrl) {

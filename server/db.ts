@@ -217,7 +217,7 @@ export async function getOrderByStripeSession(sessionId: string) {
   return results[0] || null;
 }
 
-export async function updateOrderStatus(id: number, status: string, stripePaymentIntentId?: string) {
+export async function updateOrderStatus(id: number, status: "pending" | "paid" | "failed" | "expired", stripePaymentIntentId?: string) {
   const db = await getDb();
   if (!db) return;
   await db.update(orders)

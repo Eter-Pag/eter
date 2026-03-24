@@ -71,7 +71,7 @@ async function handleCheckoutCompleted(session: Stripe.Checkout.Session) {
   const ticketNumbers = JSON.parse(order.ticketNumbers) as string[];
 
   // 3. Marcar tickets como vendidos con TODA la información
-  await markTicketsSold(order.id, ticketNumbers, buyerName, buyerPhone, buyerEmail);
+  await markTicketsSold(order.id, ticketNumbers, buyerName, buyerPhone, buyerEmail ?? '');
 
   // 4. Sincronizar con Google Sheets
   try {

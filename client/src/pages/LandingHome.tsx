@@ -198,7 +198,7 @@ export default function LandingHome() {
             <CardContent className="p-0">
               <div className="relative h-32 md:h-48 bg-gradient-to-br from-blue-400 to-indigo-400 overflow-hidden">
                 <img
-                  src="https://lh3.googleusercontent.com/d/1X9S_8uX5_8uX5_8uX5_8uX5_8uX5_8u"
+                  src="https://drive.google.com/file/d/1fQafvzU9Nu8UqYdgKtBbWZNWuikiEm_A/view?usp=sharing"
                   alt="Tienda K-POP"
                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                 />
@@ -229,7 +229,7 @@ export default function LandingHome() {
             <CardContent className="p-0">
               <div className="relative h-32 md:h-48 bg-gradient-to-br from-amber-400 to-orange-400 overflow-hidden">
                 <img
-                  src="https://lh3.googleusercontent.com/d/1Y9S_8uX5_8uX5_8uX5_8uX5_8uX5_8u"
+                  src="https://drive.google.com/file/d/1SujXJKX9Ky9W_GJ7442kq_82NhcHq44y/view?usp=sharing"
                   alt="Galerias K-POP"
                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                 />
@@ -260,7 +260,7 @@ export default function LandingHome() {
             <CardContent className="p-0">
               <div className="relative h-32 md:h-48 bg-gradient-to-br from-rose-400 to-pink-400 overflow-hidden">
                 <img
-                  src="https://lh3.googleusercontent.com/d/1Z9S_8uX5_8uX5_8uX5_8uX5_8uX5_8u"
+                  src="https://drive.google.com/file/d/11cbj7QlmwFBh3EYMULBiho7wmvmKkm24/view?usp=sharing"
                   alt="Biografias K-POP"
                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                 />
@@ -291,7 +291,7 @@ export default function LandingHome() {
             <CardContent className="p-0">
               <div className="relative h-32 md:h-48 bg-gradient-to-br from-purple-400 to-violet-400 overflow-hidden">
                 <img
-                  src="https://lh3.googleusercontent.com/d/1a9S_8uX5_8uX5_8uX5_8uX5_8uX5_8u"
+                  src="https://drive.google.com/file/d/1t9kxrkUfE5Tmgspqw5sg8bjW4FVr5wxC/view?usp=sharing"
                   alt="Diplomas K-POP"
                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                 />
