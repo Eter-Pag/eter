@@ -246,7 +246,7 @@ export default function LandingHome() {
             <CardContent className="p-0">
               <div className="relative h-32 md:h-48 bg-gradient-to-br from-rose-400 to-pink-400 overflow-hidden">
                 <img
-                  src="/assets/imagengaleria.png"
+                  src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663470405189/BXfaoAKIojRjPgam.png"
                   alt="Galerias K-POP"
                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                 />
@@ -277,7 +277,7 @@ export default function LandingHome() {
             <CardContent className="p-0">
               <div className="relative h-32 md:h-48 bg-gradient-to-br from-purple-400 to-violet-400 overflow-hidden">
                 <img
-                  src="/assets/imagenbiografias.png"
+                  src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663470405189/nZHSklzIKsAgLUdi.png"
                   alt="Biografias K-POP"
                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                 />
