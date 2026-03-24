@@ -201,7 +201,7 @@ export default function StrayKidsBiographies() {
       {/* Hero Section */}
       <section className="relative h-[40vh] md:h-[60vh] overflow-hidden">
         <img
-          src="https://wallpaperaccess.com/full/1209511.jpg"
+          src="https://i.pinimg.com/originals/cf/f2/c8/cff2c874b3b35b3a599bafc5e3416240.jpg"
           alt="Stray Kids Group"
           className="w-full h-full object-cover object-top"
         />
