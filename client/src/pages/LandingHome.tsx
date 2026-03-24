@@ -20,6 +20,7 @@ import {
   Facebook,
   Award,
   MessageCircle,
+  Clock,
 } from "lucide-react";
 import { RAFFLE_CONFIG } from "@shared/raffle";
 import { motion } from "framer-motion";
