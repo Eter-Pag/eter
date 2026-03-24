@@ -28,7 +28,7 @@ export default function TwiceBiographies() {
       birthday: "22 de septiembre de 1995",
       birthplace: "Seúl, Corea del Sur",
       mbti: "ISTP",
-      image: "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?q=80&w=1000&auto=format&fit=crop",
+      image: "https://upload.wikimedia.org/wikipedia/commons/5/55/220701_Nayeon%28%EB%82%98%EC%97%B0%29_of_Twice_MusicBank_Fancam.jpg",
       color: "bg-sky-400",
       fullBio: {
         preDebut: "Nayeon se unió a JYP en 2010 tras una audición secreta. Antes de SIXTEEN, era parte del grupo planeado 6MIX. Es conocida por ser la 'cara' de TWICE y por su energía vibrante que define el sonido del grupo.",
@@ -45,7 +45,7 @@ export default function TwiceBiographies() {
       birthday: "1 de noviembre de 1996",
       birthplace: "Suwon, Corea del Sur",
       mbti: "ISFJ",
-      image: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=800&q=80",
+      image: "https://cdn.shopify.com/s/files/1/0469/3927/5428/files/TWICE-Taste-of-Love-10th-Mini-Album-teasers-documents-3.jpg?v=1738749912",
       color: "bg-lime-400",
       fullBio: {
         preDebut: "Jeongyeon audicionó para JYP y SM el mismo día, siendo aceptada en ambas pero eligiendo JYP. Es conocida por su voz estable y su imagen carismática.",
@@ -62,7 +62,7 @@ export default function TwiceBiographies() {
       birthday: "9 de noviembre de 1996",
       birthplace: "Kyotanabe, Kioto, Japón",
       mbti: "INFP",
-      image: "https://images.unsplash.com/photo-1517841905240-472988babdf9?q=80&w=1000&auto=format&fit=crop",
+      image: "https://voguesg.s3.ap-southeast-1.amazonaws.com/wp-content/uploads/2024/06/20163946/momobeauty-3.jpg",
       color: "bg-pink-400",
       fullBio: {
         preDebut: "Momo fue reclutada por JYP tras ver un video de ella bailando con su hermana. Fue eliminada en SIXTEEN pero J.Y. Park la trajo de vuelta por su increíble habilidad de baile.",
@@ -79,7 +79,7 @@ export default function TwiceBiographies() {
       birthday: "29 de diciembre de 1996",
       birthplace: "Tennoji-ku, Osaka, Japón",
       mbti: "ENFP",
-      image: "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?q=80&w=1000&auto=format&fit=crop",
+      image: "https://cdn.shopify.com/s/files/1/0469/3927/5428/files/250119-SANA-at-Milan-Fashion-Week-for-Prada-FW25-documents-1.jpg?v=1738584857",
       color: "bg-purple-400",
       fullBio: {
         preDebut: "Sana fue reclutada mientras estaba de compras con sus amigas en Japón. Se mudó a Corea en 2012. Se hizo viral por su icónica línea 'Shy Shy Shy' en 'Cheer Up'.",
@@ -96,7 +96,7 @@ export default function TwiceBiographies() {
       birthday: "1 de febrero de 1997",
       birthplace: "Guri, Gyeonggi, Corea del Sur",
       mbti: "ESFP",
-      image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=1000&auto=format&fit=crop",
+      image: "https://i.pinimg.com/736x/5b/22/72/5b2272f2be079b99c4533a8fd408a308.jpg",
       color: "bg-amber-400",
       fullBio: {
         preDebut: "Jihyo entrenó durante 10 años en JYP antes de debutar. Vio debutar a grupos como Wonder Girls y 2PM mientras ella seguía siendo aprendiz.",
@@ -113,7 +113,7 @@ export default function TwiceBiographies() {
       birthday: "24 de marzo de 1997",
       birthplace: "San Antonio, Texas, EE.UU. (Criada en Kobe, Japón)",
       mbti: "ISFP",
-      image: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=800&q=80",
+      image: "https://i.redd.it/240419-harpers-bazaar-japan-site-update-twices-mina-and-v0-3jfsz3du9dvc1.jpg?width=980&format=pjpg&auto=webp&s=581058545e7508a4f49fb767a2a52a4dd98c464d",
       color: "bg-teal-400",
       fullBio: {
         preDebut: "Mina estudió ballet durante 11 años antes de unirse a JYP. Fue reclutada mientras compraba con su madre en Osaka. Tuvo el periodo de entrenamiento más corto de TWICE.",
@@ -130,7 +130,7 @@ export default function TwiceBiographies() {
       birthday: "28 de mayo de 1998",
       birthplace: "Seongnam, Corea del Sur",
       mbti: "ISFJ",
-      image: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=800&q=80",
+      image: "https://i.pinimg.com/736x/1b/0e/73/1b0e73c1305027599a18f2eb3f904620.jpg",
       color: "bg-white",
       fullBio: {
         preDebut: "Dahyun se hizo viral antes de debutar por su 'baile del águila' en la iglesia. Es conocida por su piel extremadamente blanca y su habilidad para encontrar cámaras.",
@@ -147,7 +147,7 @@ export default function TwiceBiographies() {
       birthday: "23 de abril de 1999",
       birthplace: "Seúl, Corea del Sur",
       mbti: "INFP",
-      image: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=800&q=80",
+      image: "https://dam.mediacorp.sg/image/upload/s--NQIR5N4y--/c_crop,h_607,w_1080,x_0,y_285/c_fill,g_auto,h_676,w_1200/f_auto,q_auto/v1/mediacorp/cna/image/2025/06/12/twice_chaeyoung_solo_1.jpg?itok=7pSNfdx7",
       color: "bg-red-500",
       fullBio: {
         preDebut: "Chaeyoung se unió a JYP en 2012. Es una artista completa que escribe sus propios raps y diseña arte para los álbumes del grupo.",
@@ -164,7 +164,7 @@ export default function TwiceBiographies() {
       birthday: "14 de junio de 1999",
       birthplace: "Tainan, Taiwán",
       mbti: "ISFP",
-      image: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=800&q=80",
+      image: "https://i.redd.it/250109-tzuyu-instagram-update-2024-2025-2-5-25-years-old-26-v0-r8d7e0c2tube1.jpg?width=1440&format=pjpg&auto=webp&s=420f0dca47af5ca3b6e25e7250d0ea0923431956",
       color: "bg-blue-600",
       fullBio: {
         preDebut: "Tzuyu fue descubierta en un taller de danza en Taiwán y se mudó a Corea en 2012. Fue añadida a TWICE por votación del público debido a su inmensa popularidad.",
