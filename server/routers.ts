@@ -338,6 +338,66 @@ export const appRouter = router({
       }),
    }),
   news: newsRouter,
+  galleries: router({
+    list: publicProcedure
+      .input(z.object({ group: z.string() }))
+      .query(async ({ input }) => {
+        try {
+          const SHEETS_API = "https://script.google.com/macros/s/AKfycbzOJeE4kmAOr2kxGkKrdQgLsvZBNq-GgQLGEHNbrbfBlPIypoh0cDh7xso66Kc1PDru/exec";
+          const response = await fetch(`${SHEETS_API}?action=getGallery&group=${input.group}`);
+          if (!response.ok) return [];
+          const data = await response.json();
+          return data.photos || [];
+        } catch (error) {
+          console.error(`[Galleries] Error fetching ${input.group} from Sheets:`, error);
+          return [];
+        }
+      }),
+    add: protectedProcedure
+      .input(z.object({ group: z.string(), url: z.string().url() }))
+      .mutation(async ({ input }) => {
+        try {
+          const SHEETS_API = "https://script.google.com/macros/s/AKfycbzOJeE4kmAOr2kxGkKrdQgLsvZBNq-GgQLGEHNbrbfBlPIypoh0cDh7xso66Kc1PDru/exec";
+          const payload = {
+            action: "addPhoto",
+            group: input.group,
+            url: input.url,
+          };
+          const response = await fetch(SHEETS_API, {
+            method: "POST",
+            mode: "no-cors",
+            body: JSON.stringify(payload),
+            headers: { "Content-Type": "application/json" },
+          });
+          return { success: true };
+        } catch (error) {
+          console.error("[Galleries] Error adding photo:", error);
+          throw new Error("Error al añadir la foto a Google Sheets.");
+        }
+      }),
+    delete: protectedProcedure
+      .input(z.object({ group: z.string(), id: z.number() }))
+      .mutation(async ({ input }) => {
+        try {
+          const SHEETS_API = "https://script.google.com/macros/s/AKfycbzOJeE4kmAOr2kxGkKrdQgLsvZBNq-GgQLGEHNbrbfBlPIypoh0cDh7xso66Kc1PDru/exec";
+          const payload = {
+            action: "deletePhoto",
+            group: input.group,
+            id: input.id,
+          };
+          const response = await fetch(SHEETS_API, {
+            method: "POST",
+            mode: "no-cors",
+            body: JSON.stringify(payload),
+            headers: { "Content-Type": "application/json" },
+          });
+          return { success: true };
+        } catch (error) {
+          console.error("[Galleries] Error deleting photo:", error);
+          throw new Error("Error al eliminar la foto de Google Sheets.");
+        }
+      }),
+  }),
   stories: router({
     list: publicProcedure.query(async () => {
       try {

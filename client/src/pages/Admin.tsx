@@ -10,7 +10,7 @@ import {
   Users, TrendingUp, AlertTriangle, Search, RefreshCw, ShieldCheck,
   Clock, DollarSign, Package, MoreVertical, ArrowUpRight, ArrowDownRight,
   CheckCircle2, XCircle, User, Phone, Mail, ChevronRight, Download, Filter,
-  AlertCircle, Newspaper, Zap, ExternalLink, Wrench, MessageCircle
+  AlertCircle, Newspaper, Zap, ExternalLink, Wrench, MessageCircle, Images, Link as LinkIcon
 } from "lucide-react";
 import { raffleThemes, type RaffleCategory } from "@shared/raffleThemes";
 import { trpc } from "@/lib/trpc";
@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface Product {
   id: string;
@@ -156,26 +157,64 @@ export default function Admin() {
   });
 
   // News state
-	  const { data: allNews, refetch: refetchNews } = trpc.news.adminGetAll.useQuery();
-	  const deleteNewsMutation = trpc.news.delete.useMutation();
-	  const runAutomationMutation = trpc.news.runAutomation.useMutation();
-	  const [isRunningAutomation, setIsRunningAutomation] = useState(false);
-	
-	  // Stories state
-	  const { data: allStories, refetch: refetchStories } = trpc.stories.list.useQuery();
-	  const deleteStoryMutation = trpc.stories.delete.useMutation();
-	
-	  const handleDeleteStory = async (id: number) => {
-	    if (confirm("¿Estás seguro de que deseas eliminar esta historia?")) {
-	      try {
-	        await deleteStoryMutation.mutateAsync({ id });
-	        alert("Historia eliminada correctamente (puede tardar unos segundos en reflejarse en Google Sheets)");
-	        await refetchStories();
-	      } catch (error) {
-	        alert("Error al eliminar la historia");
-	      }
-	    }
-	  };
+  const { data: allNews, refetch: refetchNews } = trpc.news.adminGetAll.useQuery();
+  const deleteNewsMutation = trpc.news.delete.useMutation();
+  const runAutomationMutation = trpc.news.runAutomation.useMutation();
+  const [isRunningAutomation, setIsRunningAutomation] = useState(false);
+
+  // Stories state
+  const { data: allStories, refetch: refetchStories } = trpc.stories.list.useQuery();
+  const deleteStoryMutation = trpc.stories.delete.useMutation();
+
+  // Galleries state
+  const [selectedGalleryGroup, setSelectedGalleryGroup] = useState("bts");
+  const { data: galleryPhotos, refetch: refetchGallery, isLoading: isLoadingGallery } = trpc.galleries.list.useQuery({ group: selectedGalleryGroup });
+  const addPhotoMutation = trpc.galleries.add.useMutation();
+  const deletePhotoMutation = trpc.galleries.delete.useMutation();
+  const [newPhotoUrl, setNewPhotoUrl] = useState("");
+  const [isAddingPhoto, setIsAddingPhoto] = useState(false);
+
+  const handleAddPhoto = async () => {
+    if (!newPhotoUrl || !newPhotoUrl.startsWith("http")) {
+      alert("Ingresa una URL válida");
+      return;
+    }
+    setIsAddingPhoto(true);
+    try {
+      await addPhotoMutation.mutateAsync({ group: selectedGalleryGroup, url: newPhotoUrl });
+      setNewPhotoUrl("");
+      await refetchGallery();
+      alert("Imagen añadida correctamente");
+    } catch (error) {
+      alert("Error al añadir la imagen");
+    } finally {
+      setIsAddingPhoto(false);
+    }
+  };
+
+  const handleDeletePhoto = async (id: number) => {
+    if (confirm("¿Estás seguro de que deseas eliminar esta imagen?")) {
+      try {
+        await deletePhotoMutation.mutateAsync({ group: selectedGalleryGroup, id });
+        await refetchGallery();
+        alert("Imagen eliminada correctamente");
+      } catch (error) {
+        alert("Error al eliminar la imagen");
+      }
+    }
+  };
+
+  const handleDeleteStory = async (id: number) => {
+    if (confirm("¿Estás seguro de que deseas eliminar esta historia?")) {
+      try {
+        await deleteStoryMutation.mutateAsync({ id });
+        alert("Historia eliminada correctamente (puede tardar unos segundos en reflejarse en Google Sheets)");
+        await refetchStories();
+      } catch (error) {
+        alert("Error al eliminar la historia");
+      }
+    }
+  };
 
   const handleDeleteNews = async (id: number) => {
     if (confirm("¿Estás seguro de que deseas eliminar esta noticia?")) {
@@ -300,15 +339,14 @@ export default function Admin() {
         });
       }
       await refetchRaffles();
-      await refetchTicketStats();
-      await refetchAllTickets();
+      setRaffleFormData({ title: "", description: "", image: "", totalTickets: 1000, pricePerTicket: undefined, drawDate: new Date().toISOString().slice(0, 16), webhookUrl: "", category: "otro" });
     } catch (error) {
       alert("Error al guardar la rifa");
     }
   };
 
   const handleDeleteRaffle = async (id: string) => {
-    if (confirm("¿Eliminar esta rifa? Esto NO borrará los boletos actuales.")) {
+    if (confirm("¿Eliminar esta rifa?")) {
       await deleteRaffleMutation.mutateAsync({ id: parseInt(id) });
       await refetchRaffles();
     }
@@ -319,21 +357,20 @@ export default function Admin() {
       alert("Llena los campos obligatorios");
       return;
     }
-    const tickets = manualOrderData.ticketNumbers.split(",").map(t => t.trim());
+    const ticketNumbers = manualOrderData.ticketNumbers.split(",").map(n => n.trim());
     try {
       await createManualOrderMutation.mutateAsync({
         buyerName: manualOrderData.buyerName,
         buyerPhone: manualOrderData.buyerPhone,
         buyerEmail: manualOrderData.buyerEmail || null,
-        ticketNumbers: tickets,
+        ticketNumbers,
       });
-      alert("Orden manual creada con éxito");
+      alert("Venta manual registrada con éxito");
       setManualOrderData({ buyerName: "", buyerPhone: "", buyerEmail: "", ticketNumbers: "" });
       await refetchAllOrders();
-      await refetchAllTickets();
       await refetchTicketStats();
     } catch (error: any) {
-      alert(error.message || "Error al crear orden manual");
+      alert(error.message || "Error al registrar la venta manual");
     }
   };
 
@@ -341,34 +378,31 @@ export default function Admin() {
     if (confirm("¿Eliminar esta orden? Los boletos volverán a estar disponibles.")) {
       await deleteOrderMutation.mutateAsync({ id });
       await refetchAllOrders();
-      await refetchAllTickets();
       await refetchTicketStats();
     }
   };
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
-        <Card className="w-full max-w-md border-slate-200 shadow-xl">
-          <CardContent className="p-8 space-y-6">
-            <div className="text-center space-y-2">
-              <div className="bg-purple-100 size-16 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                <ShieldCheck className="size-8 text-purple-600" />
-              </div>
-              <h1 className="text-2xl font-bold text-slate-900">Panel de Control</h1>
-              <p className="text-slate-500 text-sm">Ingresa la contraseña maestra para continuar</p>
+      <div className="min-h-screen flex items-center justify-center bg-slate-50 p-4">
+        <Card className="w-full max-w-md border-none shadow-2xl rounded-[2.5rem] overflow-hidden">
+          <CardContent className="p-8 md:p-12">
+            <div className="bg-purple-100 size-16 rounded-3xl flex items-center justify-center mb-8 mx-auto">
+              <ShieldCheck className="size-8 text-purple-600" />
             </div>
+            <h1 className="text-2xl font-black text-center text-slate-900 uppercase tracking-tight mb-2">Panel de Control</h1>
+            <p className="text-sm text-slate-400 text-center mb-8 font-medium">Ingresa la contraseña maestra para continuar</p>
             <div className="space-y-4">
-              <Input
-                type="password"
-                placeholder="Contraseña"
-                value={password}
+              <Input 
+                type="password" 
+                placeholder="Contraseña" 
+                value={password} 
                 onChange={(e) => setPassword(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && handleLogin()}
-                className="h-12 text-center text-lg tracking-widest"
+                onKeyDown={(e) => e.key === 'Enter' && handleLogin()}
+                className="h-14 rounded-2xl border-slate-200 focus:ring-purple-500 text-center text-lg font-bold tracking-widest"
               />
-              <Button onClick={handleLogin} className="w-full h-12 bg-purple-600 hover:bg-purple-700 text-lg font-bold">
-                Acceder al Panel
+              <Button onClick={handleLogin} className="w-full h-14 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-bold uppercase tracking-widest transition-all">
+                Acceder al Sistema
               </Button>
             </div>
           </CardContent>
@@ -378,25 +412,22 @@ export default function Admin() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col lg:flex-row">
+    <div className="min-h-screen bg-slate-50 flex flex-col md:flex-row">
       {/* Sidebar */}
-      <aside className="w-full lg:w-64 bg-white border-r border-slate-200 p-6 flex flex-col gap-2">
-        <div className="flex items-center gap-3 mb-8 px-2">
-          <div className="bg-purple-600 p-2 rounded-lg">
-            <LayoutDashboard className="size-5 text-white" />
+      <aside className="w-full md:w-64 bg-white border-r border-slate-100 p-6 flex flex-col">
+        <div className="flex items-center gap-3 mb-10">
+          <div className="bg-purple-600 size-10 rounded-xl flex items-center justify-center shadow-lg shadow-purple-200">
+            <ShieldCheck className="size-6 text-white" />
           </div>
-          <span className="font-bold text-slate-900">ETER Admin</span>
+          <span className="font-black text-xl tracking-tighter text-slate-900">ADMIN</span>
         </div>
-        
-        <nav className="space-y-1">
+
+        <nav className="space-y-1 flex-1">
           <button onClick={() => setActiveTab("dashboard")} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors ${activeTab === "dashboard" ? "bg-purple-50 text-purple-700" : "text-slate-500 hover:bg-slate-50"}`}>
             <LayoutDashboard className="size-4" /> Dashboard
           </button>
           <button onClick={() => setActiveTab("raffles")} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors ${activeTab === "raffles" ? "bg-purple-50 text-purple-700" : "text-slate-500 hover:bg-slate-50"}`}>
             <Ticket className="size-4" /> Rifas
-          </button>
-          <button onClick={() => setActiveTab("tickets")} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors ${activeTab === "tickets" ? "bg-purple-50 text-purple-700" : "text-slate-500 hover:bg-slate-50"}`}>
-            <ClipboardList className="size-4" /> Boletos
           </button>
           <button onClick={() => setActiveTab("orders")} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors ${activeTab === "orders" ? "bg-purple-50 text-purple-700" : "text-slate-500 hover:bg-slate-50"}`}>
             <ShoppingBag className="size-4" /> Órdenes
@@ -404,13 +435,16 @@ export default function Admin() {
           <button onClick={() => setActiveTab("products")} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors ${activeTab === "products" ? "bg-purple-50 text-purple-700" : "text-slate-500 hover:bg-slate-50"}`}>
             <Package className="size-4" /> Productos
           </button>
-	          <button onClick={() => setActiveTab("news")} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors ${activeTab === "news" ? "bg-purple-50 text-purple-700" : "text-slate-500 hover:bg-slate-50"}`}>
-	            <Newspaper className="size-4" /> Noticias
-	          </button>
-	          <button onClick={() => setActiveTab("stories")} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors ${activeTab === "stories" ? "bg-purple-50 text-purple-700" : "text-slate-500 hover:bg-slate-50"}`}>
-	            <MessageCircle className="size-4" /> Historias
-	          </button>
-	        </nav>
+          <button onClick={() => setActiveTab("news")} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors ${activeTab === "news" ? "bg-purple-50 text-purple-700" : "text-slate-500 hover:bg-slate-50"}`}>
+            <Newspaper className="size-4" /> Noticias
+          </button>
+          <button onClick={() => setActiveTab("stories")} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors ${activeTab === "stories" ? "bg-purple-50 text-purple-700" : "text-slate-500 hover:bg-slate-50"}`}>
+            <MessageCircle className="size-4" /> Historias
+          </button>
+          <button onClick={() => setActiveTab("galleries")} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors ${activeTab === "galleries" ? "bg-purple-50 text-purple-700" : "text-slate-500 hover:bg-slate-50"}`}>
+            <Images className="size-4" /> Galerías
+          </button>
+        </nav>
 
         <div className="mt-auto pt-6 border-t border-slate-100">
           <Button variant="ghost" onClick={() => navigate("/")} className="w-full justify-start gap-3 text-slate-500 hover:text-red-600 hover:bg-red-50">
@@ -539,67 +573,195 @@ export default function Admin() {
           </div>
         )}
 
-	        {/* Stories Tab */}
-	        {activeTab === "stories" && (
-	          <div className="space-y-6">
-	            <div className="flex justify-between items-center">
-	              <h2 className="font-bold text-lg">Gestión de Historias ({allStories?.length || 0})</h2>
-	              <Button variant="outline" size="sm" onClick={() => refetchStories()} className="gap-2">
-	                <RefreshCw className="size-4" /> Actualizar
-	              </Button>
-	            </div>
-	            
-	            <Card className="bg-white border-slate-200 shadow-sm overflow-hidden">
-	              <Table>
-	                <TableHeader>
-	                  <TableRow className="bg-slate-50/50">
-	                    <TableHead className="w-[150px]">Nombre</TableHead>
-	                    <TableHead>Historia (ES)</TableHead>
-	                    <TableHead>Historia (KO)</TableHead>
-	                    <TableHead className="w-[120px]">Fecha</TableHead>
-	                    <TableHead className="w-[100px] text-right">Acciones</TableHead>
-	                  </TableRow>
-	                </TableHeader>
-	                <TableBody>
-	                  {allStories?.map((story: any, index: number) => (
-	                    <TableRow key={index} className="hover:bg-slate-50/50 transition-colors">
-	                      <TableCell className="font-medium text-slate-900">{story.nombre}</TableCell>
-	                      <TableCell className="max-w-xs truncate text-slate-600" title={story.historia_es}>
-	                        {story.historia_es}
-	                      </TableCell>
-	                      <TableCell className="max-w-xs truncate text-slate-400 italic" title={story.historia_ko}>
-	                        {story.historia_ko}
-	                      </TableCell>
-	                      <TableCell className="text-slate-500 text-xs">
-	                        {story.fecha ? new Date(story.fecha).toLocaleDateString() : "N/A"}
-	                      </TableCell>
-	                      <TableCell className="text-right">
-	                        <Button 
-	                          size="sm" 
-	                          variant="ghost" 
-	                          onClick={() => handleDeleteStory(index + 2)} // index + 2 porque la fila 1 es el encabezado en Sheets
-	                          className="h-8 w-8 p-0 text-red-500 hover:text-red-700 hover:bg-red-50"
-	                        >
-	                          <Trash2 className="size-4" />
-	                        </Button>
-	                      </TableCell>
-	                    </TableRow>
-	                  ))}
-	                  {(!allStories || allStories.length === 0) && (
-	                    <TableRow>
-	                      <TableCell colSpan={5} className="h-32 text-center text-slate-400">
-	                        No hay historias registradas en Google Sheets.
-	                      </TableCell>
-	                    </TableRow>
-	                  )}
-	                </TableBody>
-	              </Table>
-	            </Card>
-	          </div>
-	        )}
-	
-	        {/* News Tab */}
-	        {activeTab === "news" && (
+        {/* Stories Tab */}
+        {activeTab === "stories" && (
+          <div className="space-y-6">
+            <div className="flex justify-between items-center">
+              <h2 className="font-bold text-lg">Gestión de Historias ({allStories?.length || 0})</h2>
+              <Button variant="outline" size="sm" onClick={() => refetchStories()} className="gap-2">
+                <RefreshCw className="size-4" /> Actualizar
+              </Button>
+            </div>
+            
+            <Card className="bg-white border-slate-200 shadow-sm overflow-hidden">
+              <Table>
+                <TableHeader>
+                  <TableRow className="bg-slate-50/50">
+                    <TableHead className="w-[150px]">Nombre</TableHead>
+                    <TableHead>Historia (ES)</TableHead>
+                    <TableHead>Historia (KO)</TableHead>
+                    <TableHead className="w-[120px]">Fecha</TableHead>
+                    <TableHead className="w-[100px] text-right">Acciones</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {allStories?.map((story: any, index: number) => (
+                    <TableRow key={index} className="hover:bg-slate-50/50 transition-colors">
+                      <TableCell className="font-medium text-slate-900">{story.nombre}</TableCell>
+                      <TableCell className="max-w-xs truncate text-slate-600" title={story.historia_es}>
+                        {story.historia_es}
+                      </TableCell>
+                      <TableCell className="max-w-xs truncate text-slate-400 italic" title={story.historia_ko}>
+                        {story.historia_ko}
+                      </TableCell>
+                      <TableCell className="text-slate-500 text-xs">
+                        {story.fecha ? new Date(story.fecha).toLocaleDateString() : "N/A"}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <Button 
+                          size="sm" 
+                          variant="ghost" 
+                          onClick={() => handleDeleteStory(index + 2)} // index + 2 porque la fila 1 es el encabezado en Sheets
+                          className="h-8 w-8 p-0 text-red-500 hover:text-red-700 hover:bg-red-50"
+                        >
+                          <Trash2 className="size-4" />
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                  {(!allStories || allStories.length === 0) && (
+                    <TableRow>
+                      <TableCell colSpan={5} className="h-32 text-center text-slate-400">
+                        No hay historias registradas en Google Sheets.
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </TableBody>
+              </Table>
+            </Card>
+          </div>
+        )}
+
+        {/* Galleries Tab */}
+        {activeTab === "galleries" && (
+          <div className="space-y-8">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              {/* Add Photo Form */}
+              <Card className="lg:col-span-1 bg-white border-slate-200 shadow-sm h-fit">
+                <CardContent className="p-6 space-y-6">
+                  <h2 className="font-bold text-lg flex items-center gap-2">
+                    <Plus className="size-5 text-purple-600" /> Añadir a Galería
+                  </h2>
+                  
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">Grupo K-Pop</label>
+                      <div className="grid grid-cols-2 gap-2">
+                        {["bts", "blackpink", "straykids", "twice", "newjeans", "ive"].map((group) => (
+                          <Button 
+                            key={group}
+                            variant={selectedGalleryGroup === group ? "default" : "outline"}
+                            size="sm"
+                            onClick={() => setSelectedGalleryGroup(group)}
+                            className={`capitalize text-xs h-9 ${selectedGalleryGroup === group ? "bg-purple-600" : "border-slate-200"}`}
+                          >
+                            {group}
+                          </Button>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="text-xs font-bold text-slate-400 uppercase tracking-widest">URL de la Imagen</label>
+                      <div className="relative">
+                        <Input 
+                          placeholder="https://ejemplo.com/foto.jpg" 
+                          value={newPhotoUrl}
+                          onChange={(e) => setNewPhotoUrl(e.target.value)}
+                          className="h-12 rounded-xl border-slate-200 pr-10"
+                        />
+                        <LinkIcon className="absolute right-3 top-1/2 -translate-y-1/2 size-4 text-slate-300" />
+                      </div>
+                    </div>
+
+                    <Button 
+                      onClick={handleAddPhoto} 
+                      disabled={isAddingPhoto || !newPhotoUrl}
+                      className="w-full h-12 rounded-xl bg-purple-600 hover:bg-purple-700 gap-2 shadow-lg shadow-purple-100"
+                    >
+                      {isAddingPhoto ? <RefreshCw className="size-4 animate-spin" /> : <Plus className="size-4" />}
+                      Añadir a {selectedGalleryGroup.toUpperCase()}
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Photos List */}
+              <div className="lg:col-span-2 space-y-6">
+                <div className="flex justify-between items-center">
+                  <h2 className="font-bold text-lg flex items-center gap-2">
+                    <Images className="size-5 text-slate-400" /> 
+                    Fotos en {selectedGalleryGroup.toUpperCase()} ({galleryPhotos?.length || 0})
+                  </h2>
+                  <Button variant="outline" size="sm" onClick={() => refetchGallery()} className="gap-2 border-slate-200">
+                    <RefreshCw className={`size-4 ${isLoadingGallery ? "animate-spin" : ""}`} /> Actualizar
+                  </Button>
+                </div>
+
+                <Card className="bg-white border-slate-200 shadow-sm overflow-hidden">
+                  <div className="max-h-[600px] overflow-y-auto">
+                    <Table>
+                      <TableHeader>
+                        <TableRow className="bg-slate-50/50 sticky top-0 z-10">
+                          <TableHead className="w-[80px]">Preview</TableHead>
+                          <TableHead>URL de la Imagen</TableHead>
+                          <TableHead className="w-[80px] text-right">Acción</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        <AnimatePresence mode="popLayout">
+                          {galleryPhotos?.map((photo: any, index: number) => (
+                            <motion.tr 
+                              key={index}
+                              initial={{ opacity: 0 }}
+                              animate={{ opacity: 1 }}
+                              exit={{ opacity: 0 }}
+                              className="hover:bg-slate-50/50 transition-colors"
+                            >
+                              <TableCell>
+                                <div className="size-12 rounded-lg overflow-hidden border border-slate-100 bg-slate-50">
+                                  <img src={photo.url} className="w-full h-full object-cover" alt="Preview" />
+                                </div>
+                              </TableCell>
+                              <TableCell className="max-w-md">
+                                <p className="text-xs text-slate-500 truncate font-mono" title={photo.url}>
+                                  {photo.url}
+                                </p>
+                              </TableCell>
+                              <TableCell className="text-right">
+                                <Button 
+                                  size="sm" 
+                                  variant="ghost" 
+                                  onClick={() => handleDeletePhoto(index + 2)}
+                                  className="h-8 w-8 p-0 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-full"
+                                >
+                                  <Trash2 className="size-4" />
+                                </Button>
+                              </TableCell>
+                            </motion.tr>
+                          ))}
+                        </AnimatePresence>
+                        {(!galleryPhotos || galleryPhotos.length === 0) && !isLoadingGallery && (
+                          <TableRow>
+                            <TableCell colSpan={3} className="h-40 text-center">
+                              <div className="flex flex-col items-center justify-center text-slate-400 gap-2">
+                                <Images className="size-8 opacity-20" />
+                                <p className="text-sm font-medium">No hay imágenes en esta galería.</p>
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        )}
+                      </TableBody>
+                    </Table>
+                  </div>
+                </Card>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* News Tab */}
+        {activeTab === "news" && (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div className="lg:col-span-1 space-y-6">
               <Card className="bg-white border-slate-200 shadow-sm">
@@ -686,123 +848,11 @@ export default function Admin() {
                 ))}
                 {(!allNews || allNews.length === 0) && (
                   <div className="text-center py-12 bg-slate-50 rounded-2xl border-2 border-dashed border-slate-200">
-                    <Newspaper className="size-12 text-slate-300 mx-auto mb-3" />
-                    <p className="text-slate-500 font-medium">No hay noticias registradas</p>
-                    <p className="text-xs text-slate-400 mt-1">Ejecuta la automatización para obtener noticias</p>
+                    <p className="text-slate-400 text-sm italic">No hay noticias publicadas</p>
                   </div>
                 )}
               </div>
             </div>
-          </div>
-        )}
-
-        {/* Raffles Tab */}
-        {activeTab === "raffles" && (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <Card className="lg:col-span-1 bg-white border-slate-200 shadow-sm">
-              <CardContent className="p-6 space-y-4">
-                <h2 className="font-bold text-lg flex items-center gap-2">
-                  <Plus className="size-5 text-purple-600" /> {editingRaffleId ? "Editar Rifa" : "Nueva Rifa"}
-                </h2>
-                <div className="space-y-3">
-                  <label className="text-xs font-bold text-slate-500 uppercase">Información Básica</label>
-                  <Input placeholder="Título de la Rifa" value={raffleFormData.title || ""} onChange={(e) => setRaffleFormData({...raffleFormData, title: e.target.value})} />
-                  <Input placeholder="Descripción" value={raffleFormData.description || ""} onChange={(e) => setRaffleFormData({...raffleFormData, description: e.target.value})} />
-                  <Input placeholder="URL Imagen" value={raffleFormData.image || ""} onChange={(e) => setRaffleFormData({...raffleFormData, image: e.target.value})} />
-                </div>
-                <div className="space-y-3">
-                  <label className="text-xs font-bold text-slate-500 uppercase">Configuración</label>
-                  <div className="grid grid-cols-2 gap-3">
-                    <Input placeholder="Boletos" type="number" value={raffleFormData.totalTickets || 1000} onChange={(e) => setRaffleFormData({...raffleFormData, totalTickets: parseInt(e.target.value)})} />
-                    <Input placeholder="Precio $" type="number" step="0.01" value={raffleFormData.pricePerTicket ?? ""} onChange={(e) => setRaffleFormData({...raffleFormData, pricePerTicket: e.target.value === "" ? undefined : parseFloat(e.target.value)})} />
-                  </div>
-                  <Input type="datetime-local" value={raffleFormData.drawDate || ""} onChange={(e) => setRaffleFormData({...raffleFormData, drawDate: e.target.value})} />
-                  <select value={raffleFormData.category || "otro"} onChange={(e) => setRaffleFormData({...raffleFormData, category: e.target.value as RaffleCategory})} className="w-full px-3 py-2 border border-slate-200 rounded-lg bg-white text-sm">
-                    <option value="dinero">💰 Dinero</option>
-                    <option value="electronica">📱 Electrónica</option>
-                    <option value="herramientas">🔧 Herramientas</option>
-                    <option value="kpop">🎤 K-POP</option>
-                    <option value="moda">👗 Moda</option>
-                    <option value="otro">🎁 Otro</option>
-                  </select>
-                </div>
-                <Button onClick={handleAddRaffle} className="w-full bg-purple-600 hover:bg-purple-700 h-11">
-                  {editingRaffleId ? "Actualizar Rifa" : "Crear Nueva Rifa"}
-                </Button>
-              </CardContent>
-            </Card>
-
-            <div className="lg:col-span-2 space-y-4">
-              <h2 className="font-bold text-lg">Rifas Registradas ({raffles.length})</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {raffles.map((raffle) => (
-                  <Card key={raffle.id} className="bg-white border-slate-200 overflow-hidden hover:shadow-md transition-all">
-                    <img src={raffle.image} className="h-32 w-full object-cover" />
-                    <CardContent className="p-4">
-                      <h3 className="font-bold text-slate-900 line-clamp-1">{raffle.title}</h3>
-                      <p className="text-xs text-slate-500 mt-1">${raffle.pricePerTicket} MXN • {raffle.totalTickets} boletos</p>
-                      <div className="flex gap-2 mt-4">
-                        <Button size="sm" variant="outline" onClick={() => {setRaffleFormData(raffle); setEditingRaffleId(raffle.id);}} className="flex-1">Editar</Button>
-                        <Button size="sm" variant="destructive" onClick={() => handleDeleteRaffle(raffle.id)} className="size-9 p-0"><Trash2 className="size-4" /></Button>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Tickets Tab */}
-        {activeTab === "tickets" && (
-          <div className="space-y-6">
-            <Card className="bg-white border-slate-200 shadow-sm">
-              <CardContent className="p-6">
-                <div className="flex justify-between items-center mb-6">
-                  <h2 className="font-bold text-lg">Listado Maestro de Boletos</h2>
-                  <Button variant="outline" size="sm" onClick={() => refetchAllTickets()} className="gap-2">
-                    <RefreshCw className="size-4" /> Actualizar
-                  </Button>
-                </div>
-                <div className="rounded-xl border border-slate-100 overflow-hidden">
-                  <Table>
-                    <TableHeader className="bg-slate-50">
-                      <TableRow>
-                        <TableHead className="w-24">Número</TableHead>
-                        <TableHead>Estado</TableHead>
-                        <TableHead>Comprador</TableHead>
-                        <TableHead>Teléfono</TableHead>
-                        <TableHead className="text-right">ID Orden</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {allTickets?.slice(0, 50).map((ticket) => (
-                        <TableRow key={ticket.id}>
-                          <TableCell className="font-mono font-bold">{ticket.number}</TableCell>
-                          <TableCell>
-                            <Badge className={
-                              ticket.status === 'sold' ? 'bg-green-100 text-green-700 border-none' :
-                              ticket.status === 'reserved' ? 'bg-amber-100 text-amber-700 border-none' :
-                              'bg-slate-100 text-slate-600 border-none'
-                            }>
-                              {ticket.status}
-                            </Badge>
-                          </TableCell>
-                          <TableCell className="text-slate-600">{ticket.buyerName || '-'}</TableCell>
-                          <TableCell className="text-slate-600">{ticket.buyerPhone || '-'}</TableCell>
-                          <TableCell className="text-right text-slate-400">#{ticket.orderId || '-'}</TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                  {allTickets && allTickets.length > 50 && (
-                    <div className="p-4 text-center text-xs text-slate-400 bg-slate-50">
-                      Mostrando los primeros 50 boletos de {allTickets.length}
-                    </div>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
           </div>
         )}
 
@@ -910,6 +960,75 @@ export default function Admin() {
                         <div className="flex gap-2 mt-3">
                           <Button size="sm" variant="outline" onClick={() => {setProductFormData(product); setEditingProductId(product.id);}} className="flex-1 h-8 text-xs">Editar</Button>
                           <Button size="sm" variant="destructive" onClick={() => handleDeleteProduct(product.id)} className="size-8 p-0"><Trash2 className="size-4" /></Button>
+                        </div>
+                      </div>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Raffles Tab */}
+        {activeTab === "raffles" && (
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <Card className="lg:col-span-1 bg-white border-slate-200 shadow-sm">
+              <CardContent className="p-6 space-y-4">
+                <h2 className="font-bold text-lg flex items-center gap-2">
+                  <Plus className="size-5 text-purple-600" /> {editingRaffleId ? "Editar Rifa" : "Nueva Rifa"}
+                </h2>
+                <div className="space-y-3">
+                  <Input placeholder="Título de la Rifa" value={raffleFormData.title || ""} onChange={(e) => setRaffleFormData({...raffleFormData, title: e.target.value})} />
+                  <textarea 
+                    placeholder="Descripción de la Rifa" 
+                    value={raffleFormData.description || ""} 
+                    onChange={(e) => setRaffleFormData({...raffleFormData, description: e.target.value})}
+                    className="w-full min-h-[100px] px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 bg-white"
+                  />
+                  <Input placeholder="URL Imagen Banner" value={raffleFormData.image || ""} onChange={(e) => setRaffleFormData({...raffleFormData, image: e.target.value})} />
+                  <div className="grid grid-cols-2 gap-3">
+                    <Input placeholder="Total Boletos" type="number" value={raffleFormData.totalTickets || 1000} onChange={(e) => setRaffleFormData({...raffleFormData, totalTickets: parseInt(e.target.value)})} />
+                    <Input placeholder="Precio x Boleto (MXN)" type="number" value={raffleFormData.pricePerTicket || ""} onChange={(e) => setRaffleFormData({...raffleFormData, pricePerTicket: parseFloat(e.target.value)})} />
+                  </div>
+                  <Input placeholder="Fecha del Sorteo" type="datetime-local" value={raffleFormData.drawDate || ""} onChange={(e) => setRaffleFormData({...raffleFormData, drawDate: e.target.value})} />
+                  <Input placeholder="Webhook URL (Opcional)" value={raffleFormData.webhookUrl || ""} onChange={(e) => setRaffleFormData({...raffleFormData, webhookUrl: e.target.value})} />
+                  <select 
+                    className="w-full h-10 px-3 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 bg-white"
+                    value={raffleFormData.category || "otro"}
+                    onChange={(e) => setRaffleFormData({...raffleFormData, category: e.target.value as RaffleCategory})}
+                  >
+                    {Object.keys(raffleThemes).map(cat => (
+                      <option key={cat} value={cat}>{cat.toUpperCase()}</option>
+                    ))}
+                  </select>
+                </div>
+                <Button onClick={handleAddRaffle} className="w-full bg-purple-600 hover:bg-purple-700 h-11">
+                  {editingRaffleId ? "Actualizar Rifa" : "Crear Nueva Rifa"}
+                </Button>
+              </CardContent>
+            </Card>
+
+            <div className="lg:col-span-2 space-y-4">
+              <h2 className="font-bold text-lg">Rifas Activas ({raffles.length})</h2>
+              <div className="grid grid-cols-1 gap-4">
+                {raffles.map((raffle) => (
+                  <Card key={raffle.id} className="bg-white border-slate-200 overflow-hidden hover:shadow-md transition-all">
+                    <div className="flex p-4 gap-4">
+                      <img src={raffle.image} className="size-32 rounded-xl object-cover" />
+                      <div className="flex-1">
+                        <div className="flex justify-between items-start">
+                          <h3 className="font-bold text-slate-900">{raffle.title}</h3>
+                          <Badge variant="outline" className="bg-purple-50 text-purple-700 border-none">#{raffle.raffleNumber}</Badge>
+                        </div>
+                        <div className="grid grid-cols-2 gap-y-2 mt-3 text-xs text-slate-500">
+                          <div className="flex items-center gap-1"><Ticket className="size-3" /> {raffle.totalTickets} boletos</div>
+                          <div className="flex items-center gap-1"><DollarSign className="size-3" /> ${raffle.pricePerTicket} MXN</div>
+                          <div className="flex items-center gap-1"><Calendar className="size-3" /> {raffle.drawDate}</div>
+                        </div>
+                        <div className="flex gap-2 mt-4">
+                          <Button size="sm" variant="outline" onClick={() => {setRaffleFormData(raffle); setEditingRaffleId(raffle.id);}} className="flex-1 h-8 text-xs">Editar</Button>
+                          <Button size="sm" variant="destructive" onClick={() => handleDeleteRaffle(raffle.id)} className="size-8 p-0"><Trash2 className="size-4" /></Button>
                         </div>
                       </div>
                     </div>

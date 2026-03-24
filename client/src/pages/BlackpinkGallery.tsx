@@ -3,6 +3,8 @@ import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, X, Download, Share2, ZoomIn, Heart, Sparkles, Images } from "lucide-react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { trpc } from "@/lib/trpc";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function BlackpinkGallery() {
   const [, navigate] = useLocation();
@@ -29,7 +31,8 @@ export default function BlackpinkGallery() {
     window.history.pushState("", document.title, window.location.pathname + window.location.search);
   };
 
-  const photos: string[] = []; // Próximamente
+  const { data: photosData, isLoading } = trpc.galleries.list.useQuery({ group: "blackpink" });
+  const photos = photosData || [];
 
   return (
     <div className="min-h-screen bg-background">
@@ -70,11 +73,17 @@ export default function BlackpinkGallery() {
       </div>
 
       <div className="container py-12">
-        {photos.length > 0 ? (
+        {isLoading ? (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
-            {photos.map((photo, index) => (
-              <div key={index} className="relative aspect-square rounded-2xl md:rounded-3xl overflow-hidden group cursor-zoom-in border-2 border-slate-100 hover:border-pink-400 transition-all shadow-sm hover:shadow-xl" onClick={() => openPhoto(photo)}>
-                <img src={photo} alt={`Blackpink Photo ${index + 1}`} onContextMenu={(e) => e.preventDefault()} onDragStart={(e) => e.preventDefault()} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 select-none pointer-events-none" />
+            {[...Array(8)].map((_, i) => (
+              <Skeleton key={i} className="aspect-square rounded-2xl md:rounded-3xl" />
+            ))}
+          </div>
+        ) : photos.length > 0 ? (
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+            {photos.map((photo: any, index: number) => (
+              <div key={index} className="relative aspect-square rounded-2xl md:rounded-3xl overflow-hidden group cursor-zoom-in border-2 border-slate-100 hover:border-pink-400 transition-all shadow-sm hover:shadow-xl" onClick={() => openPhoto(photo.url)}>
+                <img src={photo.url} alt={`Blackpink Photo ${index + 1}`} onContextMenu={(e) => e.preventDefault()} onDragStart={(e) => e.preventDefault()} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 select-none pointer-events-none" />
                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors flex items-center justify-center">
                   <div className="bg-white/20 backdrop-blur-md p-3 rounded-full opacity-0 group-hover:opacity-100 transition-opacity scale-75 group-hover:scale-100 duration-300">
                     <ZoomIn className="text-white size-6" />

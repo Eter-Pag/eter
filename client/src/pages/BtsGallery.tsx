@@ -3,6 +3,8 @@ import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, X, Download, Share2, ZoomIn, Heart, Sparkles } from "lucide-react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { trpc } from "@/lib/trpc";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function BtsGallery() {
   const [, navigate] = useLocation();
@@ -31,15 +33,8 @@ export default function BtsGallery() {
     window.history.pushState("", document.title, window.location.pathname + window.location.search);
   };
 
-  const photos = [
-    "https://imgmedia.larepublica.pe/1000x590/larepublica/original/2021/12/19/61be97f0f0dd9c5007478e90.webp",
-    "https://spanish.korea.net/upload/content/editImage/20200225180114420_SGWR2DLN.jpg",
-    "https://www.billboard.com/wp-content/uploads/2026/03/bts-netflix-trailer-2026-billboard-1800.jpg?w=1024",
-    "https://upload.wikimedia.org/wikipedia/commons/7/73/BTS_during_a_White_House_press_conference_May_31%2C_2022_%28cropped%29.jpg",
-    "https://media.gq.com.mx/photos/69c18d4a4e39de1addf4a4f6/16:9/w_2560%2Cc_limit/arirang-de-bts-pensamientos.jpg",
-    "https://oem.com.mx/elsoldemexico/gossip/bts-en-seul-asi-se-vivio-el-regreso-de-la-banda-tras-tres-anos-alejados-de-la-musica-29091262",
-    "https://www.jornada.com.mx/ndjsimg/images/jornada/jornadaimg/cuando-se-estrena-bts-the-return-esto-se-sabe-del-nuevo-documental-de-netflix/cuando-se-estrena-bts-the-return-esto-se-sabe-del-nuevo-documental-de-netflix_e5e09480-654d-4502-acd8-d4c3e8e28d67_medialjnimgndimage=fullsize"
-  ];
+  const { data: photosData, isLoading } = trpc.galleries.list.useQuery({ group: "bts" });
+  const photos = photosData || [];
 
   return (
     <div className="min-h-screen bg-background">
@@ -87,28 +82,36 @@ export default function BtsGallery() {
       </div>
 
       <div className="container py-12">
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
-          {photos.map((photo, index) => (
-            <div 
-              key={index}
-              className="relative aspect-square rounded-2xl md:rounded-3xl overflow-hidden group cursor-zoom-in border-2 border-slate-100 hover:border-purple-400 transition-all shadow-sm hover:shadow-xl"
-              onClick={() => openPhoto(photo)}
-            >
-              <img 
-                src={photo} 
-                alt={`BTS Photo ${index + 1}`}
-                onContextMenu={(e) => e.preventDefault()}
-                onDragStart={(e) => e.preventDefault()}
-                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 select-none pointer-events-none"
-              />
-              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors flex items-center justify-center">
-                <div className="bg-white/20 backdrop-blur-md p-3 rounded-full opacity-0 group-hover:opacity-100 transition-opacity scale-75 group-hover:scale-100 duration-300">
-                  <ZoomIn className="text-white size-6" />
+        {isLoading ? (
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+            {[...Array(8)].map((_, i) => (
+              <Skeleton key={i} className="aspect-square rounded-2xl md:rounded-3xl" />
+            ))}
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+            {photos.map((photo: any, index: number) => (
+              <div 
+                key={index}
+                className="relative aspect-square rounded-2xl md:rounded-3xl overflow-hidden group cursor-zoom-in border-2 border-slate-100 hover:border-purple-400 transition-all shadow-sm hover:shadow-xl"
+                onClick={() => openPhoto(photo.url)}
+              >
+                <img 
+                  src={photo.url} 
+                  alt={`BTS Photo ${index + 1}`}
+                  onContextMenu={(e) => e.preventDefault()}
+                  onDragStart={(e) => e.preventDefault()}
+                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 select-none pointer-events-none"
+                />
+                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors flex items-center justify-center">
+                  <div className="bg-white/20 backdrop-blur-md p-3 rounded-full opacity-0 group-hover:opacity-100 transition-opacity scale-75 group-hover:scale-100 duration-300">
+                    <ZoomIn className="text-white size-6" />
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Photo Detail Modal */}
