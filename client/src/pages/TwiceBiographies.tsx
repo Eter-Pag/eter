@@ -193,7 +193,7 @@ export default function TwiceBiographies() {
         <img
           src="https://www.nme.com/wp-content/uploads/2025/07/twice-this-is-for-interview-credit-jyp-entertainment-image1.jpeg"
           alt="TWICE Group"
-          className="w-full h-full object-cover object-center"
+          className="w-full h-full object-cover object-top md:object-center"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent" />
         <div className="absolute inset-0 flex flex-col items-center justify-end pb-12 text-white p-6 text-center">
@@ -219,7 +219,7 @@ export default function TwiceBiographies() {
                       <img
                         src={member.image}
                         alt={member.stageName}
-                        className="w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-110"
+                        className="w-full h-full object-cover object-top md:object-center transition-transform duration-700 group-hover:scale-110"
                       />
                       <div className={`absolute inset-0 opacity-20 ${member.color}`} />
                       <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/90 via-black/40 to-transparent text-white">
@@ -244,7 +244,7 @@ export default function TwiceBiographies() {
                     <img 
                       src={member.image} 
                       alt={member.stageName}
-                      className="w-full h-full object-cover object-center"
+                      className="w-full h-full object-cover object-top md:object-center"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent md:bg-gradient-to-r" />
                     <div className="absolute bottom-8 left-8">

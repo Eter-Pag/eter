@@ -200,8 +200,7 @@ export default function StrayKidsBiographies() {
                       <img
                         src={member.image}
                         alt={member.stageName}
-                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-                      />
+         className="w-full h-full object-cover object-top md:object-center transition-transform duration-700 group-hover:scale-110"                      />
                       <div className={`absolute inset-0 opacity-20 ${member.color}`} />
                       <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/90 via-black/40 to-transparent text-white">
                         <p className="text-[10px] font-bold uppercase tracking-widest opacity-80 mb-1">{member.position}</p>
