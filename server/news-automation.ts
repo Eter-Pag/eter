@@ -137,12 +137,26 @@ async function translateNews(
     const cleanTitle = stripHtml(title);
     const cleanContent = stripHtml(content);
 
-    const translatedTitle = await translate(cleanTitle, { to: "es" });
-    const translatedContent = await translate(cleanContent.substring(0, 1000), { to: "es" });
+    let translatedTitleText = cleanTitle;
+    let translatedContentText = cleanContent;
+
+    try {
+      const translatedTitle = await translate(cleanTitle, { to: "es" });
+      translatedTitleText = translatedTitle.text;
+    } catch (e) {
+      console.error("[News] Title translation failed, using original:", e);
+    }
+
+    try {
+      const translatedContent = await translate(cleanContent.substring(0, 2000), { to: "es" });
+      translatedContentText = translatedContent.text;
+    } catch (e) {
+      console.error("[News] Content translation failed, using original:", e);
+    }
 
     return {
-      title: translatedTitle.text,
-      content: translatedContent.text
+      title: translatedTitleText,
+      content: translatedContentText
     };
   } catch (error) {
     console.error("[News] Error translating with Google Translate:", error);
