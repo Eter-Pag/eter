@@ -365,10 +365,16 @@ export const appRouter = router({
           };
           const response = await fetch(SHEETS_API, {
             method: "POST",
-            mode: "no-cors",
             body: JSON.stringify(payload),
             headers: { "Content-Type": "application/json" },
           });
+          
+          if (!response.ok && response.status !== 0) {
+            const errorText = await response.text().catch(() => "No error text");
+            console.error("[Sheets] Error:", response.status, errorText);
+            throw new Error(`Error de Google Sheets: ${response.status}`);
+          }
+          
           return { success: true };
         } catch (error) {
           console.error("[Galleries] Error adding photo:", error);
@@ -387,10 +393,16 @@ export const appRouter = router({
           };
           const response = await fetch(SHEETS_API, {
             method: "POST",
-            mode: "no-cors",
             body: JSON.stringify(payload),
             headers: { "Content-Type": "application/json" },
           });
+          
+          if (!response.ok && response.status !== 0) {
+            const errorText = await response.text().catch(() => "No error text");
+            console.error("[Sheets] Error:", response.status, errorText);
+            throw new Error(`Error de Google Sheets: ${response.status}`);
+          }
+          
           return { success: true };
         } catch (error) {
           console.error("[Galleries] Error deleting photo:", error);
