@@ -358,23 +358,9 @@ export const appRouter = router({
       .mutation(async ({ input }) => {
         try {
           const SHEETS_API = "https://script.google.com/macros/s/AKfycbzOJeE4kmAOr2kxGkKrdQgLsvZBNq-GgQLGEHNbrbfBlPIypoh0cDh7xso66Kc1PDru/exec";
-          const payload = {
-            action: "addPhoto",
-            group: input.group,
-            url: input.url,
-          };
-          const response = await fetch(SHEETS_API, {
-            method: "POST",
-            body: JSON.stringify(payload),
-            headers: { "Content-Type": "application/json" },
-          });
-          
-          if (!response.ok && response.status !== 0) {
-            const errorText = await response.text().catch(() => "No error text");
-            console.error("[Sheets] Error:", response.status, errorText);
-            throw new Error(`Error de Google Sheets: ${response.status}`);
-          }
-          
+          const url = `${SHEETS_API}?action=addPhoto&group=${input.group}&url=${encodeURIComponent(input.url)}`;
+          const response = await fetch(url);
+          if (!response.ok) throw new Error(`Error: ${response.status}`);
           return { success: true };
         } catch (error) {
           console.error("[Galleries] Error adding photo:", error);
@@ -386,23 +372,9 @@ export const appRouter = router({
       .mutation(async ({ input }) => {
         try {
           const SHEETS_API = "https://script.google.com/macros/s/AKfycbzOJeE4kmAOr2kxGkKrdQgLsvZBNq-GgQLGEHNbrbfBlPIypoh0cDh7xso66Kc1PDru/exec";
-          const payload = {
-            action: "deletePhoto",
-            group: input.group,
-            id: input.id,
-          };
-          const response = await fetch(SHEETS_API, {
-            method: "POST",
-            body: JSON.stringify(payload),
-            headers: { "Content-Type": "application/json" },
-          });
-          
-          if (!response.ok && response.status !== 0) {
-            const errorText = await response.text().catch(() => "No error text");
-            console.error("[Sheets] Error:", response.status, errorText);
-            throw new Error(`Error de Google Sheets: ${response.status}`);
-          }
-          
+          const url = `${SHEETS_API}?action=deletePhoto&group=${input.group}&id=${input.id}`;
+          const response = await fetch(url);
+          if (!response.ok) throw new Error(`Error: ${response.status}`);
           return { success: true };
         } catch (error) {
           console.error("[Galleries] Error deleting photo:", error);
