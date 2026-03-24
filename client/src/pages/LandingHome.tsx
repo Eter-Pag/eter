@@ -313,27 +313,24 @@ export default function LandingHome() {
                   <span className="md:hidden">Diplomas</span>
                 </Button>
               </div>
-            </CardContent>
-          </Card>
-
-          {/* Muro de Ilusiones Card */}
-          <Card className="bg-white/60 backdrop-blur-xl border-border/50 shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
+                {/* Historias Section */}
+          <Card className="bg-white/60 backdrop-blur-xl border-border/50 shadow-lg overflow-hidden hover:shadow-xl transition-shadow group">
             <CardContent className="p-0">
               <div className="relative h-32 md:h-48 bg-gradient-to-br from-pink-400 to-purple-400 overflow-hidden">
-                <img
-                  src="https://wallpaperaccess.com/full/8626014.jpg"
-                  alt="Muro de Ilusiones"
-                  className="w-full h-full object-cover object-top"
+                <img 
+                  src="/HISTORIAS.png" 
+                  alt="Muro de Ilusiones" 
+                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
               </div>
               <div className="p-3 md:p-6">
                 <h2 className="text-base md:text-2xl font-bold mb-1 md:mb-2 flex items-center gap-2">
                   <MessageCircle className="size-4 md:size-5 text-pink-600" />
-                  Muro de Ilusiones
+                  Historias
                 </h2>
                 <p className="text-gray-600 text-xs md:text-sm mb-2 md:mb-4 hidden md:block">
-                  Comparte tu historia con el K-POP y tradúcela al coreano.
+                  Comparte tu historia con el K-Pop y léela traducida al coreano.
                 </p>
                 <Button
                   onClick={() => navigate("/historias")}
@@ -345,8 +342,7 @@ export default function LandingHome() {
                 </Button>
               </div>
             </CardContent>
-          </Card>
-        </div>
+          </Card></div>
       </section>
 
       {/* Legal Footer */}
