@@ -208,48 +208,24 @@ export default function Diploma() {
           // Detectar si es un dispositivo móvil
           const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
           
-          if (isMobile) {
-            // En móviles, abrir en una nueva pestaña para que el usuario pueda guardar manualmente
-            // o intentar usar la API de compartir si está disponible
-            try {
-              const blob = await (await fetch(dataUrl)).blob();
-              const file = new File([blob], `Diploma_BTS_ARMY_${diplomaName}.png`, { type: "image/png" });
-              
-              if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
-                await navigator.share({
-                  files: [file],
-                  title: 'Mi Diploma BTS ARMY',
-                  text: '¡Mira mi diploma oficial de BTS ARMY!',
-                });
-              } else {
-                // Fallback: Abrir en nueva pestaña
-                const newWindow = window.open();
-                if (newWindow) {
-                  newWindow.document.write(`<img src="${dataUrl}" style="width:100%" />`);
-                  newWindow.document.title = `Diploma_BTS_ARMY_${diplomaName}`;
-                } else {
-                  // Si el popup es bloqueado, usar el método tradicional
-                  const link = document.createElement("a");
-                  link.download = `Diploma_BTS_ARMY_${diplomaName}.png`;
-                  link.href = dataUrl;
-                  link.click();
-                }
-              }
-            } catch (error) {
-              console.error("Error sharing/downloading on mobile:", error);
-              // Fallback final
-              const link = document.createElement("a");
-              link.download = `Diploma_BTS_ARMY_${diplomaName}.png`;
-              link.href = dataUrl;
-              link.click();
-            }
-          } else {
-            // En escritorio, descarga directa normal
-            const link = document.createElement("a");
-            link.download = `Diploma_BTS_ARMY_${diplomaName}.png`;
-            link.href = dataUrl;
-            link.click();
-          }
+          // Método universal de descarga (funciona mejor en móviles)
+          const response = await fetch(dataUrl);
+          const blob = await response.blob();
+          const blobUrl = window.URL.createObjectURL(blob);
+          
+          const link = document.createElement("a");
+          link.href = blobUrl;
+          link.download = `Diploma_BTS_ARMY_${diplomaName}.png`;
+          
+          // Importante para iOS/Safari: añadir al DOM antes de hacer click
+          document.body.appendChild(link);
+          link.click();
+          
+          // Limpieza
+          setTimeout(() => {
+            document.body.removeChild(link);
+            window.URL.revokeObjectURL(blobUrl);
+          }, 100);
         }
 
         // Mostrar mensaje de éxito
