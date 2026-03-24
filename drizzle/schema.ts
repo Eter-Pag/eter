@@ -127,7 +127,7 @@ export const products = mysqlTable("products", {
   id: int("id").autoincrement().primaryKey(),
   title: varchar("title", { length: 255 }).notNull(),
   description: text("description"),
-  price: int("price").notNull(), // in cents
+  price: varchar("price", { length: 100 }).notNull(), // stored as text for display only
   image: text("image").notNull(),
   link: text("link").notNull(),
   rating: int("rating"), // stored as integer (e.g., 45 = 4.5)

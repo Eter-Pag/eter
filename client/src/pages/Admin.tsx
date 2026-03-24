@@ -29,7 +29,7 @@ interface Product {
   id: string;
   title: string;
   description: string;
-  price: number;
+  price: string;
   image: string;
   link: string;
   rating?: number;
@@ -83,7 +83,7 @@ export default function Admin() {
           id: p.id.toString(),
           title: p.title,
           description: p.description || "",
-          price: Number((p.price / 100).toFixed(2)),
+          price: p.price,
           image: p.image,
           link: p.link,
           rating: p.rating ? p.rating / 10 : undefined,
@@ -878,14 +878,10 @@ export default function Admin() {
                     className="w-full min-h-[120px] px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
                   />
                   <Input 
-                    placeholder="Precio (MXN)" 
-                    type="number" 
-                    step="0.01" 
+                    placeholder="Precio (ej: 23.65)" 
+                    type="text" 
                     value={productFormData.price ?? ""} 
-                    onChange={(e) => {
-                      const val = e.target.value;
-                      setProductFormData({...productFormData, price: val === "" ? undefined : parseFloat(val)});
-                    }} 
+                    onChange={(e) => setProductFormData({...productFormData, price: e.target.value})} 
                   />
                   <Input placeholder="URL Imagen" value={productFormData.image || ""} onChange={(e) => setProductFormData({...productFormData, image: e.target.value})} />
                   <Input placeholder="Link Mercado Libre" value={productFormData.link || ""} onChange={(e) => setProductFormData({...productFormData, link: e.target.value})} />

@@ -330,7 +330,7 @@ export async function createProduct(data: any) {
   if (!db) throw new Error("Database not available");
   const result = await db.insert(products).values({
     ...data,
-    price: Math.round(data.price * 100),
+    price: data.price,
     rating: data.rating ? Math.round(data.rating * 10) : null
   });
   return result[0].insertId;
@@ -341,7 +341,7 @@ export async function updateProduct(id: number, data: any) {
   if (!db) return;
   await db.update(products).set({
     ...data,
-    price: Math.round(data.price * 100),
+    price: data.price,
     rating: data.rating ? Math.round(data.rating * 10) : null
   }).where(eq(products.id, id));
 }

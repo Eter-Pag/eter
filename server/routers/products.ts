@@ -20,7 +20,7 @@ export const productsRouter = router({
       z.object({
         title: z.string().min(1),
         description: z.string().optional(),
-        price: z.number().min(0),
+        price: z.string().min(1),
         image: z.string().url(),
         link: z.string().url(),
         rating: z.number().optional(),
@@ -32,7 +32,7 @@ export const productsRouter = router({
       const result = await createProduct({
         title: input.title,
         description: input.description || null,
-        price: Math.round(Number(input.price.toFixed(2)) * 100),
+        price: input.price,
         image: input.image,
         link: input.link,
         rating: input.rating ? Math.round(input.rating * 10) : null,
@@ -48,7 +48,7 @@ export const productsRouter = router({
         id: z.number(),
         title: z.string().optional(),
         description: z.string().optional(),
-        price: z.number().optional(),
+        price: z.string().optional(),
         image: z.string().optional(),
         link: z.string().optional(),
         rating: z.number().optional(),
@@ -62,7 +62,7 @@ export const productsRouter = router({
 
       if (data.title !== undefined) updateData.title = data.title;
       if (data.description !== undefined) updateData.description = data.description || null;
-      if (data.price !== undefined) updateData.price = Math.round(Number(data.price.toFixed(2)) * 100);
+      if (data.price !== undefined) updateData.price = data.price;
       if (data.image !== undefined) updateData.image = data.image;
       if (data.link !== undefined) updateData.link = data.link;
       if (data.rating !== undefined) updateData.rating = data.rating ? Math.round(data.rating * 10) : null;
