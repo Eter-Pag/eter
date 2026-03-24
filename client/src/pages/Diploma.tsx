@@ -72,7 +72,7 @@ export default function Diploma() {
   // Diploma state
   const [diplomaName, setDiplomaName] = useState("");
   const [selectedFont, setSelectedFont] = useState<FontStyle>("cursive");
-  const [fontSize, setFontSize] = useState(71); // Tamaño inicial predefinido de 71px
+  const [fontSize, setFontSize] = useState(71); // Tamaño inicial predefinido de 71px (Mínimo 50px)
   const [selectedColor, setSelectedColor] = useState("#000000"); // Color inicial negro
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [imageLoaded, setImageLoaded] = useState(false);
@@ -377,8 +377,8 @@ export default function Diploma() {
                       className="h-12 border-slate-200 focus:border-purple-500 focus:ring-purple-500 rounded-xl"
                       maxLength={35}
                     />
-                    <p className="text-[10px] text-slate-400">
-                      {diplomaName.length}/35 caracteres
+                    <p className={`text-[10px] font-bold ${diplomaName.trim().length < 5 ? 'text-amber-500' : 'text-slate-400'}`}>
+                      {diplomaName.trim().length < 5 ? 'Mínimo 5 caracteres para descargar' : `${diplomaName.length}/35 caracteres`}
                     </p>
                   </div>
 
@@ -394,10 +394,10 @@ export default function Diploma() {
                     </div>
                     <input
                       type="range"
-                      min="20"
+                      min="50"
                       max="100"
                       value={fontSize}
-                      onChange={(e) => setFontSize(parseInt(e.target.value))}
+                      onChange={(e) => setFontSize(Math.max(50, parseInt(e.target.value)))}
                       className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-purple-600"
                     />
                     <div className="flex justify-between text-[10px] text-slate-400 px-1">
@@ -453,7 +453,7 @@ export default function Diploma() {
                       <div className="relative group">
                         <Button
                           onClick={() => handleDownloadDiploma(false)}
-                          disabled={!diplomaName.trim() || !imageLoaded || isDownloading || isPrinting}
+                          disabled={diplomaName.trim().length < 5 || !imageLoaded || isDownloading || isPrinting}
                           className={`w-full gap-3 bg-gradient-to-r from-purple-600 to-violet-600 hover:from-purple-700 hover:to-violet-700 text-white font-bold py-6 rounded-xl shadow-lg transition-all hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] text-base disabled:opacity-50 overflow-hidden ${isDownloading ? 'relative' : ''}`}
                         >
                           {showDownloadSuccess ? (
@@ -489,7 +489,7 @@ export default function Diploma() {
                       <div className="relative group">
                         <Button
                           onClick={() => handleDownloadDiploma(true)}
-                          disabled={!diplomaName.trim() || !imageLoaded || isDownloading || isPrinting}
+                          disabled={diplomaName.trim().length < 5 || !imageLoaded || isDownloading || isPrinting}
                           variant="outline"
                           className={`w-full gap-3 border-2 border-purple-200 hover:border-purple-600 hover:bg-purple-50 text-purple-700 font-bold py-6 rounded-xl transition-all hover:scale-[1.02] active:scale-[0.98] text-base disabled:opacity-50 overflow-hidden ${isPrinting ? 'relative' : ''}`}
                         >
