@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useLocation } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
@@ -16,6 +16,7 @@ export default function Stories() {
   const [name, setName] = useState("");
   const [content, setContent] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [openStoryId, setOpenStoryId] = useState<string | null>(null);
   const storiesRef = useRef<HTMLDivElement>(null);
 
   const utils = trpc.useUtils();
@@ -35,6 +36,31 @@ export default function Stories() {
       setIsSubmitting(false);
     }
   });
+
+  useEffect(() => {
+    const handleHashChange = () => {
+      const hash = window.location.hash.replace("#", "");
+      if (hash && hash.startsWith("story-")) {
+        setOpenStoryId(hash);
+      } else {
+        setOpenStoryId(null);
+      }
+    };
+
+    window.addEventListener("hashchange", handleHashChange);
+    handleHashChange(); // Check on mount
+
+    return () => window.removeEventListener("hashchange", handleHashChange);
+  }, []);
+
+  const handleOpenChange = (open: boolean, id: string) => {
+    if (open) {
+      window.location.hash = id;
+    } else {
+      window.history.pushState(null, "", window.location.pathname);
+      setOpenStoryId(null);
+    }
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -189,6 +215,7 @@ export default function Stories() {
               <AnimatePresence mode="popLayout">
                 {stories?.map((story: any, index: number) => {
                   const colorClass = cardColors[index % cardColors.length];
+                  const storyId = `story-${index}`;
                   return (
                     <motion.div
                       key={index}
@@ -230,7 +257,10 @@ export default function Stories() {
                               </p>
                             </div>
 
-                            <Dialog>
+                            <Dialog 
+                              open={openStoryId === storyId} 
+                              onOpenChange={(open) => handleOpenChange(open, storyId)}
+                            >
                               <DialogTrigger asChild>
                                 <Button 
                                   variant="ghost" 
@@ -242,15 +272,13 @@ export default function Stories() {
                               </DialogTrigger>
                               <DialogContent className="max-w-2xl bg-white/95 backdrop-blur-2xl border-none shadow-2xl rounded-[2.5rem] p-0 overflow-hidden">
                                 <div className={`h-3 bg-gradient-to-r ${colorClass.split(' ')[0]} ${colorClass.split(' ')[1]}`} />
-                                <div className="p-8 md:p-12 space-y-8 max-h-[80vh] overflow-y-auto custom-scrollbar">
-                                  <div className="flex items-center gap-4">
-                                    <div className="size-14 bg-slate-100 rounded-2xl flex items-center justify-center text-slate-900 font-black text-xl shadow-sm">
+                                <div className="p-8 md:p-12 max-h-[80vh] overflow-y-auto custom-scrollbar">
+                                  <div className="flex items-center gap-4 mb-8">
+                                    <div className="size-14 bg-slate-900 text-white rounded-2xl flex items-center justify-center text-2xl font-black shadow-lg">
                                       {story.nombre.charAt(0).toUpperCase()}
                                     </div>
                                     <div>
-                                      <DialogTitle className="text-2xl font-black text-slate-900 uppercase tracking-tight">
-                                        {story.nombre}
-                                      </DialogTitle>
+                                      <h4 className="text-2xl font-black text-slate-900 uppercase tracking-tight">{story.nombre}</h4>
                                       <p className="text-xs text-slate-400 font-bold uppercase tracking-widest">
                                         {new Date(story.fecha).toLocaleDateString('es-MX', { 
                                           day: 'numeric', 
@@ -261,39 +289,43 @@ export default function Stories() {
                                     </div>
                                   </div>
 
-                                  <div className="space-y-8">
-                                    <div className="relative">
-                                      <div className="absolute -left-4 top-0 bottom-0 w-1 bg-purple-100 rounded-full" />
-                                      <p className="text-slate-700 text-lg leading-relaxed font-medium italic pl-4">
+                                  <div className="space-y-10">
+                                    <div className="space-y-4">
+                                      <div className="flex items-center gap-2 text-[10px] font-black text-purple-500 uppercase tracking-[0.2em]">
+                                        <Sparkles className="size-4" />
+                                        Historia Original
+                                      </div>
+                                      <p className="text-slate-700 text-xl leading-relaxed font-medium italic">
                                         "{story.historia_es}"
                                       </p>
                                     </div>
 
-                                    <div className="pt-8 border-t border-slate-100">
-                                      <div className="flex items-center gap-2 text-xs font-black text-purple-500 uppercase tracking-widest mb-4">
+                                    <div className="space-y-4 p-8 bg-slate-50 rounded-[2rem] border border-slate-100 relative overflow-hidden group">
+                                      <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:opacity-10 transition-opacity">
+                                        <Globe className="size-24" />
+                                      </div>
+                                      <div className="flex items-center gap-2 text-[10px] font-black text-blue-500 uppercase tracking-[0.2em]">
                                         <Globe className="size-4" />
                                         Traducción al Coreano
                                       </div>
-                                      <p className="text-slate-900 font-bold text-xl leading-relaxed font-kr bg-slate-50 p-6 rounded-3xl">
+                                      <p className="text-slate-900 font-bold text-2xl leading-relaxed font-kr relative z-10">
                                         {story.historia_ko}
                                       </p>
                                     </div>
                                   </div>
 
-                                  <div className="flex items-center justify-center gap-4 pt-4">
-                                    <Heart className="size-6 text-pink-500 fill-current" />
-                                    <Sparkles className="size-6 text-purple-500" />
-                                    <Heart className="size-6 text-pink-500 fill-current" />
+                                  <div className="mt-12 pt-8 border-t border-slate-100 flex items-center justify-between">
+                                    <div className="flex items-center gap-2 text-slate-300">
+                                      <Heart className="size-5 fill-current text-pink-500" />
+                                      <span className="text-[10px] font-black uppercase tracking-widest">Eter Muro de Ilusiones</span>
+                                    </div>
+                                    <Badge variant="outline" className="rounded-full border-slate-200 text-slate-400 font-bold">
+                                      ID: #{index + 1}
+                                    </Badge>
                                   </div>
                                 </div>
                               </DialogContent>
                             </Dialog>
-                          </div>
-
-                          <div className="mt-6 flex items-center justify-between text-slate-300 group-hover:text-pink-400 transition-colors">
-                            <Heart className="size-4 fill-current" />
-                            <div className="h-px flex-grow mx-3 bg-white/50" />
-                            <Sparkles className="size-4" />
                           </div>
                         </CardContent>
                       </Card>
@@ -303,33 +335,19 @@ export default function Stories() {
               </AnimatePresence>
             </div>
           )}
-
-          {!isLoading && stories?.length === 0 && (
-            <div className="text-center py-32 bg-slate-50 rounded-[3rem] border-4 border-dashed border-white shadow-inner">
-              <Heart className="size-16 text-slate-200 mx-auto mb-6 animate-pulse" />
-              <p className="text-slate-400 font-black text-xl uppercase tracking-widest">El muro está esperando tu luz</p>
-            </div>
-          )}
         </div>
       </main>
 
       {/* Footer */}
-      <footer className="py-20 bg-slate-900 text-center mt-32">
+      <footer className="py-20 bg-slate-900 text-center mt-20">
         <div className="container px-4">
-          <div className="inline-flex items-center gap-2 bg-white/10 text-white rounded-full px-4 py-1 mb-6 text-xs font-bold uppercase tracking-widest">
-            <Sparkles className="size-3" />
-            Eter K-Pop MX
-          </div>
-          <p className="text-white/40 text-sm italic max-w-md mx-auto">
-            "Porque los sueños no tienen fronteras ni idiomas. Tu historia merece ser escuchada en todo el mundo."
+          <p className="text-white/40 text-sm font-bold uppercase tracking-widest mb-4">Eter K-Pop MX</p>
+          <p className="text-white/20 text-xs max-w-md mx-auto">
+            Un espacio creado para que los fans conecten con sus sueños. 
+            Las traducciones son generadas automáticamente.
           </p>
         </div>
       </footer>
-
-      <style dangerouslySetInnerHTML={{ __html: `
-        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap');
-        .font-kr { font-family: 'Noto Sans KR', sans-serif; }
-      `}} />
     </div>
   );
 }

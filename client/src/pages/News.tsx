@@ -25,7 +25,7 @@ export default function News() {
   const [, navigate] = useLocation();
   const [articles, setArticles] = useState<NewsArticle[]>([]);
   const [loading, setLoading] = useState(true);
-  const [expandedId, setExpandedId] = useState<number | null>(null); // Mantener para compatibilidad si es necesario, pero usaremos Dialog
+  const [openArticleId, setOpenArticleId] = useState<string | null>(null);
 
   // Fetch news articles using tRPC query hook
   const newsQuery = trpc.news.getAll.useQuery(undefined, {
@@ -45,6 +45,31 @@ export default function News() {
     }
   }, [newsQuery.data, newsQuery.isError, newsQuery.isLoading, newsQuery.error]);
 
+  useEffect(() => {
+    const handleHashChange = () => {
+      const hash = window.location.hash.replace("#", "");
+      if (hash) {
+        setOpenArticleId(hash);
+      } else {
+        setOpenArticleId(null);
+      }
+    };
+
+    window.addEventListener("hashchange", handleHashChange);
+    handleHashChange(); // Check on mount
+
+    return () => window.removeEventListener("hashchange", handleHashChange);
+  }, []);
+
+  const handleOpenChange = (open: boolean, id: string) => {
+    if (open) {
+      window.location.hash = id;
+    } else {
+      window.history.pushState(null, "", window.location.pathname);
+      setOpenArticleId(null);
+    }
+  };
+
   const formatDate = (date: any) => {
     try {
       const d = new Date(date);
@@ -57,10 +82,6 @@ export default function News() {
     } catch (e) {
       return "Fecha no disponible";
     }
-  };
-
-  const toggleExpand = (id: number) => {
-    setExpandedId(expandedId === id ? null : id);
   };
 
   const stripHtml = (html: string) => {
@@ -150,7 +171,10 @@ export default function News() {
                     </p>
 
                     <div className="mt-auto">
-                      <Dialog>
+                      <Dialog 
+                        open={openArticleId === article.slug} 
+                        onOpenChange={(open) => handleOpenChange(open, article.slug)}
+                      >
                         <DialogTrigger asChild>
                           <Button 
                             className="w-full bg-slate-900 hover:bg-emerald-600 text-white rounded-xl gap-2 font-bold transition-all"
@@ -184,9 +208,11 @@ export default function News() {
                                 </div>
                               </div>
 
-                              <DialogTitle className="text-3xl md:text-4xl font-black text-gray-900 mb-8 leading-tight tracking-tight">
-                                {article.title}
-                              </DialogTitle>
+                              <DialogHeader>
+                                <DialogTitle className="text-3xl md:text-4xl font-black text-gray-900 mb-8 leading-tight tracking-tight">
+                                  {article.title}
+                                </DialogTitle>
+                              </DialogHeader>
 
                               <div className="space-y-6 text-gray-700 text-lg leading-relaxed">
                                 {stripHtml(article.content).split('\n').map((paragraph, idx) => (
