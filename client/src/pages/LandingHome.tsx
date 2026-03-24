@@ -310,7 +310,16 @@ export default function LandingHome() {
                 <img
                   src="/assets/diploma.png"
                   alt="Diploma ARMY"
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                  onContextMenu={(e) => e.preventDefault()}
+                  onDragStart={(e) => e.preventDefault()}
+                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 select-none pointer-events-none"
+                  style={{ userSelect: 'none', WebkitUserSelect: 'none' }}
+                />
+                {/* Capa invisible de protección */}
+                <div 
+                  className="absolute inset-0 z-10" 
+                  onContextMenu={(e) => e.preventDefault()}
+                  onDragStart={(e) => e.preventDefault()}
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
               </div>

@@ -288,8 +288,16 @@ export default function Diploma() {
                 <div className="relative w-full max-w-md bg-white rounded-2xl shadow-2xl border-4 border-purple-200 overflow-hidden">
                   <canvas
                     ref={canvasRef}
-                    className="w-full h-auto block"
-                    style={{ aspectRatio: "1/1" }}
+                    onContextMenu={(e) => e.preventDefault()}
+                    onDragStart={(e) => e.preventDefault()}
+                    className="w-full h-auto block select-none pointer-events-none"
+                    style={{ aspectRatio: "1/1", userSelect: 'none', WebkitUserSelect: 'none' }}
+                  />
+                  {/* Capa invisible de protección */}
+                  <div 
+                    className="absolute inset-0 z-10 cursor-default" 
+                    onContextMenu={(e) => e.preventDefault()}
+                    onDragStart={(e) => e.preventDefault()}
                   />
                   {!imageLoaded && (
                     <div className="absolute inset-0 flex items-center justify-center bg-slate-100 rounded-2xl">
