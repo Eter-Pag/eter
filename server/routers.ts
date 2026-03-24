@@ -385,15 +385,38 @@ export const appRouter = router({
           });
 
           if (!response.ok) {
-            throw new Error("Error al guardar en Google Sheets");
-          }
-
-          return { success: true };
-        } catch (error) {
-          console.error("[Stories] Error submitting story:", error);
-          throw new Error("Lo sentimos, hubo un problema al enviar tu historia a Google Sheets. Por favor, intenta de nuevo.");
-        }
-      }),
-  }),
-});
+	            throw new Error("Error al guardar en Google Sheets");
+	          }
+	
+	          return { success: true };
+	        } catch (error) {
+	          console.error("[Stories] Error submitting story:", error);
+	          throw new Error("Lo sentimos, hubo un problema al enviar tu historia a Google Sheets. Por favor, intenta de nuevo.");
+	        }
+	      }),
+	    delete: protectedProcedure
+	      .input(z.object({ id: z.number() }))
+	      .mutation(async ({ input }) => {
+	        try {
+	          const STORIES_SHEETS_API = "https://script.google.com/macros/s/AKfycbzOJeE4kmAOr2kxGkKrdQgLsvZBNq-GgQLGEHNbrbfBlPIypoh0cDh7xso66Kc1PDru/exec";
+	          const payload = {
+	            action: "deleteStory",
+	            id: input.id,
+	          };
+	          
+	          const response = await fetch(STORIES_SHEETS_API, {
+	            method: "POST",
+	            mode: "no-cors",
+	            body: JSON.stringify(payload),
+	            headers: { "Content-Type": "application/json" },
+	          });
+	
+	          return { success: true };
+	        } catch (error) {
+	          console.error("[Stories] Error deleting story:", error);
+	          throw new Error("Error al eliminar la historia de Google Sheets.");
+	        }
+	      }),
+	  }),
+	});
 export type AppRouter = typeof appRouter;

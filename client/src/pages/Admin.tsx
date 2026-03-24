@@ -156,10 +156,26 @@ export default function Admin() {
   });
 
   // News state
-  const { data: allNews, refetch: refetchNews } = trpc.news.adminGetAll.useQuery();
-  const deleteNewsMutation = trpc.news.delete.useMutation();
-  const runAutomationMutation = trpc.news.runAutomation.useMutation();
-  const [isRunningAutomation, setIsRunningAutomation] = useState(false);
+	  const { data: allNews, refetch: refetchNews } = trpc.news.adminGetAll.useQuery();
+	  const deleteNewsMutation = trpc.news.delete.useMutation();
+	  const runAutomationMutation = trpc.news.runAutomation.useMutation();
+	  const [isRunningAutomation, setIsRunningAutomation] = useState(false);
+	
+	  // Stories state
+	  const { data: allStories, refetch: refetchStories } = trpc.stories.list.useQuery();
+	  const deleteStoryMutation = trpc.stories.delete.useMutation();
+	
+	  const handleDeleteStory = async (id: number) => {
+	    if (confirm("¿Estás seguro de que deseas eliminar esta historia?")) {
+	      try {
+	        await deleteStoryMutation.mutateAsync({ id });
+	        alert("Historia eliminada correctamente (puede tardar unos segundos en reflejarse en Google Sheets)");
+	        await refetchStories();
+	      } catch (error) {
+	        alert("Error al eliminar la historia");
+	      }
+	    }
+	  };
 
   const handleDeleteNews = async (id: number) => {
     if (confirm("¿Estás seguro de que deseas eliminar esta noticia?")) {
@@ -388,10 +404,13 @@ export default function Admin() {
           <button onClick={() => setActiveTab("products")} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors ${activeTab === "products" ? "bg-purple-50 text-purple-700" : "text-slate-500 hover:bg-slate-50"}`}>
             <Package className="size-4" /> Productos
           </button>
-          <button onClick={() => setActiveTab("news")} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors ${activeTab === "news" ? "bg-purple-50 text-purple-700" : "text-slate-500 hover:bg-slate-50"}`}>
-            <Newspaper className="size-4" /> Noticias
-          </button>
-        </nav>
+	          <button onClick={() => setActiveTab("news")} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors ${activeTab === "news" ? "bg-purple-50 text-purple-700" : "text-slate-500 hover:bg-slate-50"}`}>
+	            <Newspaper className="size-4" /> Noticias
+	          </button>
+	          <button onClick={() => setActiveTab("stories")} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors ${activeTab === "stories" ? "bg-purple-50 text-purple-700" : "text-slate-500 hover:bg-slate-50"}`}>
+	            <MessageCircle className="size-4" /> Historias
+	          </button>
+	        </nav>
 
         <div className="mt-auto pt-6 border-t border-slate-100">
           <Button variant="ghost" onClick={() => navigate("/")} className="w-full justify-start gap-3 text-slate-500 hover:text-red-600 hover:bg-red-50">
@@ -520,8 +539,67 @@ export default function Admin() {
           </div>
         )}
 
-        {/* News Tab */}
-        {activeTab === "news" && (
+	        {/* Stories Tab */}
+	        {activeTab === "stories" && (
+	          <div className="space-y-6">
+	            <div className="flex justify-between items-center">
+	              <h2 className="font-bold text-lg">Gestión de Historias ({allStories?.length || 0})</h2>
+	              <Button variant="outline" size="sm" onClick={() => refetchStories()} className="gap-2">
+	                <RefreshCw className="size-4" /> Actualizar
+	              </Button>
+	            </div>
+	            
+	            <Card className="bg-white border-slate-200 shadow-sm overflow-hidden">
+	              <Table>
+	                <TableHeader>
+	                  <TableRow className="bg-slate-50/50">
+	                    <TableHead className="w-[150px]">Nombre</TableHead>
+	                    <TableHead>Historia (ES)</TableHead>
+	                    <TableHead>Historia (KO)</TableHead>
+	                    <TableHead className="w-[120px]">Fecha</TableHead>
+	                    <TableHead className="w-[100px] text-right">Acciones</TableHead>
+	                  </TableRow>
+	                </TableHeader>
+	                <TableBody>
+	                  {allStories?.map((story: any, index: number) => (
+	                    <TableRow key={index} className="hover:bg-slate-50/50 transition-colors">
+	                      <TableCell className="font-medium text-slate-900">{story.nombre}</TableCell>
+	                      <TableCell className="max-w-xs truncate text-slate-600" title={story.historia_es}>
+	                        {story.historia_es}
+	                      </TableCell>
+	                      <TableCell className="max-w-xs truncate text-slate-400 italic" title={story.historia_ko}>
+	                        {story.historia_ko}
+	                      </TableCell>
+	                      <TableCell className="text-slate-500 text-xs">
+	                        {story.fecha ? new Date(story.fecha).toLocaleDateString() : "N/A"}
+	                      </TableCell>
+	                      <TableCell className="text-right">
+	                        <Button 
+	                          size="sm" 
+	                          variant="ghost" 
+	                          onClick={() => handleDeleteStory(index + 2)} // index + 2 porque la fila 1 es el encabezado en Sheets
+	                          className="h-8 w-8 p-0 text-red-500 hover:text-red-700 hover:bg-red-50"
+	                        >
+	                          <Trash2 className="size-4" />
+	                        </Button>
+	                      </TableCell>
+	                    </TableRow>
+	                  ))}
+	                  {(!allStories || allStories.length === 0) && (
+	                    <TableRow>
+	                      <TableCell colSpan={5} className="h-32 text-center text-slate-400">
+	                        No hay historias registradas en Google Sheets.
+	                      </TableCell>
+	                    </TableRow>
+	                  )}
+	                </TableBody>
+	              </Table>
+	            </Card>
+	          </div>
+	        )}
+	
+	        {/* News Tab */}
+	        {activeTab === "news" && (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div className="lg:col-span-1 space-y-6">
               <Card className="bg-white border-slate-200 shadow-sm">
