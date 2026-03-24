@@ -10,7 +10,7 @@ import {
   Users, TrendingUp, AlertTriangle, Search, RefreshCw, ShieldCheck,
   Clock, DollarSign, Package, MoreVertical, ArrowUpRight, ArrowDownRight,
   CheckCircle2, XCircle, User, Phone, Mail, ChevronRight, Download, Filter,
-  AlertCircle, Newspaper, Zap, ExternalLink, Wrench
+  AlertCircle, Newspaper, Zap, ExternalLink, Wrench, MessageCircle
 } from "lucide-react";
 import { raffleThemes, type RaffleCategory } from "@shared/raffleThemes";
 import { trpc } from "@/lib/trpc";
