@@ -28,7 +28,7 @@ export default function NewJeansBiographies() {
       birthday: "7 de mayo de 2004",
       birthplace: "Chuncheon, Gangwon, Corea del Sur",
       mbti: "ESTJ",
-      image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=1000&auto=format&fit=crop",
+      image: "https://i.pinimg.com/736x/05/7b/ee/057bee2994b408a891aba549858c07a2.jpg",
       color: "bg-blue-400",
       fullBio: {
         preDebut: "Minji fue aprendiz de Source Music y apareció en el video musical 'Permission to Dance' de BTS antes de su debut. Es conocida por su belleza clásica coreana y su papel como la 'hermana mayor' del grupo.",
@@ -45,7 +45,7 @@ export default function NewJeansBiographies() {
       birthday: "6 de octubre de 2004",
       birthplace: "Melbourne, Australia",
       mbti: "INFP",
-      image: "https://images.unsplash.com/photo-1517841905240-472988babdf9?q=80&w=1000&auto=format&fit=crop",
+      image: "https://www.nme.com/wp-content/uploads/2024/10/newjeans-hanni-audit-101024.jpg",
       color: "bg-pink-400",
       fullBio: {
         preDebut: "Hanni es de ascendencia vietnamita pero nació y creció en Australia. También apareció en el MV 'Permission to Dance' de BTS. Es la primera idol vietnamita bajo HYBE.",
@@ -62,7 +62,7 @@ export default function NewJeansBiographies() {
       birthday: "11 de abril de 2005",
       birthplace: "Newcastle, Nueva Gales del Sur, Australia",
       mbti: "ENFP",
-      image: "https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?q=80&w=1000&auto=format&fit=crop",
+      image: "https://nolae.es/cdn/shop/articles/danielle-newjeans-profil-584290.jpg?v=1737393834&width=1920",
       color: "bg-yellow-400",
       fullBio: {
         preDebut: "Danielle es de ascendencia coreana-australiana. De niña, apareció en varios programas de televisión coreanos como 'Rainbow Kindergarten'.",
@@ -79,7 +79,7 @@ export default function NewJeansBiographies() {
       birthday: "15 de mayo de 2006",
       birthplace: "Seúl, Corea del Sur",
       mbti: "ISTP",
-      image: "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?q=80&w=1000&auto=format&fit=crop",
+      image: "https://i.pinimg.com/736x/43/5b/c7/435bc74cf04af112e472f6c7f1e628be.jpg",
       color: "bg-green-400",
       fullBio: {
         preDebut: "Haerin practicaba pansori (música tradicional coreana) antes de convertirse en aprendiz. Es conocida por sus rasgos faciales que recuerdan a un gato.",
@@ -96,7 +96,7 @@ export default function NewJeansBiographies() {
       birthday: "21 de abril de 2008",
       birthplace: "Incheon, Corea del Sur",
       mbti: "INFP",
-      image: "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=800&q=80",
+      image: "https://upload.wikimedia.org/wikipedia/commons/a/ac/Hyein_of_NewJeans%2C_July_26%2C_2024.png",
       color: "bg-purple-400",
       fullBio: {
         preDebut: "Hyein fue modelo infantil y miembro del grupo infantil U.SSO Girl. También apareció en contenidos de YouTube antes de unirse a ADOR.",
