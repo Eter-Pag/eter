@@ -1,6 +1,6 @@
 import { eq, inArray, and, lt, sql, desc } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { InsertUser, users, tickets, orders, raffles, purchases, products, news, stories, type InsertOrder, type InsertPurchase, type InsertProduct, type InsertStory } from "../drizzle/schema";
+import { InsertUser, users, tickets, orders, raffles, purchases, products, news, type InsertOrder, type InsertPurchase, type InsertProduct } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
 let _db: ReturnType<typeof drizzle> | null = null;
@@ -358,17 +358,4 @@ export async function markOrderSyncedToSheets(orderId: number) {
   await db.update(orders).set({ syncedToSheets: true }).where(eq(orders.id, orderId));
 }
 
-// ============ STORY QUERIES ============
 
-export async function createStory(data: InsertStory) {
-  const db = await getDb();
-  if (!db) throw new Error("Database not available");
-  const result = await db.insert(stories).values(data);
-  return result[0].insertId;
-}
-
-export async function getAllStories() {
-  const db = await getDb();
-  if (!db) return [];
-  return db.select().from(stories).orderBy(desc(stories.createdAt));
-}

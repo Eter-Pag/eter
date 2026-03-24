@@ -162,16 +162,4 @@ export const news = mysqlTable("news", {
 export type News = typeof news.$inferSelect;
 export type InsertNews = typeof news.$inferInsert;
 
-/**
- * Stories table: stores user-submitted stories and their translations.
- */
-export const stories = mysqlTable("stories", {
-  id: int("id").autoincrement().primaryKey(),
-  name: varchar("name", { length: 255 }).notNull(),
-  content: text("content").notNull(),
-  contentKo: text("contentKo").notNull(),
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
-});
 
-export type Story = typeof stories.$inferSelect;
-export type InsertStory = typeof stories.$inferInsert;

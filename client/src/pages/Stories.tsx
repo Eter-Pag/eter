@@ -165,12 +165,12 @@ export default function Stories() {
                       <CardContent className="p-6 flex flex-col h-full">
                         <div className="flex items-center gap-3 mb-4">
                           <div className="size-10 bg-gradient-to-br from-purple-100 to-pink-100 rounded-full flex items-center justify-center text-purple-600 font-bold">
-                            {story.name.charAt(0).toUpperCase()}
+                            {story.nombre.charAt(0).toUpperCase()}
                           </div>
                           <div>
-                            <p className="font-bold text-slate-900">{story.name}</p>
+                            <p className="font-bold text-slate-900">{story.nombre}</p>
                             <p className="text-xs text-slate-400">
-                              {new Date(story.createdAt).toLocaleDateString('es-MX', { 
+                              {new Date(story.fecha).toLocaleDateString('es-MX', { 
                                 day: 'numeric', 
                                 month: 'long' 
                               })}
@@ -181,7 +181,7 @@ export default function Stories() {
                         <div className="space-y-4 flex-grow">
                           <div className="relative">
                             <p className="text-slate-600 text-sm leading-relaxed italic">
-                              "{story.content}"
+                              "{story.historia_es}"
                             </p>
                           </div>
                           
@@ -191,7 +191,7 @@ export default function Stories() {
                               Traducción al Coreano
                             </div>
                             <p className="text-slate-800 font-medium text-sm leading-relaxed font-kr">
-                              {story.contentKo}
+                              {story.historia_ko}
                             </p>
                           </div>
                         </div>

@@ -35,8 +35,6 @@ import {
   markTicketsSold,
   getTicketStats,
   deleteOrder,
-  createStory,
-  getAllStories,
 } from "./db";
 import { RAFFLE_PRODUCT } from "./products";
 import { orders } from "../drizzle/schema";
@@ -342,7 +340,16 @@ export const appRouter = router({
   news: newsRouter,
   stories: router({
     list: publicProcedure.query(async () => {
-      return getAllStories();
+      try {
+        const STORIES_SHEETS_API = "https://script.google.com/macros/s/AKfycbzOJeE4kmAOr2kxGkKrdQgLsvZBNq-GgQLGEHNbrbfBlPIypoh0cDh7xso66Kc1PDru/exec";
+        const response = await fetch(`${STORIES_SHEETS_API}?action=getStories`);
+        if (!response.ok) return [];
+        const data = await response.json();
+        return data.stories || [];
+      } catch (error) {
+        console.error("[Stories] Error fetching from Sheets:", error);
+        return [];
+      }
     }),
     submit: publicProcedure
       .input(z.object({
@@ -359,14 +366,7 @@ export const appRouter = router({
           });
           contentKo = translation.text || "Traducción no disponible en este momento.";
 
-          // 2. Guardar en BD (esto es lo más importante)
-          const storyId = await createStory({
-            name: input.name,
-            content: input.content,
-            contentKo,
-          });
-
-          // 3. Sincronizar con Google Sheets (en segundo plano)
+          // 2. Enviar a Google Sheets (Único almacenamiento)
           const payload = {
             tipo: "historia",
             nombre: input.name,
@@ -377,18 +377,20 @@ export const appRouter = router({
 
           const STORIES_SHEETS_API = "https://script.google.com/macros/s/AKfycbzOJeE4kmAOr2kxGkKrdQgLsvZBNq-GgQLGEHNbrbfBlPIypoh0cDh7xso66Kc1PDru/exec";
           
-          // No esperamos la respuesta de Sheets para no bloquear al usuario
-          fetch(STORIES_SHEETS_API, {
+          const response = await fetch(STORIES_SHEETS_API, {
             method: "POST",
             body: JSON.stringify(payload),
             headers: { "Content-Type": "application/json" },
-          }).catch(err => console.error("[Sheets] Error syncing story:", err));
+          });
 
-          return { success: true, storyId };
+          if (!response.ok) {
+            throw new Error("Error al guardar en Google Sheets");
+          }
+
+          return { success: true };
         } catch (error) {
-          console.error("[Stories] Critical error submitting story:", error);
-          // Solo lanzamos error si falla el guardado en la base de datos
-          throw new Error("Lo sentimos, hubo un problema técnico al procesar tu historia. Por favor, intenta de nuevo.");
+          console.error("[Stories] Error submitting story:", error);
+          throw new Error("Lo sentimos, hubo un problema al enviar tu historia a Google Sheets. Por favor, intenta de nuevo.");
         }
       }),
   }),

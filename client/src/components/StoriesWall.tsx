@@ -102,17 +102,17 @@ export function StoriesWall() {
                 <CardContent className="p-8 flex flex-col h-full">
                   <div className="flex items-center gap-3 mb-6">
                     <div className="size-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center text-white font-bold shadow-lg shadow-purple-200 group-hover:rotate-6 transition-transform">
-                      {story.name.charAt(0).toUpperCase()}
+                      {story.nombre.charAt(0).toUpperCase()}
                     </div>
                     <div>
-                      <p className="font-bold text-slate-900 text-lg">{story.name}</p>
+                      <p className="font-bold text-slate-900 text-lg">{story.nombre}</p>
                       <p className="text-xs text-slate-400 font-medium uppercase tracking-wider">Fan de Corazón</p>
                     </div>
                   </div>
                   
                   <div className="space-y-6 flex-grow">
                     <p className="text-slate-600 leading-relaxed italic text-base">
-                      "{story.content.length > 150 ? story.content.substring(0, 150) + '...' : story.content}"
+                      "{story.historia_es.length > 150 ? story.historia_es.substring(0, 150) + '...' : story.historia_es}"
                     </p>
                     
                     <div className="pt-6 border-t border-slate-100">
@@ -121,7 +121,7 @@ export function StoriesWall() {
                         Traducción al Coreano
                       </div>
                       <p className="text-slate-800 font-medium text-sm leading-relaxed font-kr line-clamp-3">
-                        {story.contentKo}
+                        {story.historia_ko}
                       </p>
                     </div>
                   </div>
