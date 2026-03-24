@@ -1,23 +1,14 @@
 import { useLocation } from "wouter";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Calendar, MapPin, Star, ChevronDown, Music, Award, BookOpen, Heart } from "lucide-react";
+import { ArrowLeft, Calendar, MapPin, Star, Music, Award, BookOpen, Heart, Maximize2, Sparkles, Globe } from "lucide-react";
 import { Badge } from "../components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useState, useRef, useEffect } from "react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { motion } from "framer-motion";
 
 export default function TwiceBiographies() {
   const [, navigate] = useLocation();
-  const [expandedMemberId, setExpandedMemberId] = useState<string | null>(null);
-  const bioContainerRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (expandedMemberId && bioContainerRef.current) {
-      setTimeout(() => {
-        bioContainerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }, 100);
-    }
-  }, [expandedMemberId]);
 
   const members = [
     {
@@ -31,7 +22,7 @@ export default function TwiceBiographies() {
       image: "https://upload.wikimedia.org/wikipedia/commons/5/55/220701_Nayeon%28%EB%82%98%EC%97%B0%29_of_Twice_MusicBank_Fancam.jpg",
       color: "bg-sky-400",
       fullBio: {
-        preDebut: "Nayeon se unió a JYP en 2010 tras una audición secreta. Antes de SIXTEEN, era parte del grupo planeado 6MIX. Es conocida por ser la 'cara' de TWICE y por su energía vibrante que define el sonido del grupo.",
+        preDebut: "Nayeon se unió a JYP en 2010 tras una audición secreta. Antes de SIXTEEN, era parte del grupo planeado 6MIX. Es conocida por ser la 'face' de TWICE y por su energía vibrante que define el sonido del grupo.",
         soloCareer: "Fue la primera en debutar como solista con 'IM NAYEON' (2022) y su éxito 'POP!'. En 2024 lanzó su segundo mini álbum 'NA'.",
         achievements: "Primera solista de K-pop en entrar al Top 10 del Billboard 200. Ganadora de múltiples premios a Mejor Artista Femenina.",
         curiosities: "Tiene una cicatriz en la pierna izquierda por un accidente de coche en su infancia. Es muy fan de Oh My Girl."
@@ -175,10 +166,6 @@ export default function TwiceBiographies() {
     }
   ];
 
-  const toggleMember = (memberId: string) => {
-    setExpandedMemberId(expandedMemberId === memberId ? null : memberId);
-  };
-
   return (
     <div className="min-h-screen bg-slate-50">
       {/* Header */}
@@ -206,187 +193,151 @@ export default function TwiceBiographies() {
         <img
           src="https://www.nme.com/wp-content/uploads/2025/07/twice-this-is-for-interview-credit-jyp-entertainment-image1.jpeg"
           alt="TWICE Group"
-          className="w-full h-full object-cover object-top"
+          className="w-full h-full object-cover object-center"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent" />
         <div className="absolute inset-0 flex flex-col items-center justify-end pb-12 text-white p-6 text-center">
           <h2 className="text-5xl md:text-8xl font-black mb-4 tracking-tighter drop-shadow-2xl">TWICE</h2>
           <p className="max-w-3xl text-lg md:text-2xl text-slate-200 font-medium leading-relaxed">
-            El grupo de la nación que ha conquistado el mundo con su talento, carisma y una discografía llena de éxitos inolvidables.
+            One in a Million! El grupo de la nación que ha conquistado corazones con su energía y talento inigualable.
           </p>
         </div>
       </section>
 
       {/* Main Content */}
       <main className="container py-16 px-4 max-w-6xl mx-auto">
-        <div className="space-y-6">
-          {/* Grid de Miembros */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-12">
-            {members.map((member) => (
-              <Card
-                key={member.id}
-                className="group overflow-hidden border-none shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer bg-white"
-                onClick={() => toggleMember(member.id)}
-              >
-                <div className="relative aspect-[3/4] overflow-hidden">
-                  <img
-                    src={member.image}
-                    alt={member.stageName}
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                  />
-                  <div className={`absolute inset-0 opacity-20 ${member.color}`} />
-                  <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/90 to-transparent text-white">
-                    <p className="text-xs font-bold uppercase tracking-widest opacity-80 mb-1">{member.position}</p>
-                    <h4 className="text-xl font-black">{member.stageName}</h4>
-                  </div>
-                  <div className="absolute top-3 right-3 bg-white/90 backdrop-blur rounded-full p-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <ChevronDown className={`size-5 text-slate-900 transition-transform ${expandedMemberId === member.id ? 'rotate-180' : ''}`} />
-                  </div>
-                </div>
-              </Card>
-            ))}
-          </div>
-
-          {/* Expanded Biography Section */}
-          {expandedMemberId && (
-            <div ref={bioContainerRef} className="animate-in fade-in slide-in-from-top-4 duration-500">
-              <Card className="border-none shadow-2xl bg-white overflow-hidden">
-                <CardContent className="p-0">
-                  {members
-                    .filter((m) => m.id === expandedMemberId)
-                    .map((member) => (
-                      <div key={member.id} className="grid grid-cols-1 lg:grid-cols-3 gap-8 p-8 md:p-12">
-                        {/* Left: Image and Basic Info */}
-                        <div className="lg:col-span-1">
-                          <div className="relative rounded-3xl overflow-hidden shadow-xl aspect-[3/4] mb-6">
-                            <img
-                              src={member.image}
-                              alt={member.stageName}
-                              className="w-full h-full object-cover object-top"
-                            />
-                            <div className={`absolute inset-0 opacity-30 ${member.color}`} />
-                            <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/90 to-transparent text-white">
-                              <h3 className="text-3xl font-black mb-1">{member.stageName}</h3>
-                              <p className="text-pink-300 font-bold tracking-widest uppercase text-xs">{member.position}</p>
-                            </div>
-                          </div>
-
-                          <div className="space-y-3">
-                            <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100">
-                              <Calendar className="size-4 text-pink-600 shrink-0" />
-                              <div>
-                                <p className="text-xs text-slate-400 font-bold uppercase">Nacimiento</p>
-                                <p className="text-xs font-bold text-slate-700">{member.birthday}</p>
-                              </div>
-                            </div>
-                            <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100">
-                              <MapPin className="size-4 text-blue-600 shrink-0" />
-                              <div>
-                                <p className="text-xs text-slate-400 font-bold uppercase">Origen</p>
-                                <p className="text-xs font-bold text-slate-700">{member.birthplace}</p>
-                              </div>
-                            </div>
-                            <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-xl border border-slate-100">
-                              <Star className="size-4 text-amber-600 shrink-0" />
-                              <div>
-                                <p className="text-xs text-slate-400 font-bold uppercase">MBTI</p>
-                                <p className="text-xs font-bold text-slate-700">{member.mbti}</p>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* Right: Tabs */}
-                        <div className="lg:col-span-2">
-                          <Tabs defaultValue="bio" className="w-full">
-                            <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 h-auto p-1 bg-slate-100 rounded-xl mb-6">
-                              <TabsTrigger value="bio" className="rounded-lg py-2 text-xs md:text-sm data-[state=active]:bg-white data-[state=active]:shadow-sm">
-                                <BookOpen className="size-3 md:size-4 mr-1" /> Bio
-                              </TabsTrigger>
-                              <TabsTrigger value="solo" className="rounded-lg py-2 text-xs md:text-sm data-[state=active]:bg-white data-[state=active]:shadow-sm">
-                                <Music className="size-3 md:size-4 mr-1" /> Solo
-                              </TabsTrigger>
-                              <TabsTrigger value="achievements" className="rounded-lg py-2 text-xs md:text-sm data-[state=active]:bg-white data-[state=active]:shadow-sm">
-                                <Award className="size-3 md:size-4 mr-1" /> Logros
-                              </TabsTrigger>
-                              <TabsTrigger value="extra" className="rounded-lg py-2 text-xs md:text-sm data-[state=active]:bg-white data-[state=active]:shadow-sm">
-                                <Heart className="size-3 md:size-4 mr-1" /> Extra
-                              </TabsTrigger>
-                            </TabsList>
-
-                            <div className="space-y-6 min-h-[350px]">
-                              <TabsContent value="bio" className="mt-0 space-y-4 animate-in fade-in duration-500">
-                                <div className="flex items-center gap-3 mb-4">
-                                  <div className="h-6 w-1 bg-pink-600 rounded-full" />
-                                  <h4 className="text-lg font-bold text-slate-900">Trayectoria y Origen</h4>
-                                </div>
-                                <p className="text-slate-600 text-sm md:text-base leading-relaxed">
-                                  {member.fullBio.preDebut}
-                                </p>
-                              </TabsContent>
-
-                              <TabsContent value="solo" className="mt-0 space-y-4 animate-in fade-in duration-500">
-                                <div className="flex items-center gap-3 mb-4">
-                                  <div className="h-6 w-1 bg-blue-600 rounded-full" />
-                                  <h4 className="text-lg font-bold text-slate-900">Carrera Solista</h4>
-                                </div>
-                                <p className="text-slate-600 text-sm md:text-base leading-relaxed">
-                                  {member.fullBio.soloCareer}
-                                </p>
-                              </TabsContent>
-
-                              <TabsContent value="achievements" className="mt-0 space-y-4 animate-in fade-in duration-500">
-                                <div className="flex items-center gap-3 mb-4">
-                                  <div className="h-6 w-1 bg-amber-500 rounded-full" />
-                                  <h4 className="text-lg font-bold text-slate-900">Logros e Impacto</h4>
-                                </div>
-                                <p className="text-slate-600 text-sm md:text-base leading-relaxed">
-                                  {member.fullBio.achievements}
-                                </p>
-                              </TabsContent>
-
-                              <TabsContent value="extra" className="mt-0 space-y-4 animate-in fade-in duration-500">
-                                <div className="flex items-center gap-3 mb-4">
-                                  <div className="h-6 w-1 bg-pink-500 rounded-full" />
-                                  <h4 className="text-lg font-bold text-slate-900">Curiosidades</h4>
-                                </div>
-                                <p className="text-slate-600 text-sm md:text-base leading-relaxed">
-                                  {member.fullBio.curiosities}
-                                </p>
-                              </TabsContent>
-                            </div>
-                          </Tabs>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {members.map((member) => (
+            <Dialog key={member.id}>
+              <DialogTrigger asChild>
+                <motion.div
+                  whileHover={{ y: -10 }}
+                  className="cursor-pointer"
+                >
+                  <Card className="group overflow-hidden border-none shadow-xl rounded-[2.5rem] bg-white">
+                    <div className="relative aspect-[3/4] overflow-hidden">
+                      <img
+                        src={member.image}
+                        alt={member.stageName}
+                        className="w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-110"
+                      />
+                      <div className={`absolute inset-0 opacity-20 ${member.color}`} />
+                      <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/90 via-black/40 to-transparent text-white">
+                        <p className="text-[10px] font-bold uppercase tracking-widest opacity-80 mb-1">{member.position}</p>
+                        <h4 className="text-2xl font-black tracking-tight">{member.stageName}</h4>
+                        <p className="text-white/80 text-sm font-medium">{member.realName}</p>
+                      </div>
+                      <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <div className="bg-white/20 backdrop-blur-md p-2 rounded-xl">
+                          <Maximize2 className="size-5 text-white" />
                         </div>
                       </div>
-                    ))}
-                </CardContent>
-              </Card>
-            </div>
-          )}
-        </div>
+                    </div>
+                  </Card>
+                </motion.div>
+              </DialogTrigger>
 
-        {/* Final Group Section */}
-        <section className="mt-16 bg-gradient-to-br from-pink-900 to-slate-900 rounded-3xl p-10 md:p-16 text-white shadow-2xl overflow-hidden relative">
-          <div className="absolute top-0 right-0 w-96 h-96 bg-pink-500/20 blur-[100px] rounded-full -mr-48 -mt-48" />
-          <div className="relative z-10 max-w-3xl">
-            <h3 className="text-3xl md:text-5xl font-black mb-6 leading-tight">TWICE: One in a Million</h3>
-            <p className="text-lg text-slate-300 leading-relaxed mb-6">
-              Desde su debut en 2015, TWICE ha demostrado que la unión y el trabajo duro pueden llevarte a la cima del mundo. Con su mensaje de alegría y amor, han creado un vínculo inquebrantable con ONCE.
-            </p>
-            <div className="flex flex-wrap gap-3">
-              <Badge variant="outline" className="text-white border-white/20 px-3 py-1 text-sm">#TWICE</Badge>
-              <Badge variant="outline" className="text-white border-white/20 px-3 py-1 text-sm">#ONCE</Badge>
-              <Badge variant="outline" className="text-white border-white/20 px-3 py-1 text-sm">#KPOP_QUEENS</Badge>
-            </div>
-          </div>
-        </section>
+              <DialogContent className="max-w-4xl bg-white border-none shadow-2xl rounded-[2.5rem] p-0 overflow-hidden">
+                <div className="flex flex-col md:flex-row h-[90vh] md:h-[80vh]">
+                  {/* Image Sidebar */}
+                  <div className="w-full md:w-2/5 relative h-64 md:h-full">
+                    <img 
+                      src={member.image} 
+                      alt={member.stageName}
+                      className="w-full h-full object-cover object-center"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent md:bg-gradient-to-r" />
+                    <div className="absolute bottom-8 left-8">
+                      <h2 className="text-5xl font-black text-white tracking-tighter mb-2">{member.stageName}</h2>
+                      <p className="text-white/90 text-xl font-bold">{member.realName}</p>
+                    </div>
+                  </div>
+
+                  {/* Content Area */}
+                  <div className="w-full md:w-3/5 p-8 md:p-12 overflow-y-auto custom-scrollbar bg-white">
+                    <div className="space-y-8">
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                          <div className="flex items-center gap-2 text-slate-400 mb-1">
+                            <Calendar className="size-4" />
+                            <span className="text-[10px] font-black uppercase tracking-widest">Nacimiento</span>
+                          </div>
+                          <p className="font-bold text-slate-900">{member.birthday}</p>
+                        </div>
+                        <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                          <div className="flex items-center gap-2 text-slate-400 mb-1">
+                            <MapPin className="size-4" />
+                            <span className="text-[10px] font-black uppercase tracking-widest">Origen</span>
+                          </div>
+                          <p className="font-bold text-slate-900 truncate">{member.birthplace}</p>
+                        </div>
+                      </div>
+
+                      <Tabs defaultValue="historia" className="w-full">
+                        <TabsList className="w-full bg-slate-100 p-1 rounded-2xl h-12">
+                          <TabsTrigger value="historia" className="flex-1 rounded-xl font-bold data-[state=active]:bg-white data-[state=active]:shadow-sm">Historia</TabsTrigger>
+                          <TabsTrigger value="logros" className="flex-1 rounded-xl font-bold data-[state=active]:bg-white data-[state=active]:shadow-sm">Logros</TabsTrigger>
+                          <TabsTrigger value="curiosidades" className="flex-1 rounded-xl font-bold data-[state=active]:bg-white data-[state=active]:shadow-sm">Extra</TabsTrigger>
+                        </TabsList>
+                        
+                        <div className="mt-8 space-y-6">
+                          <TabsContent value="historia" className="space-y-6 m-0">
+                            <div className="space-y-3">
+                              <h4 className="flex items-center gap-2 font-black text-slate-900 uppercase tracking-widest text-xs">
+                                <Music className="size-4 text-pink-500" /> Pre-Debut
+                              </h4>
+                              <p className="text-slate-600 leading-relaxed">{member.fullBio.preDebut}</p>
+                            </div>
+                            <div className="space-y-3">
+                              <h4 className="flex items-center gap-2 font-black text-slate-900 uppercase tracking-widest text-xs">
+                                <Star className="size-4 text-amber-500" /> Carrera Solista
+                              </h4>
+                              <p className="text-slate-600 leading-relaxed">{member.fullBio.soloCareer}</p>
+                            </div>
+                          </TabsContent>
+
+                          <TabsContent value="logros" className="space-y-6 m-0">
+                            <div className="space-y-3">
+                              <h4 className="flex items-center gap-2 font-black text-slate-900 uppercase tracking-widest text-xs">
+                                <Award className="size-4 text-blue-500" /> Logros Destacados
+                              </h4>
+                              <p className="text-slate-600 leading-relaxed">{member.fullBio.achievements}</p>
+                            </div>
+                          </TabsContent>
+
+                          <TabsContent value="curiosidades" className="space-y-6 m-0">
+                            <div className="space-y-3">
+                              <h4 className="flex items-center gap-2 font-black text-slate-900 uppercase tracking-widest text-xs">
+                                <Heart className="size-4 text-pink-500" /> Curiosidades
+                              </h4>
+                              <p className="text-slate-600 leading-relaxed">{member.fullBio.curiosities}</p>
+                            </div>
+                            <div className="flex items-center justify-center gap-4 pt-4">
+                              <Sparkles className="size-6 text-purple-500" />
+                              <div className="h-px w-12 bg-slate-100" />
+                              <Heart className="size-6 text-pink-500 fill-current" />
+                              <div className="h-px w-12 bg-slate-100" />
+                              <Globe className="size-6 text-blue-500" />
+                            </div>
+                          </TabsContent>
+                        </div>
+                      </Tabs>
+                    </div>
+                  </div>
+                </div>
+              </DialogContent>
+            </Dialog>
+          ))}
+        </div>
       </main>
 
       {/* Footer */}
-      <footer className="py-12 bg-white border-t border-slate-200 text-center">
+      <footer className="py-20 bg-slate-900 text-center mt-20">
         <div className="container px-4">
-          <p className="font-bold text-slate-900 mb-2">ETER K-POP MX</p>
-          <p className="text-slate-400 text-sm">© 2026 - Biografías Oficiales de TWICE. Todos los derechos reservados.</p>
+          <p className="text-white/40 text-sm font-bold uppercase tracking-widest mb-4">Eter K-Pop MX</p>
+          <p className="text-white/20 text-xs max-w-md mx-auto">
+            Información actualizada a marzo de 2026. Todas las imágenes pertenecen a sus respectivos dueños.
+          </p>
         </div>
       </footer>
     </div>
