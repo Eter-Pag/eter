@@ -28,7 +28,7 @@ export default function StrayKidsBiographies() {
       birthday: "3 de octubre de 1997",
       birthplace: "Seúl, Corea del Sur (Criado en Sídney, Australia)",
       mbti: "ENFJ",
-      image: "https://www.musicmundial.com/wp-content/uploads/2025/01/Bang-Chan-de-Stray-Kids-tuvo-que-cancelar-sus-actividades-debido-a-problemas-de-salud.jpg",
+      image: "https://i.pinimg.com/originals/cf/f2/c8/cff2c874b3b35b3a599bafc5e3416240.jpg",
       color: "bg-slate-800",
       fullBio: {
         preDebut: "Bang Chan se unió a JYP Entertainment en 2010 tras una audición en Australia y entrenó durante siete años. Durante este tiempo, formó el trío de hip-hop 3RACHA junto a Changbin y Han. Fue el encargado de seleccionar personalmente a los integrantes de Stray Kids, lo que demuestra su papel fundamental en la creación del grupo.",
@@ -187,7 +187,7 @@ export default function StrayKidsBiographies() {
       {/* Hero Section */}
       <section className="relative h-[40vh] md:h-[60vh] overflow-hidden">
         <img
-          src="https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=1600&q=80"
+          src="https://i.pinimg.com/originals/cf/f2/c8/cff2c874b3b35b3a599bafc5e3416240.jpg"
           alt="Stray Kids Group"
           className="w-full h-full object-cover"
         />

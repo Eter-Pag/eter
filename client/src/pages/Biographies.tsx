@@ -32,7 +32,7 @@ export default function Biographies() {
       name: "STRAY KIDS",
       group: "Grupo de 8 miembros",
       description: "STRAY KIDS es un grupo masculino surcoreano conocido por su talento en danza, canto y producción musical.",
-      image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=1000&auto=format&fit=crop",
+      image: "https://i.pinimg.com/originals/cf/f2/c8/cff2c874b3b35b3a599bafc5e3416240.jpg",
       debut: "2018",
       members: 8,
       path: "/biografias/straykids"
