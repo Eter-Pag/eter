@@ -45,7 +45,7 @@ export default function IveBiographies() {
       birth: "24 de septiembre de 2002",
       origin: "Incheon, Corea del Sur",
       mbti: "ISTJ",
-      image: "https://i.pinimg.com/564x/a1/42/6c/a1426c551f0a5d79949789025582d152.jpg",
+      image: "https://upload.wikimedia.org/wikipedia/commons/5/59/Ive_Gaeul_at_Seoul_Fashion_Week%2C_1_September_2025_03_%28cropped%29.png",
       color: "bg-blue-300",
       fullBio: {
         preDebut: "Fue reclutada por JYP y luego por Starship. Es la integrante con el período de entrenamiento más largo.",
@@ -113,7 +113,7 @@ export default function IveBiographies() {
       birth: "21 de febrero de 2007",
       origin: "Seúl, Corea del Sur",
       mbti: "ENFP",
-      image: "https://i.pinimg.com/564x/47/36/38/4736387a2572e35b5a278d155dc64547.jpg",
+      image: "https://i.pinimg.com/736x/9e/f2/1b/9ef21b780c6703757de41d688c18b9a0.jpg",
       color: "bg-yellow-300",
       fullBio: {
         preDebut: "Fue modelo infantil para SM Entertainment antes de unirse a Starship. Es la miembro más joven.",
