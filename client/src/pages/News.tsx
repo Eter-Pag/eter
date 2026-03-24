@@ -3,7 +3,8 @@ import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { LegalFooter } from "@/components/LegalFooter";
-import { ArrowLeft, Calendar, ExternalLink, Loader2, ChevronDown, ChevronUp } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { ArrowLeft, Calendar, ExternalLink, Loader2, ChevronDown, ChevronUp, Maximize2, Globe } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 
 interface NewsArticle {
@@ -23,7 +24,7 @@ export default function News() {
   const [, navigate] = useLocation();
   const [articles, setArticles] = useState<NewsArticle[]>([]);
   const [loading, setLoading] = useState(true);
-  const [expandedId, setExpandedId] = useState<number | null>(null);
+  const [expandedId, setExpandedId] = useState<number | null>(null); // Mantener para compatibilidad si es necesario, pero usaremos Dialog
 
   // Fetch news articles using tRPC query hook
   const newsQuery = trpc.news.getAll.useQuery(undefined, {
@@ -104,108 +105,123 @@ export default function News() {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 items-start">
-            {articles.map((article) => {
-              const isExpanded = expandedId === article.id;
-              return (
-                <Card
-                  key={article.id}
-                  className={`bg-white/60 backdrop-blur-xl border-border/50 shadow-lg overflow-hidden transition-all duration-500 ease-in-out ${
-                    isExpanded 
-                      ? "col-span-full md:col-span-full lg:col-span-full ring-2 ring-emerald-500/20 shadow-2xl scale-[1.02] z-10" 
-                      : "hover:shadow-xl hover:-translate-y-1"
-                  }`}
-                >
-                  <CardContent className="p-0 flex flex-col">
-                    <div className={`flex flex-col ${isExpanded ? "md:flex-row" : ""}`}>
-                      {/* Image Section */}
-                      {article.image && (
-                        <div className={`relative bg-gradient-to-br from-gray-300 to-gray-400 overflow-hidden transition-all duration-500 ${
-                          isExpanded ? "w-full md:w-1/3 h-64 md:h-auto" : "w-full h-48"
-                        }`}>
-                          <img
-                            src={article.image}
-                            alt={article.title}
-                            className="w-full h-full object-cover"
-                            onError={(e) => {
-                              (e.target as HTMLImageElement).style.display = "none";
-                            }}
-                          />
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
-                        </div>
-                      )}
-
-                      {/* Content Section */}
-                      <div className={`p-6 flex flex-col justify-between ${isExpanded && article.image ? "md:w-2/3" : "w-full"}`}>
-                        <div>
-                          <div className="flex items-center gap-2 mb-3">
-                            <Calendar className="size-4 text-gray-500" />
-                            <span className="text-xs text-gray-500">
-                              {formatDate(article.createdAt)}
-                            </span>
-                            <span className="text-xs bg-emerald-100 text-emerald-700 px-2 py-1 rounded-full">
-                              {article.source.toUpperCase()}
-                            </span>
-                          </div>
-
-                          <h2 className={`font-bold mb-3 text-gray-900 transition-all duration-300 ${
-                            isExpanded ? "text-2xl md:text-3xl" : "text-lg line-clamp-2"
-                          }`}>
-                            {article.title}
-                          </h2>
-
-                          <div className={`text-gray-600 text-sm md:text-base mb-4 transition-all duration-500 ${
-                            isExpanded ? "opacity-100" : "line-clamp-3 opacity-80"
-                          }`}>
-                            {isExpanded ? (
-                              <div className="space-y-4 animate-in fade-in slide-in-from-top-2 duration-700">
-                                {stripHtml(article.content).split('\n').map((paragraph, idx) => (
-                                  paragraph.trim() && <p key={idx}>{paragraph}</p>
-                                ))}
-                              </div>
-                            ) : (
-                              <p>{stripHtml(article.summary || article.content).substring(0, 120)}...</p>
-                            )}
-                          </div>
-                        </div>
-
-                        <div className="flex gap-2 mt-4">
-                          <Button
-                            onClick={() => toggleExpand(article.id)}
-                            className={`flex-1 gap-2 transition-all duration-300 ${
-                              isExpanded 
-                                ? "bg-gray-100 text-gray-900 hover:bg-gray-200" 
-                                : "bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700"
-                            } text-sm`}
-                          >
-                            {isExpanded ? (
-                              <>
-                                <ChevronUp className="size-4" />
-                                Leer Menos
-                              </>
-                            ) : (
-                              <>
-                                <ChevronDown className="size-4" />
-                                Leer Completo
-                              </>
-                            )}
-                          </Button>
-                          {article.sourceUrl && isExpanded && (
-                            <Button
-                              onClick={() => window.open(article.sourceUrl!, "_blank")}
-                              variant="outline"
-                              className="gap-2 text-sm animate-in fade-in zoom-in duration-500"
-                            >
-                              <ExternalLink className="size-4" />
-                              Fuente
-                            </Button>
-                          )}
-                        </div>
+            {articles.map((article) => (
+              <Card
+                key={article.id}
+                className="bg-white/60 backdrop-blur-xl border-border/50 shadow-lg overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group"
+              >
+                <CardContent className="p-0 flex flex-col h-full">
+                  {/* Image Section */}
+                  {article.image && (
+                    <div className="relative w-full h-48 bg-gradient-to-br from-gray-100 to-gray-200 overflow-hidden">
+                      <img
+                        src={article.image}
+                        alt={article.title}
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).style.display = "none";
+                        }}
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+                      <div className="absolute top-3 left-3">
+                        <Badge className="bg-emerald-500/80 backdrop-blur-md text-white border-none text-[10px] uppercase tracking-widest">
+                          {article.source}
+                        </Badge>
                       </div>
                     </div>
-                  </CardContent>
-                </Card>
-              );
-            })}
+                  )}
+
+                  {/* Content Section */}
+                  <div className="p-5 flex flex-col flex-grow">
+                    <div className="flex items-center gap-2 mb-3">
+                      <Calendar className="size-3 text-gray-400" />
+                      <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">
+                        {formatDate(article.createdAt)}
+                      </span>
+                    </div>
+
+                    <h2 className="font-black text-lg text-gray-900 mb-3 line-clamp-2 leading-tight group-hover:text-emerald-600 transition-colors">
+                      {article.title}
+                    </h2>
+
+                    <p className="text-gray-600 text-sm line-clamp-3 mb-6 leading-relaxed">
+                      {stripHtml(article.summary || article.content).substring(0, 150)}...
+                    </p>
+
+                    <div className="mt-auto">
+                      <Dialog>
+                        <DialogTrigger asChild>
+                          <Button 
+                            className="w-full bg-slate-900 hover:bg-emerald-600 text-white rounded-xl gap-2 font-bold transition-all"
+                          >
+                            <Maximize2 className="size-4" />
+                            Leer Noticia Completa
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent className="max-w-3xl bg-white/95 backdrop-blur-2xl border-none shadow-2xl rounded-[2.5rem] p-0 overflow-hidden">
+                          <div className="h-3 bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500" />
+                          <div className="p-0 max-h-[85vh] overflow-y-auto custom-scrollbar">
+                            {article.image && (
+                              <div className="w-full h-64 md:h-80 relative">
+                                <img 
+                                  src={article.image} 
+                                  alt={article.title} 
+                                  className="w-full h-full object-cover"
+                                />
+                                <div className="absolute inset-0 bg-gradient-to-t from-white via-transparent to-transparent" />
+                              </div>
+                            )}
+                            
+                            <div className="p-8 md:p-12 -mt-12 relative bg-white/80 backdrop-blur-sm rounded-t-[3rem]">
+                              <div className="flex items-center gap-3 mb-6">
+                                <Badge className="bg-emerald-100 text-emerald-700 border-none px-3 py-1 font-black uppercase tracking-widest text-[10px]">
+                                  {article.source}
+                                </Badge>
+                                <div className="flex items-center gap-2 text-gray-400 font-bold text-xs uppercase tracking-widest">
+                                  <Calendar className="size-4" />
+                                  {formatDate(article.createdAt)}
+                                </div>
+                              </div>
+
+                              <DialogTitle className="text-3xl md:text-4xl font-black text-gray-900 mb-8 leading-tight tracking-tight">
+                                {article.title}
+                              </DialogTitle>
+
+                              <div className="space-y-6 text-gray-700 text-lg leading-relaxed">
+                                {stripHtml(article.content).split('\n').map((paragraph, idx) => (
+                                  paragraph.trim() && (
+                                    <p key={idx} className="animate-in fade-in slide-in-from-bottom-2 duration-500" style={{ animationDelay: `${idx * 100}ms` }}>
+                                      {paragraph}
+                                    </p>
+                                  )
+                                ))}
+                              </div>
+
+                              <div className="mt-12 pt-8 border-t border-gray-100 flex flex-wrap gap-4 items-center justify-between">
+                                {article.sourceUrl && (
+                                  <Button
+                                    onClick={() => window.open(article.sourceUrl!, "_blank")}
+                                    variant="outline"
+                                    className="rounded-full border-emerald-200 text-emerald-600 hover:bg-emerald-50 gap-2 font-bold px-6"
+                                  >
+                                    <ExternalLink className="size-4" />
+                                    Ver Fuente Original
+                                  </Button>
+                                )}
+                                <div className="flex items-center gap-2 text-gray-300">
+                                  <Globe className="size-5" />
+                                  <span className="text-[10px] font-black uppercase tracking-widest">Eter K-Pop News</span>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </DialogContent>
+                      </Dialog>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
           </div>
         )}
       </section>
