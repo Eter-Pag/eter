@@ -54,7 +54,7 @@ const BTS_DIPLOMA = {
   name: "BTS ARMY",
   group: "BTS",
   fandom: "ARMY",
-  imagePath: "/assets/diploma_bts_army_hq.png",
+  imagePath: "/assets/diploma.png",
   description: "Diploma oficial BTS ARMY",
   namePosition: {
     x: 50,
