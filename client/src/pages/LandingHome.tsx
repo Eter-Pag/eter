@@ -308,7 +308,7 @@ export default function LandingHome() {
             <CardContent className="p-0">
               <div className="relative h-32 md:h-48 bg-gradient-to-br from-purple-400 to-violet-400 overflow-hidden">
                 <img
-                  src="/assets/diploma.png"
+                  src="https://lh3.googleusercontent.com/d/1gk6QkcP5Jgr-ou_Ay4inkaSaxVgmvWuw"
                   alt="Diploma ARMY"
                   onContextMenu={(e) => e.preventDefault()}
                   onDragStart={(e) => e.preventDefault()}
