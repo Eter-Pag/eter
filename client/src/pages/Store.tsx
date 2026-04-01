@@ -34,7 +34,7 @@ export default function Store() {
         id: p.id.toString(),
         title: p.title,
         description: p.description || "",
-        price: Number(p.price) / 100,
+        price: Number(p.price),
         image: p.image,
         link: p.link,
         rating: p.rating ? p.rating / 10 : undefined,

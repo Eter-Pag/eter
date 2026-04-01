@@ -32,7 +32,7 @@ export const productsRouter = router({
       const result = await createProduct({
         title: input.title,
         description: input.description || null,
-        price: input.price,
+        price: input.price, // Store exact price string or number
         image: input.image,
         link: input.link,
         rating: input.rating ? Math.round(input.rating * 10) : null,
