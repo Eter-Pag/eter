@@ -1,1 +1,0 @@
-ALTER TABLE `raffles` ADD `category` enum('dinero','electronica','herramientas','kpop','moda','otro') DEFAULT 'otro' NOT NULL;

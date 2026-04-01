@@ -932,3 +932,106 @@ export async function markOrderSyncedToSheets(orderId: number): Promise<void> {
     console.error('[Sheets] Error marking order synced:', error);
   }
 }
+
+// ============ NEWS QUERIES ============
+
+export async function getAllNews(): Promise<News[]> {
+  const doc = await getDoc();
+  if (!doc) return [];
+
+  try {
+    const sheet = doc.sheetsByTitle['news'];
+    if (!sheet) return [];
+
+    const rows = await sheet.getRows();
+    return rows
+      .map(r => rowToObject(r, getHeadersForSheet('news')))
+      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  } catch (error) {
+    console.error('[Sheets] Error getting all news:', error);
+    return [];
+  }
+}
+
+export async function createNews(data: any): Promise<number> {
+  const doc = await getDoc();
+  if (!doc) throw new Error('Database not available');
+
+  try {
+    const sheet = doc.sheetsByTitle['news'];
+    if (!sheet) throw new Error('News sheet not found');
+
+    const rows = await sheet.getRows();
+    const id = (rows.length + 1).toString();
+    const now = new Date().toISOString();
+
+    await sheet.addRows([
+      {
+        id,
+        ...data,
+        createdAt: now,
+        updatedAt: now,
+      },
+    ]);
+
+    return Number(id);
+  } catch (error) {
+    console.error('[Sheets] Error creating news:', error);
+    throw error;
+  }
+}
+
+export async function getNewsBySlug(slug: string): Promise<News | null> {
+  const doc = await getDoc();
+  if (!doc) return null;
+
+  try {
+    const sheet = doc.sheetsByTitle['news'];
+    if (!sheet) return null;
+
+    const rows = await sheet.getRows();
+    const row = rows.find(r => r.slug === slug);
+    return row ? rowToObject(row, getHeadersForSheet('news')) : null;
+  } catch (error) {
+    console.error('[Sheets] Error getting news by slug:', error);
+    return null;
+  }
+}
+
+export async function deleteNews(id: number): Promise<void> {
+  const doc = await getDoc();
+  if (!doc) return;
+
+  try {
+    const sheet = doc.sheetsByTitle['news'];
+    if (!sheet) return;
+
+    const rows = await sheet.getRows();
+    const row = rows.find(r => Number(r.id) === id);
+
+    if (row) {
+      await row.delete();
+    }
+  } catch (error) {
+    console.error('[Sheets] Error deleting news:', error);
+  }
+}
+
+export async function getDb() {
+  // This is for compatibility with existing code that calls getDb()
+  return {
+    select: () => ({
+      from: (table: any) => ({
+        orderBy: (order: any) => ({
+          limit: (limit: number) => getAllNews().then(news => news.slice(0, limit))
+        })
+      })
+    }),
+    insert: (table: any) => ({
+      values: (data: any) => createNews(data)
+    }),
+    delete: (table: any) => ({
+      where: (condition: any) => ({}) // Dummy
+    })
+  };
+}

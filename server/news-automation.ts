@@ -6,9 +6,7 @@
  * Solo procesa UNA noticia por ejecución, buscando siempre una que no haya sido publicada antes.
  */
 
-import { getDb } from "./db";
-import { news as newsTable, type InsertNews } from "../drizzle/schema";
-import { eq, lt, desc, or } from "drizzle-orm";
+import * as db from "./db";
 import Parser from "rss-parser";
 import { load } from "cheerio";
 import { translate } from "@vitalets/google-translate-api";
@@ -181,14 +179,8 @@ function selectBackupImage(title: string, content: string): string {
  * Clean up old news (older than 5 days)
  */
 async function cleanupOldNews(): Promise<void> {
-  try {
-    const db = await getDb();
-    if (!db) return;
-    const fiveDaysAgo = new Date(Date.now() - 5 * 24 * 60 * 60 * 1000);
-    await db.delete(newsTable).where(lt(newsTable.createdAt, fiveDaysAgo));
-  } catch (error) {
-    console.error("[News] Error cleaning up old news:", error);
-  }
+  // Not implemented for Sheets yet to avoid excessive API calls
+  // Sheets version of cleanup would require scanning all rows
 }
 
 /**
@@ -207,11 +199,9 @@ async function automateNews(): Promise<void> {
       return;
     }
 
-    const db = await getDb();
-    if (!db) return;
-
-    // Get ALL recent news from DB to check for duplicates (both by title and sourceUrl)
-    const recentNews = await db.select().from(newsTable).orderBy(desc(newsTable.createdAt)).limit(50);
+    // Get ALL recent news from Sheets to check for duplicates
+    // We use the db functions directly
+    const recentNews = await db.getAllNews();
     const existingTitles = new Set(recentNews.map(n => n.title.toLowerCase()));
     const existingUrls = new Set(recentNews.map(n => n.sourceUrl?.toLowerCase()));
 
@@ -253,18 +243,18 @@ async function automateNews(): Promise<void> {
       .replace(/[^a-z0-9]+/g, "-")
       .replace(/^-+|-+$/g, "") + "-" + Math.random().toString(36).substring(2, 5);
 
-    const newsRecord: InsertNews = {
+    const newsRecord: any = {
       title: translatedTitle,
       slug,
       content: translatedContent,
       summary: translatedContent.substring(0, 200),
-      image: imageUrl || undefined,
+      image: imageUrl || "",
       sourceUrl: itemToProcess.link || "",
       source: itemToProcess.source || "unknown",
       isPublished: true,
     };
 
-    await db.insert(newsTable).values(newsRecord);
+    await db.createNews(newsRecord);
     console.log(`[News] Published Smart Item: "${translatedTitle}"`);
 
     await cleanupOldNews();
