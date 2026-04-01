@@ -1035,3 +1035,412 @@ export async function getDb() {
     })
   };
 }
+
+export async function updateOrderStripeSession(orderId: number, sessionId: string): Promise<void> {
+  const doc = await getDoc();
+  if (!doc) return;
+
+  try {
+    const sheet = doc.sheetsByTitle['orders'];
+    if (!sheet) return;
+
+    const rows = await sheet.getRows();
+    const row = rows.find(r => Number(r.id) === orderId);
+
+    if (row) {
+      row.stripeSessionId = sessionId;
+      row.updatedAt = new Date().toISOString();
+      await row.save();
+    }
+  } catch (error) {
+    console.error('[Sheets] Error updating order stripe session:', error);
+  }
+}
+
+export async function reserveTickets(numbers: string[], orderId: number): Promise<void> {
+  const doc = await getDoc();
+  if (!doc) return;
+
+  try {
+    const sheet = doc.sheetsByTitle['tickets'];
+    if (!sheet) return;
+
+    const rows = await sheet.getRows();
+    const now = Date.now();
+
+    for (const number of numbers) {
+      const row = rows.find(r => r.number === number);
+      if (row && row.status === 'available') {
+        row.status = 'reserved';
+        row.orderId = orderId.toString();
+        row.reservedAt = now.toString();
+        row.updatedAt = new Date().toISOString();
+        await row.save();
+      }
+    }
+  } catch (error) {
+    console.error('[Sheets] Error reserving tickets:', error);
+  }
+}
+
+export async function releaseExpiredReservations(): Promise<void> {
+  const doc = await getDoc();
+  if (!doc) return;
+
+  try {
+    const sheet = doc.sheetsByTitle['tickets'];
+    if (!sheet) return;
+
+    const rows = await sheet.getRows();
+    const now = Date.now();
+    const expiryTime = 15 * 60 * 1000; // 15 minutes
+
+    for (const row of rows) {
+      if (row.status === 'reserved' && row.reservedAt) {
+        const reservedAt = Number(row.reservedAt);
+        if (now - reservedAt > expiryTime) {
+          row.status = 'available';
+          row.orderId = '';
+          row.reservedAt = '';
+          row.updatedAt = new Date().toISOString();
+          await row.save();
+        }
+      }
+    }
+  } catch (error) {
+    console.error('[Sheets] Error releasing expired reservations:', error);
+  }
+}
+
+export async function releaseTicketsByOrder(orderId: number): Promise<void> {
+  const doc = await getDoc();
+  if (!doc) return;
+
+  try {
+    const sheet = doc.sheetsByTitle['tickets'];
+    if (!sheet) return;
+
+    const rows = await sheet.getRows();
+    for (const row of rows) {
+      if (row.orderId === orderId.toString() && row.status === 'reserved') {
+        row.status = 'available';
+        row.orderId = '';
+        row.reservedAt = '';
+        row.updatedAt = new Date().toISOString();
+        await row.save();
+      }
+    }
+  } catch (error) {
+    console.error('[Sheets] Error releasing tickets by order:', error);
+  }
+}
+
+export async function markTicketsSold(orderId: number, numbers: string[], name: string, phone: string, email: string): Promise<void> {
+  const doc = await getDoc();
+  if (!doc) return;
+
+  try {
+    const sheet = doc.sheetsByTitle['tickets'];
+    if (!sheet) return;
+
+    const rows = await sheet.getRows();
+    const now = new Date().toISOString();
+
+    for (const number of numbers) {
+      const row = rows.find(r => r.number === number);
+      if (row) {
+        row.status = 'sold';
+        row.orderId = orderId.toString();
+        row.buyerName = name;
+        row.buyerPhone = phone;
+        row.buyerEmail = email;
+        row.soldAt = Date.now().toString();
+        row.updatedAt = now;
+        await row.save();
+      }
+    }
+  } catch (error) {
+    console.error('[Sheets] Error marking tickets as sold:', error);
+  }
+}
+
+export async function getAvailableRandomTickets(count: number): Promise<Ticket[]> {
+  const tickets = await getAllTickets();
+  const available = tickets.filter(t => t.status === 'available');
+  return available.sort(() => Math.random() - 0.5).slice(0, count);
+}
+
+export async function getTicketStats() {
+  const tickets = await getAllTickets();
+  return {
+    total: tickets.length,
+    available: tickets.filter(t => t.status === 'available').length,
+    reserved: tickets.filter(t => t.status === 'reserved').length,
+    sold: tickets.filter(t => t.status === 'sold').length,
+  };
+}
+
+// ============ ORDER QUERIES ============
+
+export async function createOrder(data: any): Promise<number> {
+  const doc = await getDoc();
+  if (!doc) throw new Error('Database not available');
+
+  try {
+    const sheet = doc.sheetsByTitle['orders'];
+    if (!sheet) throw new Error('Orders sheet not found');
+
+    const rows = await sheet.getRows();
+    const id = (rows.length + 1).toString();
+    const now = new Date().toISOString();
+
+    await sheet.addRows([{
+      id,
+      ...data,
+      createdAt: now,
+      updatedAt: now,
+    }]);
+
+    return Number(id);
+  } catch (error) {
+    console.error('[Sheets] Error creating order:', error);
+    throw error;
+  }
+}
+
+export async function getAllOrders(): Promise<Order[]> {
+  const doc = await getDoc();
+  if (!doc) return [];
+
+  try {
+    const sheet = doc.sheetsByTitle['orders'];
+    if (!sheet) return [];
+
+    const rows = await sheet.getRows();
+    return rows.map(r => rowToObject(r, getHeadersForSheet('orders')));
+  } catch (error) {
+    console.error('[Sheets] Error getting all orders:', error);
+    return [];
+  }
+}
+
+export async function getOrderById(id: number): Promise<Order | null> {
+  const doc = await getDoc();
+  if (!doc) return null;
+
+  try {
+    const sheet = doc.sheetsByTitle['orders'];
+    if (!sheet) return null;
+
+    const rows = await sheet.getRows();
+    const row = rows.find(r => Number(r.id) === id);
+    return row ? rowToObject(row, getHeadersForSheet('orders')) : null;
+  } catch (error) {
+    console.error('[Sheets] Error getting order by id:', error);
+    return null;
+  }
+}
+
+export async function getOrdersByPhone(phone: string): Promise<Order[]> {
+  const orders = await getAllOrders();
+  return orders.filter(o => o.buyerPhone === phone);
+}
+
+export async function updateOrderStatus(id: number, status: string, paymentIntentId?: string): Promise<void> {
+  const doc = await getDoc();
+  if (!doc) return;
+
+  try {
+    const sheet = doc.sheetsByTitle['orders'];
+    if (!sheet) return;
+
+    const rows = await sheet.getRows();
+    const row = rows.find(r => Number(r.id) === id);
+
+    if (row) {
+      row.status = status;
+      if (paymentIntentId) row.stripePaymentIntentId = paymentIntentId;
+      row.updatedAt = new Date().toISOString();
+      await row.save();
+    }
+  } catch (error) {
+    console.error('[Sheets] Error updating order status:', error);
+  }
+}
+
+export async function deleteOrder(id: number): Promise<void> {
+  const doc = await getDoc();
+  if (!doc) return;
+
+  try {
+    const sheet = doc.sheetsByTitle['orders'];
+    if (!sheet) return;
+
+    const rows = await sheet.getRows();
+    const row = rows.find(r => Number(r.id) === id);
+    if (row) await row.delete();
+  } catch (error) {
+    console.error('[Sheets] Error deleting order:', error);
+  }
+}
+
+// ============ RAFFLE QUERIES ============
+
+export async function createRaffle(data: any): Promise<number> {
+  const doc = await getDoc();
+  if (!doc) throw new Error('Database not available');
+
+  try {
+    const sheet = doc.sheetsByTitle['raffles'];
+    const rows = await sheet.getRows();
+    const id = (rows.length + 1).toString();
+    const now = new Date().toISOString();
+
+    await sheet.addRows([{
+      id,
+      ...data,
+      createdAt: now,
+      updatedAt: now,
+    }]);
+
+    return Number(id);
+  } catch (error) {
+    console.error('[Sheets] Error creating raffle:', error);
+    throw error;
+  }
+}
+
+export async function getAllRaffles(): Promise<Raffle[]> {
+  const doc = await getDoc();
+  if (!doc) return [];
+
+  try {
+    const sheet = doc.sheetsByTitle['raffles'];
+    const rows = await sheet.getRows();
+    return rows.map(r => rowToObject(r, getHeadersForSheet('raffles')));
+  } catch (error) {
+    console.error('[Sheets] Error getting all raffles:', error);
+    return [];
+  }
+}
+
+export async function getRaffleById(id: number): Promise<Raffle | null> {
+  const raffles = await getAllRaffles();
+  return raffles.find(r => Number(r.id) === id) || null;
+}
+
+export async function getRaffleByNumber(raffleNumber: number): Promise<Raffle | null> {
+  const raffles = await getAllRaffles();
+  return raffles.find(r => Number(r.raffleNumber) === raffleNumber) || null;
+}
+
+export async function updateRaffle(id: number, data: any): Promise<void> {
+  const doc = await getDoc();
+  if (!doc) return;
+
+  try {
+    const sheet = doc.sheetsByTitle['raffles'];
+    const rows = await sheet.getRows();
+    const row = rows.find(r => Number(r.id) === id);
+
+    if (row) {
+      Object.assign(row, data);
+      row.updatedAt = new Date().toISOString();
+      await row.save();
+    }
+  } catch (error) {
+    console.error('[Sheets] Error updating raffle:', error);
+  }
+}
+
+export async function deleteRaffle(id: number): Promise<void> {
+  const doc = await getDoc();
+  if (!doc) return;
+
+  try {
+    const sheet = doc.sheetsByTitle['raffles'];
+    const rows = await sheet.getRows();
+    const row = rows.find(r => Number(r.id) === id);
+    if (row) await row.delete();
+  } catch (error) {
+    console.error('[Sheets] Error deleting raffle:', error);
+  }
+}
+
+// ============ PRODUCT QUERIES ============
+
+export async function getAllProducts(): Promise<Product[]> {
+  const doc = await getDoc();
+  if (!doc) return [];
+
+  try {
+    const sheet = doc.sheetsByTitle['products'];
+    const rows = await sheet.getRows();
+    return rows.map(r => rowToObject(r, getHeadersForSheet('products')));
+  } catch (error) {
+    console.error('[Sheets] Error getting all products:', error);
+    return [];
+  }
+}
+
+export async function getProductById(id: number): Promise<Product | null> {
+  const products = await getAllProducts();
+  return products.find(p => Number(p.id) === id) || null;
+}
+
+export async function createProduct(data: any): Promise<number> {
+  const doc = await getDoc();
+  if (!doc) throw new Error('Database not available');
+
+  try {
+    const sheet = doc.sheetsByTitle['products'];
+    const rows = await sheet.getRows();
+    const id = (rows.length + 1).toString();
+    const now = new Date().toISOString();
+
+    await sheet.addRows([{
+      id,
+      ...data,
+      createdAt: now,
+      updatedAt: now,
+    }]);
+
+    return Number(id);
+  } catch (error) {
+    console.error('[Sheets] Error creating product:', error);
+    throw error;
+  }
+}
+
+export async function updateProduct(id: number, data: any): Promise<void> {
+  const doc = await getDoc();
+  if (!doc) return;
+
+  try {
+    const sheet = doc.sheetsByTitle['products'];
+    const rows = await sheet.getRows();
+    const row = rows.find(r => Number(r.id) === id);
+
+    if (row) {
+      Object.assign(row, data);
+      row.updatedAt = new Date().toISOString();
+      await row.save();
+    }
+  } catch (error) {
+    console.error('[Sheets] Error updating product:', error);
+  }
+}
+
+export async function deleteProduct(id: number): Promise<void> {
+  const doc = await getDoc();
+  if (!doc) return;
+
+  try {
+    const sheet = doc.sheetsByTitle['products'];
+    const rows = await sheet.getRows();
+    const row = rows.find(r => Number(r.id) === id);
+    if (row) await row.delete();
+  } catch (error) {
+    console.error('[Sheets] Error deleting product:', error);
+  }
+}

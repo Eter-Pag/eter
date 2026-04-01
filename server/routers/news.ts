@@ -4,9 +4,7 @@
  */
 
 import { publicProcedure, router } from "../_core/trpc";
-import { getDb } from "../db";
-import { news as newsTable } from "../../drizzle/schema";
-import { eq, desc } from "drizzle-orm";
+import { getAllNews, getNewsBySlug, deleteNews } from "../db";
 import { z } from "zod";
 
 export const newsRouter = router({
@@ -14,20 +12,9 @@ export const newsRouter = router({
    * Get all published news articles, ordered by most recent
    */
   getAll: publicProcedure.query(async () => {
-    const db = await getDb();
-    if (!db) {
-      return [];
-    }
-
     try {
-      const articles = await db
-        .select()
-        .from(newsTable)
-        .where(eq(newsTable.isPublished, true))
-        .orderBy(desc(newsTable.createdAt))
-        .limit(50);
-
-      return articles;
+      const articles = await getAllNews();
+      return articles.filter(a => a.isPublished).slice(0, 50);
     } catch (error) {
       console.error("[News Router] Error fetching news:", error);
       return [];
@@ -40,19 +27,8 @@ export const newsRouter = router({
   getBySlug: publicProcedure
     .input(z.object({ slug: z.string() }))
     .query(async ({ input }) => {
-      const db = await getDb();
-      if (!db) {
-        return null;
-      }
-
       try {
-        const article = await db
-          .select()
-          .from(newsTable)
-          .where(eq(newsTable.slug, input.slug))
-          .limit(1);
-
-        return article[0] || null;
+        return await getNewsBySlug(input.slug);
       } catch (error) {
         console.error("[News Router] Error fetching news by slug:", error);
         return null;
@@ -63,20 +39,10 @@ export const newsRouter = router({
    * Get the latest news article (for homepage display)
    */
   getLatest: publicProcedure.query(async () => {
-    const db = await getDb();
-    if (!db) {
-      return null;
-    }
-
     try {
-      const article = await db
-        .select()
-        .from(newsTable)
-        .where(eq(newsTable.isPublished, true))
-        .orderBy(desc(newsTable.createdAt))
-        .limit(1);
-
-      return article[0] || null;
+      const articles = await getAllNews();
+      const published = articles.filter(a => a.isPublished);
+      return published[0] || null;
     } catch (error) {
       console.error("[News Router] Error fetching latest news:", error);
       return null;
@@ -89,20 +55,11 @@ export const newsRouter = router({
   getBySource: publicProcedure
     .input(z.object({ source: z.enum(["soompi", "allkpop"]) }))
     .query(async ({ input }) => {
-      const db = await getDb();
-      if (!db) {
-        return [];
-      }
-
       try {
-        const articles = await db
-          .select()
-          .from(newsTable)
-          .where(eq(newsTable.source, input.source))
-          .orderBy(desc(newsTable.createdAt))
-          .limit(20);
-
-        return articles;
+        const articles = await getAllNews();
+        return articles
+          .filter(a => a.source === input.source)
+          .slice(0, 20);
       } catch (error) {
         console.error("[News Router] Error fetching news by source:", error);
         return [];
@@ -113,10 +70,8 @@ export const newsRouter = router({
    * Admin: Get all news articles (including unpublished)
    */
   adminGetAll: publicProcedure.query(async () => {
-    const db = await getDb();
-    if (!db) return [];
     try {
-      return await db.select().from(newsTable).orderBy(desc(newsTable.createdAt)).limit(100);
+      return await getAllNews();
     } catch (error) {
       console.error("[News Router] Error fetching all news for admin:", error);
       return [];
@@ -129,10 +84,8 @@ export const newsRouter = router({
   delete: publicProcedure
     .input(z.object({ id: z.number() }))
     .mutation(async ({ input }) => {
-      const db = await getDb();
-      if (!db) throw new Error("Database not available");
       try {
-        await db.delete(newsTable).where(eq(newsTable.id, input.id));
+        await deleteNews(input.id);
         return { success: true };
       } catch (error) {
         console.error("[News Router] Error deleting news:", error);
@@ -144,9 +97,9 @@ export const newsRouter = router({
    * Admin: Run news automation manually
    */
   runAutomation: publicProcedure.mutation(async () => {
-    const { runNewsAutomationNow } = await import("../cron-jobs");
+    const { default: automateNews } = await import("../news-automation");
     try {
-      await runNewsAutomationNow();
+      await automateNews();
       return { success: true };
     } catch (error) {
       console.error("[News Router] Error running automation:", error);

@@ -18,7 +18,6 @@ import {
   getAllOrders,
   getOrderById,
   getAvailableRandomTickets,
-  getDb,
   getOrdersByPhone,
   createRaffle,
   getAllRaffles,
@@ -35,13 +34,11 @@ import {
   markTicketsSold,
   getTicketStats,
   deleteOrder,
+  updateOrderStripeSession,
 } from "./db";
 import { RAFFLE_PRODUCT } from "./products";
-import { orders } from "../drizzle/schema";
-import { eq } from "drizzle-orm";
 
 import { sendWhatsAppConfirmation } from "./whatsapp";
-import { translate } from "@vitalets/google-translate-api";
 
 // Use TEST keys as requested
 const stripeSecretKey = process.env.STRIPE_SECRET_KEY || "";
@@ -208,10 +205,7 @@ export const appRouter = router({
             },
           });
 
-          const db = await getDb();
-          if (db) {
-            await db.update(orders).set({ stripeSessionId: session.id }).where(eq(orders.id, orderId));
-          }
+          await updateOrderStripeSession(orderId, session.id);
 
           return {
             checkoutUrl: session.url,
@@ -297,184 +291,9 @@ export const appRouter = router({
       .query(async ({ input }) => {
         return getRaffleByNumber(input.raffleNumber);
       }),
-
-    create: protectedProcedure
-      .input(z.object({
-        raffleNumber: z.number(),
-        title: z.string(),
-        description: z.string(),
-        image: z.string(),
-        pricePerTicket: z.number(),
-        totalTickets: z.number(),
-        drawDate: z.string(),
-        webhookUrl: z.string().optional(),
-        category: z.string().optional(),
-      }))
-      .mutation(async ({ input }) => {
-        return createRaffle(input);
-      }),
-
-    update: protectedProcedure
-      .input(z.object({
-        id: z.number(),
-        title: z.string(),
-        description: z.string(),
-        image: z.string(),
-        pricePerTicket: z.number(),
-        totalTickets: z.number(),
-        drawDate: z.string(),
-        webhookUrl: z.string().optional(),
-        category: z.string().optional(),
-      }))
-      .mutation(async ({ input }) => {
-        const { id, ...data } = input;
-        return updateRaffle(id, data);
-      }),
-
-    delete: protectedProcedure
-      .input(z.object({ id: z.number() }))
-      .mutation(async ({ input }) => {
-        return deleteRaffle(input.id);
-      }),
-   }),
-  news: newsRouter,
-  galleries: router({
-    list: publicProcedure
-      .input(z.object({ group: z.string() }))
-      .query(async ({ input }) => {
-        try {
-          const SHEETS_API = "https://script.google.com/macros/s/AKfycbzOJeE4kmAOr2kxGkKrdQgLsvZBNq-GgQLGEHNbrbfBlPIypoh0cDh7xso66Kc1PDru/exec";
-          const response = await fetch(`${SHEETS_API}?action=getGallery&group=${input.group}`);
-          if (!response.ok) return [];
-          const data = await response.json();
-          return data.photos || [];
-        } catch (error) {
-          console.error(`[Galleries] Error fetching ${input.group} from Sheets:`, error);
-          return [];
-        }
-      }),
-    add: protectedProcedure
-      .input(z.object({ group: z.string(), url: z.string().url() }))
-      .mutation(async ({ input }) => {
-        try {
-          const SHEETS_API = "https://script.google.com/macros/s/AKfycbzOJeE4kmAOr2kxGkKrdQgLsvZBNq-GgQLGEHNbrbfBlPIypoh0cDh7xso66Kc1PDru/exec";
-          const url = `${SHEETS_API}?action=addPhoto&group=${input.group}&url=${encodeURIComponent(input.url)}`;
-          const response = await fetch(url);
-          if (!response.ok) throw new Error(`Error: ${response.status}`);
-          return { success: true };
-        } catch (error) {
-          console.error("[Galleries] Error adding photo:", error);
-          throw new Error("Error al añadir la foto a Google Sheets.");
-        }
-      }),
-    delete: protectedProcedure
-      .input(z.object({ group: z.string(), id: z.number() }))
-      .mutation(async ({ input }) => {
-        try {
-          const SHEETS_API = "https://script.google.com/macros/s/AKfycbzOJeE4kmAOr2kxGkKrdQgLsvZBNq-GgQLGEHNbrbfBlPIypoh0cDh7xso66Kc1PDru/exec";
-          const url = `${SHEETS_API}?action=deletePhoto&group=${input.group}&id=${input.id}`;
-          const response = await fetch(url);
-          if (!response.ok) throw new Error(`Error: ${response.status}`);
-          return { success: true };
-        } catch (error) {
-          console.error("[Galleries] Error deleting photo:", error);
-          throw new Error("Error al eliminar la foto de Google Sheets.");
-        }
-      }),
   }),
-  stories: router({
-    list: publicProcedure.query(async () => {
-      try {
-        const STORIES_SHEETS_API = "https://script.google.com/macros/s/AKfycbzOJeE4kmAOr2kxGkKrdQgLsvZBNq-GgQLGEHNbrbfBlPIypoh0cDh7xso66Kc1PDru/exec";
-        const response = await fetch(`${STORIES_SHEETS_API}?action=getStories`);
-        if (!response.ok) return [];
-        const data = await response.json();
-        return data.stories || [];
-      } catch (error) {
-        console.error("[Stories] Error fetching from Sheets:", error);
-        return [];
-      }
-    }),
-    submit: publicProcedure
-      .input(z.object({
-        name: z.string().min(1),
-        content: z.string().min(10),
-      }))
-      .mutation(async ({ input }) => {
-        // 0. Filtrar groserías (español)
-        const BANNED_WORDS = [
-          "puto", "puta", "pendejo", "pendeja", "mierda", "verga", "chingar", "chingada", 
-          "culero", "culera", "cabron", "cabrona", "pito", "zorra", "estupido", "estupida",
-          "idiota", "baboso", "babosa", "mamon", "mamona", "joto", "maricon", "perra"
-        ];
-        
-        const lowerContent = input.content.toLowerCase();
-        const hasBannedWord = BANNED_WORDS.some(word => lowerContent.includes(word));
-        
-        if (hasBannedWord) {
-          throw new Error("Tu historia contiene lenguaje inapropiado. Por favor, sé respetuoso.");
-        }
 
-        let contentKo = "";
-        try {
-          // 1. Intentar traducir al coreano
-          const translation = await translate(input.content, { to: "ko" }).catch(err => {
-            console.error("[Stories] Translation failed:", err);
-            return { text: "" };
-          });
-          contentKo = translation.text || "Traducción no disponible en este momento.";
+  news: newsRouter,
+});
 
-          // 2. Enviar a Google Sheets (Único almacenamiento)
-          const payload = {
-            tipo: "historia",
-            nombre: input.name,
-            historia_es: input.content,
-            historia_ko: contentKo,
-            fecha: new Date().toISOString(),
-          };
-
-          const STORIES_SHEETS_API = "https://script.google.com/macros/s/AKfycbzOJeE4kmAOr2kxGkKrdQgLsvZBNq-GgQLGEHNbrbfBlPIypoh0cDh7xso66Kc1PDru/exec";
-          
-          const response = await fetch(STORIES_SHEETS_API, {
-            method: "POST",
-            mode: "no-cors",
-            body: JSON.stringify(payload),
-            headers: { "Content-Type": "application/json" },
-          });
-
-          if (!response.ok) {
-	            throw new Error("Error al guardar en Google Sheets");
-	          }
-	
-	          return { success: true };
-	        } catch (error) {
-	          console.error("[Stories] Error submitting story:", error);
-	          throw new Error("Lo sentimos, hubo un problema al enviar tu historia a Google Sheets. Por favor, intenta de nuevo.");
-	        }
-	      }),
-	    delete: protectedProcedure
-	      .input(z.object({ id: z.number() }))
-	      .mutation(async ({ input }) => {
-	        try {
-	          const STORIES_SHEETS_API = "https://script.google.com/macros/s/AKfycbzOJeE4kmAOr2kxGkKrdQgLsvZBNq-GgQLGEHNbrbfBlPIypoh0cDh7xso66Kc1PDru/exec";
-	          const payload = {
-	            action: "deleteStory",
-	            id: input.id,
-	          };
-	          
-	          const response = await fetch(STORIES_SHEETS_API, {
-	            method: "POST",
-	            mode: "no-cors",
-	            body: JSON.stringify(payload),
-	            headers: { "Content-Type": "application/json" },
-	          });
-	
-	          return { success: true };
-	        } catch (error) {
-	          console.error("[Stories] Error deleting story:", error);
-	          throw new Error("Error al eliminar la historia de Google Sheets.");
-	        }
-	      }),
-	  }),
-	});
 export type AppRouter = typeof appRouter;
