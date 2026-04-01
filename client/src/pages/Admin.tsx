@@ -64,7 +64,7 @@ export default function Admin() {
   const [productFormData, setProductFormData] = useState<Partial<Product>>({
     title: "",
     description: "",
-    price: undefined,
+    price: "",
     image: "",
     link: "",
     rating: undefined,
@@ -124,9 +124,9 @@ export default function Admin() {
     title: "",
     description: "",
     image: "",
-    totalTickets: 1000,
+    totalTickets: undefined,
     pricePerTicket: undefined,
-    drawDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().slice(0, 16),
+    drawDate: "",
     webhookUrl: "",
     category: "otro",
   });
@@ -252,8 +252,8 @@ export default function Admin() {
 
   // Handlers
   const handleAddProduct = async () => {
-    if (!productFormData.title || !productFormData.image || !productFormData.link || productFormData.price === undefined) {
-      alert("Llena los campos obligatorios");
+    if (!productFormData.title || !productFormData.image || !productFormData.link || !productFormData.price) {
+      alert("Llena los campos obligatorios (Título, Imagen, Link y Precio)");
       return;
     }
     try {
@@ -283,34 +283,51 @@ export default function Admin() {
         });
       }
       await refetchProducts();
-      setProductFormData({ title: "", description: "", price: undefined, image: "", link: "", rating: undefined, reviews: undefined, badge: "" });
+      setProductFormData({ title: "", description: "", price: "", image: "", link: "", rating: undefined, reviews: undefined, badge: "" });
+      alert("Producto guardado correctamente");
     } catch (error) {
       alert("Error al guardar el producto");
     }
   };
 
   const handleDeleteProduct = async (id: string) => {
-    if (confirm("¿Eliminar este producto?")) {
-      await deleteProductMutation.mutateAsync({ id: parseInt(id) });
-      await refetchProducts();
+    if (confirm("¿Estás seguro de eliminar este producto?")) {
+      try {
+        await deleteProductMutation.mutateAsync({ id: parseInt(id) });
+        await refetchProducts();
+      } catch (error) {
+        alert("Error al eliminar");
+      }
     }
   };
 
   const handleAddRaffle = () => {
-    if (!raffleFormData.title || !raffleFormData.image || !raffleFormData.drawDate || raffleFormData.totalTickets === undefined || raffleFormData.pricePerTicket === undefined) {
+    if (!raffleFormData.title || !raffleFormData.pricePerTicket || !raffleFormData.totalTickets) {
       alert("Llena los campos obligatorios");
       return;
     }
-    setShowRaffleWarning(true);
+    if (editingRaffleId) {
+      confirmAddRaffle();
+    } else {
+      setShowRaffleWarning(true);
+    }
   };
 
-  const confirmAddRaffle = async () => {
+  const confirmAddRaffle = () => {
     setShowRaffleWarning(false);
-    setShowRaffleWarningFinal(true);
+    if (editingRaffleId) {
+      executeRaffleMutation();
+    } else {
+      setShowRaffleWarningFinal(true);
+    }
   };
 
-  const finalConfirmAddRaffle = async () => {
+  const finalConfirmAddRaffle = () => {
     setShowRaffleWarningFinal(false);
+    executeRaffleMutation();
+  };
+
+  const executeRaffleMutation = async () => {
     try {
       if (editingRaffleId) {
         await updateRaffleMutation.mutateAsync({
@@ -319,10 +336,10 @@ export default function Admin() {
           description: raffleFormData.description!,
           image: raffleFormData.image!,
           totalTickets: raffleFormData.totalTickets!,
-          pricePerTicket: raffleFormData.pricePerTicket!,
-          drawDate: raffleFormData.drawDate!,
-          webhookUrl: raffleFormData.webhookUrl,
-          category: raffleFormData.category || "otro",
+          pricePerTicket: Math.round(raffleFormData.pricePerTicket! * 100),
+          drawDate: new Date(raffleFormData.drawDate!),
+          webhookUrl: raffleFormData.webhookUrl!,
+          category: raffleFormData.category!,
         });
         setEditingRaffleId(null);
       } else {
@@ -331,78 +348,89 @@ export default function Admin() {
           description: raffleFormData.description!,
           image: raffleFormData.image!,
           totalTickets: raffleFormData.totalTickets!,
-          pricePerTicket: raffleFormData.pricePerTicket!,
-          drawDate: raffleFormData.drawDate!,
-          webhookUrl: raffleFormData.webhookUrl,
-          category: raffleFormData.category || "otro",
-          raffleNumber: nextRaffleNumber,
+          pricePerTicket: Math.round(raffleFormData.pricePerTicket! * 100),
+          drawDate: new Date(raffleFormData.drawDate!),
+          webhookUrl: raffleFormData.webhookUrl!,
+          category: raffleFormData.category!,
         });
       }
       await refetchRaffles();
-      setRaffleFormData({ title: "", description: "", image: "", totalTickets: 1000, pricePerTicket: undefined, drawDate: new Date().toISOString().slice(0, 16), webhookUrl: "", category: "otro" });
+      setRaffleFormData({ title: "", description: "", image: "", totalTickets: undefined, pricePerTicket: undefined, drawDate: "", webhookUrl: "", category: "otro" });
+      alert("Rifa guardada correctamente");
     } catch (error) {
       alert("Error al guardar la rifa");
     }
   };
 
   const handleDeleteRaffle = async (id: string) => {
-    if (confirm("¿Eliminar esta rifa?")) {
-      await deleteRaffleMutation.mutateAsync({ id: parseInt(id) });
-      await refetchRaffles();
+    if (confirm("¿Estás seguro de eliminar esta rifa? ¡Se perderán todos los datos!")) {
+      try {
+        await deleteRaffleMutation.mutateAsync({ id: parseInt(id) });
+        await refetchRaffles();
+      } catch (error) {
+        alert("Error al eliminar");
+      }
     }
   };
 
-  const handleCreateManualOrder = async () => {
+  const handleManualOrder = async () => {
     if (!manualOrderData.buyerName || !manualOrderData.buyerPhone || !manualOrderData.ticketNumbers) {
       alert("Llena los campos obligatorios");
       return;
     }
-    const ticketNumbers = manualOrderData.ticketNumbers.split(",").map(n => n.trim());
     try {
       await createManualOrderMutation.mutateAsync({
         buyerName: manualOrderData.buyerName,
         buyerPhone: manualOrderData.buyerPhone,
-        buyerEmail: manualOrderData.buyerEmail || null,
-        ticketNumbers,
+        buyerEmail: manualOrderData.buyerEmail,
+        ticketNumbers: manualOrderData.ticketNumbers.split(",").map(n => n.trim()),
       });
-      alert("Venta manual registrada con éxito");
       setManualOrderData({ buyerName: "", buyerPhone: "", buyerEmail: "", ticketNumbers: "" });
-      await refetchAllOrders();
       await refetchTicketStats();
-    } catch (error: any) {
-      alert(error.message || "Error al registrar la venta manual");
+      await refetchAllOrders();
+      alert("Orden manual creada con éxito");
+    } catch (error) {
+      alert("Error al crear orden: " + (error as any).message);
     }
   };
 
   const handleDeleteOrder = async (id: number) => {
-    if (confirm("¿Eliminar esta orden? Los boletos volverán a estar disponibles.")) {
-      await deleteOrderMutation.mutateAsync({ id });
-      await refetchAllOrders();
-      await refetchTicketStats();
+    if (confirm("¿Estás seguro de eliminar esta orden? Los boletos volverán a estar disponibles.")) {
+      try {
+        await deleteOrderMutation.mutateAsync({ id });
+        await refetchAllOrders();
+        await refetchTicketStats();
+      } catch (error) {
+        alert("Error al eliminar orden");
+      }
     }
   };
 
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50 p-4">
-        <Card className="w-full max-w-md border-none shadow-2xl rounded-[2.5rem] overflow-hidden">
-          <CardContent className="p-8 md:p-12">
-            <div className="bg-purple-100 size-16 rounded-3xl flex items-center justify-center mb-8 mx-auto">
-              <ShieldCheck className="size-8 text-purple-600" />
+      <div className="min-h-screen bg-slate-900 flex items-center justify-center p-4">
+        <Card className="w-full max-w-md bg-slate-800 border-slate-700 shadow-2xl overflow-hidden">
+          <div className="h-2 bg-gradient-to-r from-purple-600 to-blue-600" />
+          <CardContent className="p-8">
+            <div className="flex justify-center mb-8">
+              <div className="bg-slate-700 p-4 rounded-2xl">
+                <ShieldCheck className="size-12 text-purple-400" />
+              </div>
             </div>
-            <h1 className="text-2xl font-black text-center text-slate-900 uppercase tracking-tight mb-2">Panel de Control</h1>
-            <p className="text-sm text-slate-400 text-center mb-8 font-medium">Ingresa la contraseña maestra para continuar</p>
+            <h1 className="text-2xl font-black text-white text-center mb-2 uppercase tracking-tighter">Acceso Restringido</h1>
+            <p className="text-slate-400 text-center text-sm mb-8 font-medium">Introduce la contraseña maestra para continuar</p>
             <div className="space-y-4">
-              <Input 
-                type="password" 
-                placeholder="Contraseña" 
-                value={password} 
+              <Input
+                type="password"
+                placeholder="••••••••"
+                value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleLogin()}
-                className="h-14 rounded-2xl border-slate-200 focus:ring-purple-500 text-center text-lg font-bold tracking-widest"
+                onKeyDown={(e) => e.key === "Enter" && handleLogin()}
+                className="bg-slate-700 border-slate-600 text-white h-14 text-center text-xl tracking-widest focus:ring-purple-500 rounded-xl"
+                autoFocus
               />
-              <Button onClick={handleLogin} className="w-full h-14 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-bold uppercase tracking-widest transition-all">
-                Acceder al Sistema
+              <Button onClick={handleLogin} className="w-full h-14 bg-purple-600 hover:bg-purple-700 text-white font-bold text-sm uppercase tracking-widest rounded-xl shadow-lg shadow-purple-900/20">
+                Entrar al Sistema
               </Button>
             </div>
           </CardContent>
@@ -412,92 +440,86 @@ export default function Admin() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col md:flex-row">
+    <div className="min-h-screen bg-slate-50 flex">
       {/* Sidebar */}
-      <aside className="w-full md:w-64 bg-white border-r border-slate-100 p-6 flex flex-col">
-        <div className="flex items-center gap-3 mb-10">
-          <div className="bg-purple-600 size-10 rounded-xl flex items-center justify-center shadow-lg shadow-purple-200">
-            <ShieldCheck className="size-6 text-white" />
+      <aside className="w-64 bg-white border-r border-slate-200 hidden lg:flex flex-col sticky top-0 h-screen">
+        <div className="p-6 flex items-center gap-3 border-b border-slate-100">
+          <div className="bg-slate-900 p-1.5 rounded-lg">
+            <LayoutDashboard className="size-5 text-white" />
           </div>
-          <span className="font-black text-xl tracking-tighter text-slate-900">ADMIN</span>
+          <span className="font-black text-slate-900 uppercase tracking-tighter">Eter Admin</span>
         </div>
-
-        <nav className="space-y-1 flex-1">
-          <button onClick={() => setActiveTab("dashboard")} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors ${activeTab === "dashboard" ? "bg-purple-50 text-purple-700" : "text-slate-500 hover:bg-slate-50"}`}>
+        <nav className="p-4 flex-1 space-y-1">
+          <button onClick={() => setActiveTab("dashboard")} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors ${activeTab === "dashboard" ? "bg-slate-900 text-white" : "text-slate-500 hover:bg-slate-50"}`}>
             <LayoutDashboard className="size-4" /> Dashboard
           </button>
           <button onClick={() => setActiveTab("raffles")} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors ${activeTab === "raffles" ? "bg-purple-50 text-purple-700" : "text-slate-500 hover:bg-slate-50"}`}>
             <Ticket className="size-4" /> Rifas
           </button>
-          <button onClick={() => setActiveTab("orders")} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors ${activeTab === "orders" ? "bg-purple-50 text-purple-700" : "text-slate-500 hover:bg-slate-50"}`}>
+          <button onClick={() => setActiveTab("orders")} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors ${activeTab === "orders" ? "bg-blue-50 text-blue-700" : "text-slate-500 hover:bg-slate-50"}`}>
             <ShoppingBag className="size-4" /> Órdenes
           </button>
-          <button onClick={() => setActiveTab("products")} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors ${activeTab === "products" ? "bg-purple-50 text-purple-700" : "text-slate-500 hover:bg-slate-50"}`}>
+          <button onClick={() => setActiveTab("products")} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors ${activeTab === "products" ? "bg-emerald-50 text-emerald-700" : "text-slate-500 hover:bg-slate-50"}`}>
             <Package className="size-4" /> Productos
           </button>
-          <button onClick={() => setActiveTab("news")} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors ${activeTab === "news" ? "bg-purple-50 text-purple-700" : "text-slate-500 hover:bg-slate-50"}`}>
-            <Newspaper className="size-4" /> Noticias
+          <button onClick={() => setActiveTab("news")} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors ${activeTab === "news" ? "bg-amber-50 text-amber-700" : "text-slate-500 hover:bg-slate-50"}`}>
+            <Newspaper className="size-4" /> Noticias K-Pop
           </button>
-          <button onClick={() => setActiveTab("stories")} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors ${activeTab === "stories" ? "bg-purple-50 text-purple-700" : "text-slate-500 hover:bg-slate-50"}`}>
-            <MessageCircle className="size-4" /> Historias
+          <button onClick={() => setActiveTab("stories")} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors ${activeTab === "stories" ? "bg-pink-50 text-pink-700" : "text-slate-500 hover:bg-slate-50"}`}>
+            <ClipboardList className="size-4" /> Historias
           </button>
-          <button onClick={() => setActiveTab("galleries")} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors ${activeTab === "galleries" ? "bg-purple-50 text-purple-700" : "text-slate-500 hover:bg-slate-50"}`}>
+          <button onClick={() => setActiveTab("galleries")} className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-colors ${activeTab === "galleries" ? "bg-indigo-50 text-indigo-700" : "text-slate-500 hover:bg-slate-50"}`}>
             <Images className="size-4" /> Galerías
           </button>
         </nav>
-
-        <div className="mt-auto pt-6 border-t border-slate-100">
-          <Button variant="ghost" onClick={() => navigate("/")} className="w-full justify-start gap-3 text-slate-500 hover:text-red-600 hover:bg-red-50">
-            <ArrowLeft className="size-4" /> Salir al Sitio
+        <div className="p-4 border-t border-slate-100">
+          <Button variant="ghost" onClick={() => navigate("/")} className="w-full justify-start gap-3 text-slate-500 font-bold text-xs uppercase tracking-widest rounded-xl">
+            <ArrowLeft className="size-4" /> Salir del Panel
           </Button>
         </div>
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 p-4 md:p-8 overflow-y-auto">
-        {/* Header */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
-          <div>
-            <h1 className="text-2xl font-bold text-slate-900 capitalize">{activeTab}</h1>
-            <p className="text-slate-500 text-sm">Gestiona el contenido de ETER KPOP MX</p>
-          </div>
-          <div className="flex items-center gap-3">
-            <Badge variant="outline" className="bg-white py-1.5 px-3 border-slate-200 text-slate-600 gap-2">
-              <div className="size-2 rounded-full bg-green-500 animate-pulse" /> Sistema Online
-            </Badge>
-          </div>
-        </div>
-
-        {/* Dashboard Tab */}
+      <main className="flex-1 p-4 md:p-8 lg:p-12 max-w-7xl mx-auto w-full">
         {activeTab === "dashboard" && (
           <div className="space-y-8">
+            <header className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+              <div>
+                <h1 className="text-3xl font-black text-slate-900 uppercase tracking-tighter">Dashboard</h1>
+                <p className="text-slate-500 font-medium">Resumen general de tu plataforma</p>
+              </div>
+              <div className="flex items-center gap-2 text-xs font-bold text-slate-400 bg-white px-4 py-2 rounded-full border border-slate-100 shadow-sm">
+                <Clock className="size-3" /> Última actualización: {new Date().toLocaleTimeString()}
+              </div>
+            </header>
+
             {/* Stats Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
               <Card className="bg-white border-slate-200 shadow-sm">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between mb-4">
-                    <div className="bg-blue-50 p-2 rounded-lg"><Ticket className="size-5 text-blue-600" /></div>
-                    <Badge className="bg-blue-50 text-blue-700 border-none">Total</Badge>
+                    <div className="bg-purple-50 p-2 rounded-lg"><DollarSign className="size-5 text-purple-600" /></div>
+                    <Badge className="bg-purple-50 text-purple-700 border-none">+{allOrders?.filter(o => o.status === 'paid').length || 0}</Badge>
                   </div>
-                  <div className="text-2xl font-bold text-slate-900">{ticketStats?.total || 0}</div>
-                  <p className="text-xs text-slate-500 mt-1">Boletos Generados</p>
+                  <div className="text-2xl font-bold text-slate-900">${(allOrders?.filter(o => o.status === 'paid').reduce((acc, curr) => acc + curr.totalAmount, 0) || 0) / 100} MXN</div>
+                  <p className="text-xs text-slate-500 mt-1">Ingresos Totales</p>
                 </CardContent>
               </Card>
               <Card className="bg-white border-slate-200 shadow-sm">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between mb-4">
-                    <div className="bg-green-50 p-2 rounded-lg"><TrendingUp className="size-5 text-green-600" /></div>
-                    <Badge className="bg-green-50 text-green-700 border-none">Vendido</Badge>
+                    <div className="bg-blue-50 p-2 rounded-lg"><Ticket className="size-5 text-blue-600" /></div>
+                    <Badge className="bg-blue-50 text-blue-700 border-none">Sold</Badge>
                   </div>
                   <div className="text-2xl font-bold text-slate-900">{ticketStats?.sold || 0}</div>
-                  <p className="text-xs text-slate-500 mt-1">Boletos Pagados</p>
+                  <p className="text-xs text-slate-500 mt-1">Boletos Vendidos</p>
                 </CardContent>
               </Card>
               <Card className="bg-white border-slate-200 shadow-sm">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between mb-4">
                     <div className="bg-amber-50 p-2 rounded-lg"><Clock className="size-5 text-amber-600" /></div>
-                    <Badge className="bg-amber-50 text-amber-700 border-none">Pendiente</Badge>
+                    <Badge className="bg-amber-50 text-amber-700 border-none">Hold</Badge>
                   </div>
                   <div className="text-2xl font-bold text-slate-900">{ticketStats?.reserved || 0}</div>
                   <p className="text-xs text-slate-500 mt-1">Boletos Reservados</p>
@@ -677,180 +699,45 @@ export default function Admin() {
                     <Button 
                       onClick={handleAddPhoto} 
                       disabled={isAddingPhoto || !newPhotoUrl}
-                      className="w-full h-12 rounded-xl bg-purple-600 hover:bg-purple-700 gap-2 shadow-lg shadow-purple-100"
+                      className="w-full h-12 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs uppercase tracking-widest"
                     >
-                      {isAddingPhoto ? <RefreshCw className="size-4 animate-spin" /> : <Plus className="size-4" />}
-                      Añadir a {selectedGalleryGroup.toUpperCase()}
+                      {isAddingPhoto ? "Añadiendo..." : "Subir a Galería"}
                     </Button>
                   </div>
                 </CardContent>
               </Card>
 
-              {/* Photos List */}
-              <div className="lg:col-span-2 space-y-6">
+              {/* Photos Grid */}
+              <div className="lg:col-span-2 space-y-4">
                 <div className="flex justify-between items-center">
-                  <h2 className="font-bold text-lg flex items-center gap-2">
-                    <Images className="size-5 text-slate-400" /> 
-                    Fotos en {selectedGalleryGroup.toUpperCase()} ({galleryPhotos?.length || 0})
-                  </h2>
-                  <Button variant="outline" size="sm" onClick={() => refetchGallery()} className="gap-2 border-slate-200">
-                    <RefreshCw className={`size-4 ${isLoadingGallery ? "animate-spin" : ""}`} /> Actualizar
+                  <h2 className="font-bold text-lg capitalize">Fotos de {selectedGalleryGroup} ({galleryPhotos?.length || 0})</h2>
+                  <Button variant="ghost" size="sm" onClick={() => refetchGallery()} className="text-slate-400 hover:text-slate-900">
+                    <RefreshCw className="size-4" />
                   </Button>
                 </div>
-
-                <Card className="bg-white border-slate-200 shadow-sm overflow-hidden">
-                  <div className="max-h-[600px] overflow-y-auto">
-                    <Table>
-                      <TableHeader>
-                        <TableRow className="bg-slate-50/50 sticky top-0 z-10">
-                          <TableHead className="w-[80px]">Preview</TableHead>
-                          <TableHead>URL de la Imagen</TableHead>
-                          <TableHead className="w-[80px] text-right">Acción</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        <AnimatePresence mode="popLayout">
-                          {galleryPhotos?.map((photo: any, index: number) => (
-                            <motion.tr 
-                              key={index}
-                              initial={{ opacity: 0 }}
-                              animate={{ opacity: 1 }}
-                              exit={{ opacity: 0 }}
-                              className="hover:bg-slate-50/50 transition-colors"
-                            >
-                              <TableCell>
-                                <div className="size-12 rounded-lg overflow-hidden border border-slate-100 bg-slate-50">
-                                  <img src={photo.url} className="w-full h-full object-cover" alt="Preview" />
-                                </div>
-                              </TableCell>
-                              <TableCell className="max-w-md">
-                                <p className="text-xs text-slate-500 truncate font-mono" title={photo.url}>
-                                  {photo.url}
-                                </p>
-                              </TableCell>
-                              <TableCell className="text-right">
-                                <Button 
-                                  size="sm" 
-                                  variant="ghost" 
-                                  onClick={() => handleDeletePhoto(index + 2)}
-                                  className="h-8 w-8 p-0 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-full"
-                                >
-                                  <Trash2 className="size-4" />
-                                </Button>
-                              </TableCell>
-                            </motion.tr>
-                          ))}
-                        </AnimatePresence>
-                        {(!galleryPhotos || galleryPhotos.length === 0) && !isLoadingGallery && (
-                          <TableRow>
-                            <TableCell colSpan={3} className="h-40 text-center">
-                              <div className="flex flex-col items-center justify-center text-slate-400 gap-2">
-                                <Images className="size-8 opacity-20" />
-                                <p className="text-sm font-medium">No hay imágenes en esta galería.</p>
-                              </div>
-                            </TableCell>
-                          </TableRow>
-                        )}
-                      </TableBody>
-                    </Table>
-                  </div>
-                </Card>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* News Tab */}
-        {activeTab === "news" && (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <div className="lg:col-span-1 space-y-6">
-              <Card className="bg-white border-slate-200 shadow-sm">
-                <CardContent className="p-6 space-y-4">
-                  <h2 className="font-bold text-lg flex items-center gap-2">
-                    <Zap className="size-5 text-amber-500" /> Automatización
-                  </h2>
-                  <p className="text-xs text-slate-500">
-                    Ejecuta el proceso de obtención y traducción de noticias de K-pop inmediatamente.
-                  </p>
-                  <Button 
-                    onClick={handleRunAutomation} 
-                    disabled={isRunningAutomation}
-                    className="w-full bg-amber-500 hover:bg-amber-600 h-11 gap-2"
-                  >
-                    {isRunningAutomation ? <RefreshCw className="size-4 animate-spin" /> : <Zap className="size-4" />}
-                    {isRunningAutomation ? "Ejecutando..." : "Ejecutar runNewsAutomationNow()"}
-                  </Button>
-                </CardContent>
-              </Card>
-
-              <Card className="bg-white border-slate-200 shadow-sm">
-                <CardContent className="p-6 space-y-4">
-                  <h2 className="font-bold text-lg flex items-center gap-2">
-                    <Wrench className="size-5 text-blue-600" /> Herramientas Útiles
-                  </h2>
-                  <div className="space-y-2">
-                    <a href="https://www.soompi.com" target="_blank" rel="noreferrer" className="flex items-center justify-between p-3 rounded-lg border border-slate-100 hover:bg-slate-50 transition-colors group">
-                      <span className="text-sm font-medium">Soompi (Fuente)</span>
-                      <ExternalLink className="size-4 text-slate-400 group-hover:text-blue-600" />
-                    </a>
-                    <a href="https://www.allkpop.com" target="_blank" rel="noreferrer" className="flex items-center justify-between p-3 rounded-lg border border-slate-100 hover:bg-slate-50 transition-colors group">
-                      <span className="text-sm font-medium">Allkpop (Fuente)</span>
-                      <ExternalLink className="size-4 text-slate-400 group-hover:text-blue-600" />
-                    </a>
-                    <a href="https://translate.google.com" target="_blank" rel="noreferrer" className="flex items-center justify-between p-3 rounded-lg border border-slate-100 hover:bg-slate-50 transition-colors group">
-                      <span className="text-sm font-medium">Google Translate</span>
-                      <ExternalLink className="size-4 text-slate-400 group-hover:text-blue-600" />
-                    </a>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-
-            <div className="lg:col-span-2 space-y-4">
-              <div className="flex justify-between items-center">
-                <h2 className="font-bold text-lg">Noticias Publicadas ({allNews?.length || 0})</h2>
-                <Button variant="outline" size="sm" onClick={() => refetchNews()} className="gap-2">
-                  <RefreshCw className="size-4" /> Actualizar
-                </Button>
-              </div>
-              <div className="space-y-4">
-                {allNews?.map((article) => (
-                  <Card key={article.id} className="bg-white border-slate-200 overflow-hidden hover:shadow-md transition-all">
-                    <div className="flex p-4 gap-4">
-                      {article.image && (
-                        <img src={article.image} className="size-24 rounded-xl object-cover flex-shrink-0" />
-                      )}
-                      <div className="flex-1 min-w-0">
-                        <div className="flex justify-between items-start">
-                          <h3 className="font-bold text-slate-900 line-clamp-1">{article.title}</h3>
-                          <Badge variant="outline" className="text-[10px] uppercase">{article.source}</Badge>
-                        </div>
-                        <p className="text-xs text-slate-500 line-clamp-2 mt-1">{article.summary}</p>
-                        <div className="flex items-center gap-3 mt-3">
-                          <div className="flex items-center gap-1 text-[10px] text-slate-400">
-                            <Clock className="size-3" />
-                            {new Date(article.createdAt).toLocaleDateString()}
-                          </div>
-                          <div className="flex gap-2 ml-auto">
-                            <Button 
-                              size="sm" 
-                              variant="ghost" 
-                              onClick={() => handleDeleteNews(article.id)} 
-                              className="h-7 text-[10px] px-2 text-red-500 hover:text-red-700 hover:bg-red-50"
-                            >
-                              <Trash2 className="size-3 mr-1" /> Eliminar
-                            </Button>
-                          </div>
-                        </div>
+                
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                  {galleryPhotos?.map((photo: any) => (
+                    <div key={photo.id} className="group relative aspect-square rounded-2xl overflow-hidden bg-slate-100 border border-slate-200">
+                      <img src={photo.url} className="w-full h-full object-cover transition-transform group-hover:scale-110" />
+                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                        <Button 
+                          variant="destructive" 
+                          size="sm" 
+                          onClick={() => handleDeletePhoto(photo.id)}
+                          className="h-10 w-10 p-0 rounded-full"
+                        >
+                          <Trash2 className="size-5" />
+                        </Button>
                       </div>
                     </div>
-                  </Card>
-                ))}
-                {(!allNews || allNews.length === 0) && (
-                  <div className="text-center py-12 bg-slate-50 rounded-2xl border-2 border-dashed border-slate-200">
-                    <p className="text-slate-400 text-sm italic">No hay noticias publicadas</p>
-                  </div>
-                )}
+                  ))}
+                  {(!galleryPhotos || galleryPhotos.length === 0) && !isLoadingGallery && (
+                    <div className="col-span-full py-20 text-center bg-white rounded-2xl border border-dashed border-slate-200 text-slate-400">
+                      No hay fotos en esta galería.
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           </div>
@@ -858,56 +745,104 @@ export default function Admin() {
 
         {/* Orders Tab */}
         {activeTab === "orders" && (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <Card className="lg:col-span-1 bg-white border-slate-200 shadow-sm h-fit">
-              <CardContent className="p-6 space-y-4">
-                <h2 className="font-bold text-lg flex items-center gap-2">
-                  <Plus className="size-5 text-blue-600" /> Crear Orden Manual
-                </h2>
-                <p className="text-xs text-slate-500">Registra ventas realizadas fuera de la plataforma (efectivo, transferencia).</p>
-                <div className="space-y-3 pt-2">
-                  <Input placeholder="Nombre del Comprador" value={manualOrderData.buyerName} onChange={e => setManualOrderData({...manualOrderData, buyerName: e.target.value})} />
-                  <Input placeholder="Teléfono (10 dígitos)" value={manualOrderData.buyerPhone} onChange={e => setManualOrderData({...manualOrderData, buyerPhone: e.target.value})} />
-                  <Input placeholder="Email (Opcional)" value={manualOrderData.buyerEmail} onChange={e => setManualOrderData({...manualOrderData, buyerEmail: e.target.value})} />
-                  <Input placeholder="Números (ej: 001, 045, 999)" value={manualOrderData.ticketNumbers} onChange={e => setManualOrderData({...manualOrderData, ticketNumbers: e.target.value})} />
-                </div>
-                <Button onClick={handleCreateManualOrder} className="w-full bg-blue-600 hover:bg-blue-700 h-11">
-                  Registrar Venta Manual
-                </Button>
-              </CardContent>
-            </Card>
+          <div className="space-y-8">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              {/* Manual Order Form */}
+              <Card className="lg:col-span-1 bg-white border-slate-200 shadow-sm">
+                <CardContent className="p-6 space-y-4">
+                  <h2 className="font-bold text-lg flex items-center gap-2">
+                    <Plus className="size-5 text-blue-600" /> Nueva Venta Manual
+                  </h2>
+                  <div className="space-y-3">
+                    <Input placeholder="Nombre del Comprador" value={manualOrderData.buyerName} onChange={(e) => setManualOrderData({...manualOrderData, buyerName: e.target.value})} />
+                    <Input placeholder="Teléfono" value={manualOrderData.buyerPhone} onChange={(e) => setManualOrderData({...manualOrderData, buyerPhone: e.target.value})} />
+                    <Input placeholder="Email (Opcional)" value={manualOrderData.buyerEmail} onChange={(e) => setManualOrderData({...manualOrderData, buyerEmail: e.target.value})} />
+                    <Input placeholder="Números (separados por coma, ej: 001, 002)" value={manualOrderData.ticketNumbers} onChange={(e) => setManualOrderData({...manualOrderData, ticketNumbers: e.target.value})} />
+                  </div>
+                  <Button onClick={handleManualOrder} className="w-full bg-blue-600 hover:bg-blue-700 h-11">Crear Orden</Button>
+                </CardContent>
+              </Card>
 
-            <Card className="lg:col-span-2 bg-white border-slate-200 shadow-sm">
-              <CardContent className="p-6">
-                <h2 className="font-bold text-lg mb-6">Historial de Órdenes</h2>
-                <div className="space-y-4">
-                  {allOrders?.map(order => (
-                    <div key={order.id} className="p-4 rounded-xl border border-slate-100 hover:bg-slate-50 transition-colors">
-                      <div className="flex justify-between items-start mb-2">
-                        <div>
-                          <span className="text-xs font-bold text-slate-400 uppercase">Orden #{order.id}</span>
-                          <h4 className="font-bold text-slate-900">{order.buyerName}</h4>
+              {/* Orders List */}
+              <div className="lg:col-span-2 space-y-4">
+                <h2 className="font-bold text-lg">Historial de Órdenes ({allOrders?.length || 0})</h2>
+                <div className="space-y-3">
+                  {allOrders?.map((order) => (
+                    <Card key={order.id} className="bg-white border-slate-200 shadow-sm overflow-hidden">
+                      <div className="p-4 flex items-center justify-between">
+                        <div className="flex items-center gap-4">
+                          <div className={`size-10 rounded-full flex items-center justify-center font-bold ${order.status === 'paid' ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-600'}`}>
+                            {order.buyerName[0]}
+                          </div>
+                          <div>
+                            <p className="font-bold text-slate-900">{order.buyerName}</p>
+                            <p className="text-xs text-slate-500">{order.ticketNumbers} • ${order.totalAmount / 100} MXN</p>
+                          </div>
                         </div>
-                        <Badge className={order.status === 'paid' ? 'bg-green-100 text-green-700 border-none' : 'bg-slate-100 text-slate-600 border-none'}>
-                          {order.status}
-                        </Badge>
+                        <div className="flex items-center gap-3">
+                          <Badge className={order.status === 'paid' ? 'bg-green-100 text-green-700 border-none' : 'bg-slate-100 text-slate-600 border-none'}>
+                            {order.status}
+                          </Badge>
+                          <Button size="sm" variant="ghost" onClick={() => handleDeleteOrder(order.id)} className="text-red-400 hover:text-red-600 h-8 w-8 p-0">
+                            <Trash2 className="size-4" />
+                          </Button>
+                        </div>
                       </div>
-                      <div className="flex flex-wrap gap-4 text-sm text-slate-500">
-                        <div className="flex items-center gap-1"><Ticket className="size-3" /> {order.ticketCount} boletos</div>
-                        <div className="flex items-center gap-1"><TrendingUp className="size-3" /> ${order.totalAmount / 100} MXN</div>
-                        <div className="flex items-center gap-1"><Calendar className="size-3" /> {new Date(order.createdAt).toLocaleDateString()}</div>
-                      </div>
-                      <div className="mt-3 pt-3 border-t border-slate-50 flex justify-between items-center">
-                        <code className="text-xs bg-white px-2 py-1 rounded border border-slate-100">{JSON.parse(order.ticketNumbers).join(", ")}</code>
-                        <Button variant="ghost" size="sm" onClick={() => handleDeleteOrder(order.id)} className="text-red-500 hover:text-red-700 hover:bg-red-50 h-8">
-                          <Trash2 className="size-4 mr-2" /> Eliminar
-                        </Button>
-                      </div>
-                    </div>
+                    </Card>
                   ))}
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* News Tab */}
+        {activeTab === "news" && (
+          <div className="space-y-6">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+              <div>
+                <h2 className="font-bold text-xl flex items-center gap-2">
+                  <Newspaper className="size-6 text-amber-600" /> Noticias Automatizadas
+                </h2>
+                <p className="text-slate-500 text-sm">Gestiona las noticias traídas de Soompi y AllKpop</p>
+              </div>
+              <Button 
+                onClick={handleRunAutomation} 
+                disabled={isRunningAutomation}
+                className="bg-amber-600 hover:bg-amber-700 gap-2 rounded-xl h-11 px-6 shadow-lg shadow-amber-100"
+              >
+                <Zap className={`size-4 ${isRunningAutomation ? 'animate-pulse' : ''}`} />
+                {isRunningAutomation ? "Ejecutando..." : "Ejecutar Automatización"}
+              </Button>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {allNews?.map((article: any) => (
+                <Card key={article.id} className="bg-white border-slate-200 overflow-hidden group hover:shadow-xl transition-all rounded-[2rem]">
+                  <div className="relative aspect-video overflow-hidden">
+                    <img src={article.image} className="w-full h-full object-cover transition-transform group-hover:scale-105" />
+                    <Badge className="absolute top-4 left-4 bg-white/90 backdrop-blur-md text-slate-900 border-none font-black text-[10px] uppercase tracking-widest">
+                      {article.source}
+                    </Badge>
+                  </div>
+                  <CardContent className="p-5">
+                    <h3 className="font-bold text-slate-900 line-clamp-2 mb-2 text-sm uppercase leading-tight">{article.title}</h3>
+                    <p className="text-xs text-slate-500 line-clamp-3 mb-4">{article.summary}</p>
+                    <div className="flex items-center justify-between pt-4 border-t border-slate-50">
+                      <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                        {new Date(article.createdAt).toLocaleDateString()}
+                      </span>
+                      <div className="flex gap-1">
+                        <a href={article.sourceUrl} target="_blank" rel="noopener noreferrer">
+                          <Button size="sm" variant="ghost" className="h-8 w-8 p-0"><ExternalLink className="size-4" /></Button>
+                        </a>
+                        <Button size="sm" variant="ghost" onClick={() => handleDeleteNews(article.id)} className="h-8 w-8 p-0 text-red-400 hover:text-red-600"><Trash2 className="size-4" /></Button>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
           </div>
         )}
 
@@ -928,16 +863,16 @@ export default function Admin() {
                     className="w-full min-h-[120px] px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
                   />
                   <Input 
-                    placeholder="Precio (ej: 23.65)" 
+                    placeholder="Precio (ej: 124.56)" 
                     type="text" 
-                    value={productFormData.price ?? ""} 
+                    value={productFormData.price || ""} 
                     onChange={(e) => setProductFormData({...productFormData, price: e.target.value})} 
                   />
                   <Input placeholder="URL Imagen" value={productFormData.image || ""} onChange={(e) => setProductFormData({...productFormData, image: e.target.value})} />
                   <Input placeholder="Link Mercado Libre" value={productFormData.link || ""} onChange={(e) => setProductFormData({...productFormData, link: e.target.value})} />
                   <div className="grid grid-cols-2 gap-3">
-                    <Input placeholder="Rating (0-5)" type="number" step="0.1" value={productFormData.rating || 4.5} onChange={(e) => setProductFormData({...productFormData, rating: parseFloat(e.target.value)})} />
-                    <Input placeholder="Reviews" type="number" value={productFormData.reviews || 0} onChange={(e) => setProductFormData({...productFormData, reviews: parseInt(e.target.value)})} />
+                    <Input placeholder="Rating (0-5)" type="number" step="0.1" value={productFormData.rating || ""} onChange={(e) => setProductFormData({...productFormData, rating: parseFloat(e.target.value)})} />
+                    <Input placeholder="Reviews" type="number" value={productFormData.reviews || ""} onChange={(e) => setProductFormData({...productFormData, reviews: parseInt(e.target.value)})} />
                   </div>
                   <Input placeholder="Badge (ej: Nuevo)" value={productFormData.badge || ""} onChange={(e) => setProductFormData({...productFormData, badge: e.target.value})} />
                 </div>
@@ -988,7 +923,7 @@ export default function Admin() {
                   />
                   <Input placeholder="URL Imagen Banner" value={raffleFormData.image || ""} onChange={(e) => setRaffleFormData({...raffleFormData, image: e.target.value})} />
                   <div className="grid grid-cols-2 gap-3">
-                    <Input placeholder="Total Boletos" type="number" value={raffleFormData.totalTickets || 1000} onChange={(e) => setRaffleFormData({...raffleFormData, totalTickets: parseInt(e.target.value)})} />
+                    <Input placeholder="Total Boletos" type="number" value={raffleFormData.totalTickets || ""} onChange={(e) => setRaffleFormData({...raffleFormData, totalTickets: parseInt(e.target.value)})} />
                     <Input placeholder="Precio x Boleto (MXN)" type="number" value={raffleFormData.pricePerTicket || ""} onChange={(e) => setRaffleFormData({...raffleFormData, pricePerTicket: parseFloat(e.target.value)})} />
                   </div>
                   <Input placeholder="Fecha del Sorteo" type="datetime-local" value={raffleFormData.drawDate || ""} onChange={(e) => setRaffleFormData({...raffleFormData, drawDate: e.target.value})} />
