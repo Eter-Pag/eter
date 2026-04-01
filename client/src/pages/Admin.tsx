@@ -79,19 +79,21 @@ export default function Admin() {
 
   useEffect(() => {
     if (dbProducts) {
-      setProducts(
-        dbProducts.map((p) => ({
+      // Filtrar productos nulos o sin ID para evitar errores de .toString()
+      const validProducts = dbProducts
+        .filter(p => p && p.id !== undefined && p.id !== null)
+        .map((p) => ({
           id: p.id.toString(),
-          title: p.title,
+          title: p.title || "Sin título",
           description: p.description || "",
-          price: p.price,
-          image: p.image,
-          link: p.link,
+          price: p.price || "0",
+          image: p.image || "",
+          link: p.link || "",
           rating: p.rating ? p.rating / 10 : undefined,
-          reviews: p.reviews,
+          reviews: p.reviews || 0,
           badge: p.badge || undefined,
-        }))
-      );
+        }));
+      setProducts(validProducts);
     }
   }, [dbProducts]);
 
