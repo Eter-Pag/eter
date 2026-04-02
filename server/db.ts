@@ -608,16 +608,19 @@ export async function createRaffle(data: any): Promise<number> {
     await sheet.addRows([safeData]);
 
     // 3. Generar boletos para esta rifa
-    // Primero limpiamos la tabla de boletos (opcional, pero recomendado si solo hay una rifa activa)
     const ticketSheet = doc.sheetsByTitle['tickets'];
-    await ticketSheet.clearRows(); // Borra los boletos de la rifa anterior
+    await ticketSheet.clearRows(); 
 
     const totalTickets = Number(data.totalTickets);
-    const ticketRows = [];
+    const padding = totalTickets > 10000 ? 5 : (totalTickets > 1000 ? 4 : 3);
+    
+    const BATCH_SIZE = 500; // Aumentamos el bloque para mayor velocidad
+    let ticketRows = [];
+    
     for (let i = 0; i < totalTickets; i++) {
       ticketRows.push({
         id: (i + 1).toString(),
-        number: i.toString().padStart(3, '0'),
+        number: i.toString().padStart(padding, '0'),
         status: 'available',
         orderId: '',
         reservedAt: '',
@@ -627,12 +630,12 @@ export async function createRaffle(data: any): Promise<number> {
         updatedAt: now,
       });
 
-      // Insertar en bloques de 100 para no saturar la API
-      if (ticketRows.length === 100) {
+      if (ticketRows.length >= BATCH_SIZE) {
         await ticketSheet.addRows(ticketRows);
-        ticketRows.length = 0;
+        ticketRows = [];
       }
     }
+    
     if (ticketRows.length > 0) {
       await ticketSheet.addRows(ticketRows);
     }

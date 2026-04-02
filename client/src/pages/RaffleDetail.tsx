@@ -3,7 +3,7 @@ import { useRoute, useLocation } from "wouter";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Ticket, Loader2, Calendar, DollarSign, Info, ShieldCheck } from "lucide-react";
+import { ArrowLeft, Ticket, Loader2, Calendar, DollarSign, Info, ShieldCheck, Search } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
 
@@ -12,6 +12,8 @@ export default function RaffleDetail() {
   const [, navigate] = useLocation();
   const [selectedTickets, setSelectedTickets] = useState<string[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [ticketSearch, setTicketSearch] = useState("");
+  const [displayLimit, setDisplayLimit] = useState(500);
   
   const { data: raffle, isLoading: isLoadingRaffle, error: raffleError } = trpc.raffles.getById.useQuery(
     { id: parseInt(params?.id || "0") },
@@ -148,7 +150,28 @@ export default function RaffleDetail() {
                   {tickets?.filter((t: any) => t.status === "available").length} Disponibles
                 </Badge>
               </div>
-              <CardContent className="p-8">
+              <CardContent className="p-8 space-y-6">
+                <div className="flex flex-col md:flex-row gap-4">
+                  <div className="relative flex-grow">
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 size-4 text-slate-400" />
+                    <Input 
+                      placeholder="Buscar número..." 
+                      className="pl-11 h-12 rounded-2xl bg-slate-50 border-slate-100"
+                      value={ticketSearch}
+                      onChange={(e) => setTicketSearch(e.target.value)}
+                    />
+                  </div>
+                  {tickets && tickets.length > displayLimit && !ticketSearch && (
+                    <Button 
+                      variant="outline" 
+                      onClick={() => setDisplayLimit(prev => prev + 500)}
+                      className="rounded-2xl h-12 border-slate-200 font-bold"
+                    >
+                      Cargar más boletos
+                    </Button>
+                  )}
+                </div>
+
                 {isLoadingTickets ? (
                   <div className="grid grid-cols-5 md:grid-cols-8 gap-3">
                     {Array.from({ length: 40 }).map((_, i) => (
@@ -157,28 +180,31 @@ export default function RaffleDetail() {
                   </div>
                 ) : (
                   <div className="grid grid-cols-5 md:grid-cols-8 lg:grid-cols-10 gap-2 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
-                    {tickets?.map((t: any) => {
-                      const isSelected = selectedTickets.includes(t.number);
-                      const isSold = t.status === "sold";
-                      const isReserved = t.status === "reserved";
-                      
-                      return (
-                        <button
-                          key={t.number}
-                          disabled={isSold || isReserved}
-                          onClick={() => handleTicketClick(t.number, t.status)}
-                          className={`
-                            aspect-square rounded-xl text-xs font-black transition-all duration-200
-                            ${isSelected ? "bg-purple-600 text-white scale-95 shadow-lg shadow-purple-200" : ""}
-                            ${t.status === "available" && !isSelected ? "bg-slate-50 text-slate-600 hover:bg-slate-100 hover:scale-105" : ""}
-                            ${isSold ? "bg-red-50 text-red-300 cursor-not-allowed opacity-50" : ""}
-                            ${isReserved ? "bg-amber-50 text-amber-400 cursor-not-allowed animate-pulse" : ""}
-                          `}
-                        >
-                          {t.number}
-                        </button>
-                      );
-                    })}
+                    {tickets
+                      ?.filter((t: any) => ticketSearch ? t.number.includes(ticketSearch) : true)
+                      .slice(0, ticketSearch ? undefined : displayLimit)
+                      .map((t: any) => {
+                        const isSelected = selectedTickets.includes(t.number);
+                        const isSold = t.status === "sold";
+                        const isReserved = t.status === "reserved";
+                        
+                        return (
+                          <button
+                            key={t.number}
+                            disabled={isSold || isReserved}
+                            onClick={() => handleTicketClick(t.number, t.status)}
+                            className={`
+                              aspect-square rounded-xl text-xs font-black transition-all duration-200
+                              ${isSelected ? "bg-purple-600 text-white scale-95 shadow-lg shadow-purple-200" : ""}
+                              ${t.status === "available" && !isSelected ? "bg-slate-50 text-slate-600 hover:bg-slate-100 hover:scale-105" : ""}
+                              ${isSold ? "bg-red-50 text-red-300 cursor-not-allowed opacity-50" : ""}
+                              ${isReserved ? "bg-amber-50 text-amber-400 cursor-not-allowed animate-pulse" : ""}
+                            `}
+                          >
+                            {t.number}
+                          </button>
+                        );
+                      })}
                   </div>
                 )}
                 

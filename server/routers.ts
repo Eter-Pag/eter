@@ -61,7 +61,7 @@ export const appRouter = router({
         buyerName: z.string().min(1),
         buyerPhone: z.string().min(1),
         buyerEmail: z.string().email().optional().nullable(),
-        ticketNumbers: z.array(z.string().length(3)).min(1),
+        ticketNumbers: z.array(z.string().min(1)).min(1),
       }))
       .mutation(async ({ input }) => {
         const ticketRows = await getTicketsByNumbers(input.ticketNumbers);
@@ -138,13 +138,13 @@ export const appRouter = router({
     create: publicProcedure
       .input(
         z.object({
-          ticketNumbers: z.array(z.string().length(3)).min(1).max(30),
-          buyerName: z.string().min(1),
-          buyerPhone: z.string().min(1),
-          buyerEmail: z.string().email().optional(),
-        })
-      )
-      .mutation(async ({ input, ctx }) => {
+                 ticketNumbers: z.array(z.string().min(1)).min(1),
+        buyerName: z.string().min(1),
+        buyerPhone: z.string().min(1),
+        buyerEmail: z.string().email().optional(),
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
         await releaseExpiredReservations();
 
         const formattedPhone = input.buyerPhone.trim();
