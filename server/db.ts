@@ -111,6 +111,16 @@ export interface News {
   updatedAt?: string;
 }
 
+export interface Story {
+  id?: string;
+  nombre: string;
+  historia_es: string;
+  historia_ko: string;
+  fecha: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
 export type InsertUser = Omit<User, 'id' | 'createdAt' | 'updatedAt'>;
 export type InsertOrder = Omit<Order, 'id' | 'createdAt' | 'updatedAt'>;
 export type InsertPurchase = Omit<Purchase, 'id' | 'createdAt' | 'updatedAt'>;
@@ -159,7 +169,7 @@ async function ensureSheets() {
   const doc = _doc;
   if (!doc) return;
 
-  const requiredSheets = ['users', 'tickets', 'orders', 'raffles', 'purchases', 'products', 'news'];
+  const requiredSheets = ['users', 'tickets', 'orders', 'raffles', 'purchases', 'products', 'news', 'stories'];
 
   for (const sheetName of requiredSheets) {
     const existing = doc.sheetsByTitle[sheetName];
@@ -179,6 +189,7 @@ function getHeadersForSheet(sheetName: string): string[] {
     purchases: ['id', 'userId', 'raffleId', 'productId', 'type', 'amount', 'currency', 'ticketNumbers', 'quantity', 'stripePaymentIntentId', 'stripeCheckoutSessionId', 'status', 'buyerName', 'buyerEmail', 'buyerPhone', 'createdAt', 'updatedAt'],
     products: ['id', 'title', 'description', 'price', 'image', 'link', 'rating', 'reviews', 'badge', 'createdAt', 'updatedAt'],
     news: ['id', 'title', 'content', 'summary', 'image', 'source', 'sourceUrl', 'slug', 'isPublished', 'createdAt', 'updatedAt'],
+    stories: ['id', 'nombre', 'historia_es', 'historia_ko', 'fecha', 'createdAt', 'updatedAt'],
   };
   return headers[sheetName] || [];
 }
@@ -856,5 +867,55 @@ export async function getOrderByStripeSession(sessionId: string): Promise<Order 
   } catch (error) {
     console.error('[Sheets] Error getting order by stripe session:', error);
     return null;
+  }
+}
+
+// ============ STORIES QUERIES ============
+
+export async function getAllStories(): Promise<Story[]> {
+  const doc = await getDoc();
+  if (!doc) return [];
+
+  try {
+    const sheet = doc.sheetsByTitle['stories'];
+    if (!sheet) return [];
+
+    const rows = await sheet.getRows();
+    return rows
+      .map(r => rowToObject(r, getHeadersForSheet('stories')))
+      .sort((a, b) => new Date(b.fecha).getTime() - new Date(a.fecha).getTime());
+  } catch (error) {
+    console.error('[Sheets] Error getting all stories:', error);
+    return [];
+  }
+}
+
+export async function createStory(data: { nombre: string; historia_es: string; historia_ko: string }): Promise<number> {
+  const doc = await getDoc();
+  if (!doc) throw new Error('Database not available');
+
+  try {
+    const sheet = doc.sheetsByTitle['stories'];
+    if (!sheet) throw new Error('Stories sheet not found');
+
+    const rows = await sheet.getRows();
+    const maxId = rows.reduce((max, row) => Math.max(max, Number(row.id) || 0), 0);
+    const id = (maxId + 1).toString();
+    const now = new Date().toISOString();
+
+    await sheet.addRows([
+      {
+        id,
+        ...data,
+        fecha: now,
+        createdAt: now,
+        updatedAt: now,
+      },
+    ]);
+
+    return Number(id);
+  } catch (error) {
+    console.error('[Sheets] Error creating story:', error);
+    throw error;
   }
 }
