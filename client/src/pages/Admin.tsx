@@ -79,18 +79,17 @@ export default function Admin() {
 
   useEffect(() => {
     if (dbProducts) {
-      // Filtrar productos nulos o sin ID para evitar errores de .toString()
       const validProducts = dbProducts
-        .filter(p => p && p.id !== undefined && p.id !== null)
-        .map((p) => ({
+        .filter((p: any) => p && p.id !== undefined && p.id !== null)
+        .map((p: any) => ({
           id: p.id.toString(),
           title: p.title || "Sin título",
           description: p.description || "",
           price: p.price || "0",
           image: p.image || "",
           link: p.link || "",
-          rating: p.rating ? p.rating / 10 : undefined,
-          reviews: p.reviews || 0,
+          rating: p.rating ? Number(p.rating) / 10 : undefined,
+          reviews: p.reviews ? Number(p.reviews) : 0,
           badge: p.badge || undefined,
         }));
       setProducts(validProducts);
