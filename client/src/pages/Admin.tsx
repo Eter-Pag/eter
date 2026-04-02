@@ -330,29 +330,35 @@ export default function Admin() {
 
   const executeRaffleMutation = async () => {
     try {
+      const drawDateStr = typeof raffleFormData.drawDate === 'string' 
+        ? new Date(raffleFormData.drawDate).toISOString() 
+        : (raffleFormData.drawDate as Date).toISOString();
+
       if (editingRaffleId) {
         await updateRaffleMutation.mutateAsync({
           id: parseInt(editingRaffleId),
-          title: raffleFormData.title!,
-          description: raffleFormData.description!,
-          image: raffleFormData.image!,
-          totalTickets: raffleFormData.totalTickets!,
-          pricePerTicket: Math.round(raffleFormData.pricePerTicket! * 100),
-          drawDate: new Date(raffleFormData.drawDate!),
-          webhookUrl: raffleFormData.webhookUrl!,
-          category: raffleFormData.category!,
+          title: raffleFormData.title || undefined,
+          description: raffleFormData.description || undefined,
+          image: raffleFormData.image || undefined,
+          totalTickets: raffleFormData.totalTickets,
+          pricePerTicket: raffleFormData.pricePerTicket ? Math.round(raffleFormData.pricePerTicket * 100) : undefined,
+          drawDate: drawDateStr,
+          webhookUrl: raffleFormData.webhookUrl || undefined,
+          category: raffleFormData.category || undefined,
         });
         setEditingRaffleId(null);
       } else {
         await createRaffleMutation.mutateAsync({
           title: raffleFormData.title!,
-          description: raffleFormData.description!,
+          description: raffleFormData.description || "",
           image: raffleFormData.image!,
           totalTickets: raffleFormData.totalTickets!,
           pricePerTicket: Math.round(raffleFormData.pricePerTicket! * 100),
-          drawDate: new Date(raffleFormData.drawDate!),
-          webhookUrl: raffleFormData.webhookUrl!,
+          drawDate: drawDateStr,
+          webhookUrl: raffleFormData.webhookUrl || "",
           category: raffleFormData.category!,
+          raffleNumber: nextRaffleNumber,
+          isActive: true,
         });
       }
       await refetchRaffles();

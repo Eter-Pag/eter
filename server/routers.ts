@@ -299,11 +299,11 @@ export const appRouter = router({
         z.object({
           title: z.string().min(1),
           description: z.string().optional(),
-          image: z.string().url(),
+          image: z.string().min(1), // Relaxed from .url() to .min(1)
           totalTickets: z.number().min(1),
           pricePerTicket: z.number().min(1),
-          drawDate: z.string(), // ISO string from frontend
-          webhookUrl: z.string().url().optional(),
+          drawDate: z.string(),
+          webhookUrl: z.string().optional(),
           category: z.string(),
           raffleNumber: z.number(),
           isActive: z.boolean().default(true),
