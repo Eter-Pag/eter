@@ -10,7 +10,7 @@ import {
   Loader2, Plus, Trash2, Edit2, Ticket, Package, ShoppingCart, 
   MessageCircle, Newspaper, Image as ImageIcon, Search, RefreshCw,
   DollarSign, Calendar, Zap, ExternalLink, Images, User, Phone, CheckCircle2, XCircle,
-  Smartphone, Wallet, Plane, Car, Gift
+  Smartphone, Wallet, Plane, Car, Gift, X
 } from "lucide-react";
 import { raffleThemes, type RaffleCategory } from "@shared/raffleThemes";
 import { toast } from "sonner";
@@ -76,8 +76,10 @@ export default function Admin() {
 function RaffleManager() {
   const { data: raffles, refetch, isLoading } = trpc.raffles.list.useQuery();
   const createMutation = trpc.raffles.create.useMutation();
+  const updateMutation = trpc.raffles.update.useMutation();
   const deleteMutation = trpc.raffles.delete.useMutation();
 
+  const [editingId, setEditingId] = useState<number | null>(null);
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -85,9 +87,38 @@ function RaffleManager() {
     totalTickets: 100,
     pricePerTicket: 50,
     drawDate: "",
-    category: "otro",
+    category: "otro" as RaffleCategory,
     isActive: true
   });
+
+  const handleEdit = (raffle: any) => {
+    setEditingId(Number(raffle.id));
+    setFormData({
+      title: raffle.title,
+      description: raffle.description || "",
+      image: raffle.image || "",
+      totalTickets: Number(raffle.totalTickets),
+      pricePerTicket: Number(raffle.pricePerTicket) / 100,
+      drawDate: raffle.drawDate ? raffle.drawDate.split('T')[0] : "",
+      category: raffle.category as RaffleCategory,
+      isActive: raffle.isActive === true || raffle.isActive === 'TRUE'
+    });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const resetForm = () => {
+    setEditingId(null);
+    setFormData({
+      title: "",
+      description: "",
+      image: "",
+      totalTickets: 100,
+      pricePerTicket: 50,
+      drawDate: "",
+      category: "otro",
+      isActive: true
+    });
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -97,17 +128,23 @@ function RaffleManager() {
         return;
       }
 
-      await createMutation.mutateAsync({
-        ...formData,
-        pricePerTicket: Math.round(formData.pricePerTicket * 100),
-        raffleNumber: (raffles?.length || 0) + 1
-      });
+      if (editingId) {
+        await updateMutation.mutateAsync({
+          id: editingId,
+          ...formData,
+          pricePerTicket: Math.round(formData.pricePerTicket * 100),
+        });
+        toast.success("¡Rifa actualizada correctamente!");
+      } else {
+        await createMutation.mutateAsync({
+          ...formData,
+          pricePerTicket: Math.round(formData.pricePerTicket * 100),
+          raffleNumber: (raffles?.length || 0) + 1
+        });
+        toast.success("¡Rifa creada y boletos generados!");
+      }
       
-      toast.success("¡Rifa creada y boletos generados!");
-      setFormData({
-        title: "", description: "", image: "", totalTickets: 100,
-        pricePerTicket: 50, drawDate: "", category: "otro", isActive: true
-      });
+      resetForm();
       refetch();
     } catch (error: any) {
       toast.error("Error: " + error.message);
@@ -128,10 +165,16 @@ function RaffleManager() {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
       <Card className="lg:col-span-1 border-slate-200 shadow-xl rounded-[2rem] bg-white overflow-hidden">
-        <CardHeader className="bg-slate-50 border-b border-slate-100 p-6">
+        <CardHeader className="bg-slate-50 border-b border-slate-100 p-6 flex flex-row items-center justify-between">
           <CardTitle className="text-lg font-black flex items-center gap-2 uppercase tracking-tighter">
-            <Plus className="size-5 text-purple-600" /> Nueva Rifa
+            {editingId ? <Edit2 className="size-5 text-blue-600" /> : <Plus className="size-5 text-purple-600" />}
+            {editingId ? "Editar Rifa" : "Nueva Rifa"}
           </CardTitle>
+          {editingId && (
+            <Button variant="ghost" size="sm" onClick={resetForm} className="rounded-full size-8 p-0">
+              <X className="size-4" />
+            </Button>
+          )}
         </CardHeader>
         <CardContent className="p-6">
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -156,7 +199,8 @@ function RaffleManager() {
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Boletos</label>
-                <Input className="rounded-xl h-11 bg-slate-50 border-slate-100" type="number" value={formData.totalTickets} onChange={e => setFormData({...formData, totalTickets: parseInt(e.target.value)})} />
+                <Input className="rounded-xl h-11 bg-slate-50 border-slate-100" type="number" value={formData.totalTickets} onChange={e => setFormData({...formData, totalTickets: parseInt(e.target.value)})} disabled={!!editingId} />
+                {editingId && <p className="text-[8px] text-amber-500 font-bold uppercase">No editable</p>}
               </div>
               <div className="space-y-2">
                 <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Precio ($)</label>
@@ -186,9 +230,9 @@ function RaffleManager() {
                 ))}
               </div>
             </div>
-            <Button type="submit" className="w-full bg-purple-600 hover:bg-purple-700 text-white rounded-2xl h-14 font-black uppercase tracking-widest shadow-lg shadow-purple-100 mt-4" disabled={createMutation.isLoading}>
-              {createMutation.isLoading ? <Loader2 className="animate-spin mr-2" /> : <Ticket className="mr-2 size-5" />}
-              Generar Rifa
+            <Button type="submit" className={`w-full ${editingId ? "bg-blue-600 hover:bg-blue-700" : "bg-purple-600 hover:bg-purple-700"} text-white rounded-2xl h-14 font-black uppercase tracking-widest shadow-lg mt-4`} disabled={createMutation.isLoading || updateMutation.isLoading}>
+              {(createMutation.isLoading || updateMutation.isLoading) ? <Loader2 className="animate-spin mr-2" /> : (editingId ? <Edit2 className="mr-2 size-5" /> : <Ticket className="mr-2 size-5" />)}
+              {editingId ? "Actualizar Rifa" : "Generar Rifa"}
             </Button>
           </form>
         </CardContent>
@@ -200,33 +244,43 @@ function RaffleManager() {
           <div className="flex justify-center py-12"><Loader2 className="animate-spin text-slate-400" /></div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {raffles?.map((raffle: any) => (
-              <Card key={raffle.id} className="border-slate-200 overflow-hidden rounded-[2rem] group hover:border-purple-200 transition-all shadow-sm bg-white">
-                <div className="h-40 bg-slate-200 relative">
-                  <img src={raffle.image} className="w-full h-full object-cover" alt={raffle.title} />
-                  <div className="absolute top-4 right-4">
-                    <Badge className={raffle.isActive ? "bg-green-500 font-bold" : "bg-slate-400 font-bold"}>{raffle.isActive ? "ACTIVA" : "INACTIVA"}</Badge>
-                  </div>
-                </div>
-                <CardContent className="p-6">
-                  <h4 className="font-black text-slate-900 truncate uppercase tracking-tighter text-lg">{raffle.title}</h4>
-                  <div className="grid grid-cols-2 gap-2 mt-4">
-                    <div className="bg-slate-50 p-2 rounded-xl text-center">
-                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Boletos</p>
-                      <p className="font-bold text-slate-700">{raffle.totalTickets}</p>
+            {raffles?.map((raffle) => {
+              const theme = raffleThemes[raffle.category as RaffleCategory] || raffleThemes.otro;
+              return (
+                <Card key={raffle.id} className="border-none shadow-xl rounded-[2rem] bg-white overflow-hidden group">
+                  <div className={`h-2 ${theme.buttonBg}`} />
+                  <CardContent className="p-6">
+                    <div className="flex justify-between items-start mb-4">
+                      <div className={`size-12 rounded-2xl ${theme.buttonBg} flex items-center justify-center text-white text-2xl shadow-lg`}>
+                        {theme.icon}
+                      </div>
+                      <div className="flex gap-1">
+                        <Button variant="ghost" size="sm" className="text-blue-500 hover:bg-blue-50 rounded-lg" onClick={() => handleEdit(raffle)}>
+                          <Edit2 className="size-4" />
+                        </Button>
+                        <Button variant="ghost" size="sm" className="text-red-500 hover:bg-red-50 rounded-lg" onClick={() => handleDelete(Number(raffle.id))}>
+                          <Trash2 className="size-4" />
+                        </Button>
+                      </div>
                     </div>
-                    <div className="bg-slate-50 p-2 rounded-xl text-center">
-                      <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Precio</p>
-                      <p className="font-bold text-purple-600">${Number(raffle.pricePerTicket) / 100}</p>
+                    <h4 className="font-black text-slate-900 uppercase tracking-tighter mb-1 line-clamp-1">{raffle.title}</h4>
+                    <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest mb-4 flex items-center gap-2">
+                      <Calendar className="size-3" /> {new Date(raffle.drawDate).toLocaleDateString()}
+                    </p>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="bg-slate-50 p-3 rounded-2xl border border-slate-100">
+                        <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Boletos</p>
+                        <p className="font-black text-slate-900">{raffle.totalTickets}</p>
+                      </div>
+                      <div className="bg-slate-50 p-3 rounded-2xl border border-slate-100">
+                        <p className="text-[8px] font-black text-slate-400 uppercase tracking-widest mb-1">Precio</p>
+                        <p className={`font-black ${theme.accent}`}>${Number(raffle.pricePerTicket) / 100}</p>
+                      </div>
                     </div>
-                  </div>
-                  <div className="flex gap-2 mt-6">
-                    <Button variant="outline" size="sm" className="flex-1 rounded-xl h-10 font-bold text-xs" disabled><Edit2 className="size-3 mr-2" /> Editar</Button>
-                    <Button variant="outline" size="sm" className="flex-1 rounded-xl h-10 font-bold text-xs text-red-600 hover:bg-red-50" onClick={() => handleDelete(Number(raffle.id))}><Trash2 className="size-3 mr-2" /> Borrar</Button>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+                  </CardContent>
+                </Card>
+              );
+            })}
           </div>
         )}
       </div>
@@ -238,13 +292,42 @@ function RaffleManager() {
 function ProductManager() {
   const { data: products, refetch, isLoading } = trpc.products.list.useQuery();
   const createMutation = trpc.products.create.useMutation();
-  const deleteMutation = trpc.products.delete.useMutation();
   const updateMutation = trpc.products.update.useMutation();
+  const deleteMutation = trpc.products.delete.useMutation();
 
   const [editingId, setEditingId] = useState<number | null>(null);
   const [formData, setFormData] = useState({
-    title: "", description: "", price: "", image: "", link: "", rating: 5, reviews: 0, badge: ""
+    title: "",
+    description: "",
+    price: "",
+    image: "",
+    link: "",
+    badge: "",
+    rating: 5,
+    reviews: 0
   });
+
+  const handleEdit = (product: any) => {
+    setEditingId(Number(product.id));
+    setFormData({
+      title: product.title,
+      description: product.description || "",
+      price: product.price,
+      image: product.image,
+      link: product.link,
+      badge: product.badge || "",
+      rating: Number(product.rating) || 5,
+      reviews: Number(product.reviews) || 0
+    });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const resetForm = () => {
+    setEditingId(null);
+    setFormData({
+      title: "", description: "", price: "", image: "", link: "", badge: "", rating: 5, reviews: 0
+    });
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -256,71 +339,72 @@ function ProductManager() {
         await createMutation.mutateAsync(formData);
         toast.success("Producto creado");
       }
-      setFormData({ title: "", description: "", price: "", image: "", link: "", rating: 5, reviews: 0, badge: "" });
-      setEditingId(null);
+      resetForm();
       refetch();
-    } catch (error: any) {
+    } catch (error) {
       toast.error("Error al guardar producto");
     }
   };
 
-  const handleEdit = (p: any) => {
-    setEditingId(Number(p.id));
-    setFormData({
-      title: p.title, description: p.description, price: p.price,
-      image: p.image, link: p.link, rating: p.rating || 5,
-      reviews: p.reviews || 0, badge: p.badge || ""
-    });
-  };
-
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-      <Card className="lg:col-span-1 border-slate-200 shadow-xl rounded-[2rem] bg-white overflow-hidden">
+      <Card className="lg:col-span-1 border-slate-200 shadow-xl rounded-[2rem] bg-white">
         <CardHeader className="bg-slate-50 border-b border-slate-100 p-6">
           <CardTitle className="text-lg font-black flex items-center gap-2 uppercase tracking-tighter">
-            <Plus className="size-5 text-blue-600" /> {editingId ? "Editar Producto" : "Nuevo Producto"}
+            {editingId ? <Edit2 className="size-5 text-blue-600" /> : <Plus className="size-5 text-green-600" />}
+            {editingId ? "Editar Producto" : "Nuevo Producto"}
           </CardTitle>
         </CardHeader>
         <CardContent className="p-6">
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
               <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Nombre del Producto</label>
-              <Input className="rounded-xl h-11 bg-slate-50 border-slate-100" value={formData.title} onChange={e => setFormData({...formData, title: e.target.value})} />
+              <Input className="rounded-xl h-11 bg-slate-50 border-slate-100" value={formData.title} onChange={e => setFormData({...formData, title: e.target.value})} required />
             </div>
             <div className="space-y-2">
-              <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Precio (MXN)</label>
-              <Input className="rounded-xl h-11 bg-slate-50 border-slate-100" value={formData.price} onChange={e => setFormData({...formData, price: e.target.value})} placeholder="Ej. 299.00" />
+              <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Precio (Texto, ej: $1,500)</label>
+              <Input className="rounded-xl h-11 bg-slate-50 border-slate-100" value={formData.price} onChange={e => setFormData({...formData, price: e.target.value})} required />
             </div>
             <div className="space-y-2">
               <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Imagen URL</label>
-              <Input className="rounded-xl h-11 bg-slate-50 border-slate-100" value={formData.image} onChange={e => setFormData({...formData, image: e.target.value})} />
+              <Input className="rounded-xl h-11 bg-slate-50 border-slate-100" value={formData.image} onChange={e => setFormData({...formData, image: e.target.value})} required />
             </div>
             <div className="space-y-2">
-              <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Link Mercado Libre</label>
-              <Input className="rounded-xl h-11 bg-slate-50 border-slate-100" value={formData.link} onChange={e => setFormData({...formData, link: e.target.value})} />
+              <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Link de Mercado Libre / Amazon</label>
+              <Input className="rounded-xl h-11 bg-slate-50 border-slate-100" value={formData.link} onChange={e => setFormData({...formData, link: e.target.value})} required />
             </div>
-            <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700 text-white rounded-2xl h-14 font-black uppercase tracking-widest shadow-lg shadow-blue-100 mt-4">
-              {editingId ? "Actualizar" : "Crear Producto"}
-            </Button>
-            {editingId && <Button type="button" variant="ghost" onClick={() => {setEditingId(null); setFormData({title:"", description:"", price:"", image:"", link:"", rating:5, reviews:0, badge:""})}} className="w-full rounded-xl">Cancelar</Button>}
+            <div className="space-y-2">
+              <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Badge (Opcional, ej: OFERTA)</label>
+              <Input className="rounded-xl h-11 bg-slate-50 border-slate-100" value={formData.badge} onChange={e => setFormData({...formData, badge: e.target.value})} />
+            </div>
+            <div className="flex gap-3">
+              {editingId && (
+                <Button type="button" variant="outline" className="flex-1 rounded-xl h-12 font-bold" onClick={resetForm}>Cancelar</Button>
+              )}
+              <Button type="submit" className={`flex-[2] ${editingId ? "bg-blue-600 hover:bg-blue-700" : "bg-green-600 hover:bg-green-700"} text-white rounded-xl h-12 font-bold`}>
+                {editingId ? "Actualizar" : "Crear"}
+              </Button>
+            </div>
           </form>
         </CardContent>
       </Card>
 
       <div className="lg:col-span-2 space-y-4">
-        <h3 className="font-black text-slate-900 flex items-center gap-2 uppercase tracking-tighter text-lg">Productos en Tienda <Badge className="bg-slate-900">{products?.length || 0}</Badge></h3>
+        <h3 className="font-black text-slate-900 uppercase tracking-tighter text-lg">Productos en Tienda <Badge className="bg-slate-900">{products?.length || 0}</Badge></h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {products?.map((p: any) => (
-            <Card key={p.id} className="bg-white border-slate-200 rounded-2xl overflow-hidden hover:shadow-md transition-all">
-              <div className="flex p-4 gap-4">
-                <img src={p.image} className="size-20 rounded-xl object-cover" />
-                <div className="flex-1">
-                  <h4 className="font-bold text-slate-900 line-clamp-1 text-sm">{p.title}</h4>
-                  <p className="text-blue-600 font-black text-sm mt-1">${p.price} MXN</p>
-                  <div className="flex gap-2 mt-3">
-                    <Button size="sm" variant="outline" onClick={() => handleEdit(p)} className="flex-1 h-8 text-[10px] font-black uppercase">Editar</Button>
-                    <Button size="sm" variant="outline" onClick={async () => { if(confirm("¿Borrar?")) { await deleteMutation.mutateAsync({id: Number(p.id)}); refetch(); } }} className="size-8 p-0 text-red-500 hover:bg-red-50"><Trash2 className="size-4" /></Button>
-                  </div>
+          {products?.map(p => (
+            <Card key={p.id} className="border-none shadow-lg rounded-2xl bg-white overflow-hidden flex">
+              <div className="w-24 h-24 shrink-0">
+                <img src={p.image} className="w-full h-full object-cover" />
+              </div>
+              <div className="p-4 flex-grow flex flex-col justify-between">
+                <div>
+                  <h5 className="font-black text-slate-900 uppercase text-xs line-clamp-1">{p.title}</h5>
+                  <p className="text-green-600 font-black text-sm">{p.price}</p>
+                </div>
+                <div className="flex justify-end gap-2">
+                  <Button variant="ghost" size="sm" className="size-8 p-0 text-blue-500" onClick={() => handleEdit(p)}><Edit2 className="size-4" /></Button>
+                  <Button variant="ghost" size="sm" className="size-8 p-0 text-red-500" onClick={() => deleteMutation.mutate(Number(p.id))}><Trash2 className="size-4" /></Button>
                 </div>
               </div>
             </Card>
@@ -333,66 +417,58 @@ function ProductManager() {
 
 // --- ORDER MANAGER ---
 function OrderManager() {
-  const { data: orders, refetch, isLoading } = trpc.orders.getAll.useQuery();
-  const deleteMutation = trpc.orders.delete.useMutation();
+  const { data: orders, isLoading } = trpc.orders.getAll.useQuery();
+  const deleteMutation = trpc.orders.delete.useMutation({ onSuccess: () => window.location.reload() });
 
   return (
-    <Card className="border-slate-200 shadow-xl rounded-[2rem] bg-white overflow-hidden">
-      <CardHeader className="bg-slate-50 border-b border-slate-100 p-6 flex flex-row items-center justify-between">
-        <CardTitle className="text-lg font-black flex items-center gap-2 uppercase tracking-tighter">
-          <ShoppingCart className="size-5 text-emerald-600" /> Gestión de Pedidos
+    <Card className="border-none shadow-xl rounded-[2rem] bg-white overflow-hidden">
+      <CardHeader className="bg-slate-900 text-white p-8">
+        <CardTitle className="text-2xl font-black uppercase tracking-tighter flex items-center gap-3">
+          <ShoppingCart className="size-8 text-purple-400" /> Control de Pedidos
         </CardTitle>
-        <Button variant="outline" size="sm" onClick={() => refetch()} className="rounded-xl gap-2 font-bold h-10 px-4">
-          <RefreshCw className="size-4" /> Refrescar
-        </Button>
       </CardHeader>
       <CardContent className="p-0">
-        <div className="overflow-x-auto">
-          <Table>
-            <TableHeader>
-              <TableRow className="bg-slate-50/50">
-                <TableHead className="font-black text-[10px] uppercase tracking-widest pl-6">Cliente</TableHead>
-                <TableHead className="font-black text-[10px] uppercase tracking-widest">Boletos</TableHead>
-                <TableHead className="font-black text-[10px] uppercase tracking-widest">Total</TableHead>
-                <TableHead className="font-black text-[10px] uppercase tracking-widest">Estado</TableHead>
-                <TableHead className="font-black text-[10px] uppercase tracking-widest text-right pr-6">Acción</TableHead>
+        <Table>
+          <TableHeader className="bg-slate-50">
+            <TableRow>
+              <TableHead className="font-black uppercase text-[10px] tracking-widest text-slate-400 p-6">Comprador</TableHead>
+              <TableHead className="font-black uppercase text-[10px] tracking-widest text-slate-400 p-6">Boletos</TableHead>
+              <TableHead className="font-black uppercase text-[10px] tracking-widest text-slate-400 p-6">Total</TableHead>
+              <TableHead className="font-black uppercase text-[10px] tracking-widest text-slate-400 p-6">Estado</TableHead>
+              <TableHead className="font-black uppercase text-[10px] tracking-widest text-slate-400 p-6 text-right">Acciones</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {orders?.map((order) => (
+              <TableRow key={order.id} className="hover:bg-slate-50/50 transition-colors">
+                <TableCell className="p-6">
+                  <p className="font-black text-slate-900 uppercase">{order.buyerName}</p>
+                  <p className="text-xs text-slate-400 font-bold flex items-center gap-1"><Phone className="size-3" /> {order.buyerPhone}</p>
+                </TableCell>
+                <TableCell className="p-6">
+                  <div className="flex flex-wrap gap-1 max-w-[200px]">
+                    {JSON.parse(order.ticketNumbers).map((n: string) => (
+                      <Badge key={n} variant="outline" className="bg-slate-100 border-slate-200 text-slate-600 font-bold text-[10px]">{n}</Badge>
+                    ))}
+                  </div>
+                </TableCell>
+                <TableCell className="p-6 font-black text-slate-900">${order.totalAmount / 100}</TableCell>
+                <TableCell className="p-6">
+                  {order.status === "paid" ? (
+                    <Badge className="bg-green-500 text-white font-black uppercase text-[9px]">PAGADO</Badge>
+                  ) : (
+                    <Badge variant="outline" className="text-amber-500 border-amber-200 bg-amber-50 font-black uppercase text-[9px]">PENDIENTE</Badge>
+                  )}
+                </TableCell>
+                <TableCell className="p-6 text-right">
+                  <Button variant="ghost" size="sm" className="text-red-500 hover:bg-red-50" onClick={() => deleteMutation.mutate({ id: Number(order.id) })}>
+                    <Trash2 className="size-4" />
+                  </Button>
+                </TableCell>
               </TableRow>
-            </TableHeader>
-            <TableBody>
-              {orders?.map((order: any) => (
-                <TableRow key={order.id} className="hover:bg-slate-50/50 transition-colors border-b border-slate-50">
-                  <TableCell className="pl-6 py-4">
-                    <div className="flex items-center gap-3">
-                      <div className="bg-slate-100 size-9 rounded-full flex items-center justify-center font-black text-slate-500 text-xs">{order.buyerName[0]}</div>
-                      <div>
-                        <p className="font-bold text-slate-900 text-sm">{order.buyerName}</p>
-                        <p className="text-[10px] text-slate-400 font-medium">{order.buyerPhone}</p>
-                      </div>
-                    </div>
-                  </TableCell>
-                  <TableCell className="py-4">
-                    <Badge variant="outline" className="bg-purple-50 text-purple-700 border-none font-black text-[10px]">{order.ticketCount} BOLETOS</Badge>
-                  </TableCell>
-                  <TableCell className="py-4 font-black text-slate-900 text-sm">${order.totalAmount / 100}</TableCell>
-                  <TableCell className="py-4">
-                    <Badge className={order.status === 'paid' ? 'bg-green-100 text-green-700 border-none font-bold' : 'bg-amber-100 text-amber-700 border-none font-bold'}>
-                      {order.status === 'paid' ? <CheckCircle2 className="size-3 mr-1" /> : <Loader2 className="size-3 mr-1 animate-spin" />}
-                      {order.status.toUpperCase()}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-right pr-6 py-4">
-                    <Button variant="ghost" size="sm" onClick={async () => { if(confirm("¿Eliminar orden?")) { await deleteMutation.mutateAsync({id: Number(order.id)}); refetch(); } }} className="h-8 w-8 p-0 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg">
-                      <Trash2 className="size-4" />
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))}
-              {(!orders || orders.length === 0) && (
-                <TableRow><TableCell colSpan={5} className="h-40 text-center text-slate-400 font-medium italic">No hay pedidos registrados todavía.</TableCell></TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </div>
+            ))}
+          </TableBody>
+        </Table>
       </CardContent>
     </Card>
   );
@@ -400,122 +476,32 @@ function OrderManager() {
 
 // --- STORY MANAGER ---
 function StoryManager() {
-  const { data: stories, refetch, isLoading } = trpc.stories.list.useQuery();
-  const deleteMutation = trpc.stories.delete.useMutation();
+  const { data: stories, isLoading } = trpc.stories.list.useQuery();
 
   return (
-    <Card className="border-slate-200 shadow-xl rounded-[2rem] bg-white overflow-hidden">
-      <CardHeader className="bg-slate-50 border-b border-slate-100 p-6 flex flex-row items-center justify-between">
-        <CardTitle className="text-lg font-black flex items-center gap-2 uppercase tracking-tighter">
-          <MessageCircle className="size-5 text-pink-600" /> Muro de Historias
-        </CardTitle>
-        <Button variant="outline" size="sm" onClick={() => refetch()} className="rounded-xl gap-2 font-bold h-10 px-4">
-          <RefreshCw className="size-4" /> Actualizar
-        </Button>
-      </CardHeader>
-      <CardContent className="p-0">
-        <div className="overflow-x-auto">
-          <Table>
-            <TableHeader>
-              <TableRow className="bg-slate-50/50">
-                <TableHead className="font-black text-[10px] uppercase tracking-widest pl-6">Autor</TableHead>
-                <TableHead className="font-black text-[10px] uppercase tracking-widest">Historia (Español)</TableHead>
-                <TableHead className="font-black text-[10px] uppercase tracking-widest">Traducción (Coreano)</TableHead>
-                <TableHead className="font-black text-[10px] uppercase tracking-widest text-right pr-6">Acción</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {stories?.map((story: any, index: number) => (
-                <TableRow key={index} className="hover:bg-slate-50/50 border-b border-slate-50">
-                  <TableCell className="pl-6 py-4 font-bold text-slate-900 text-sm">{story.nombre}</TableCell>
-                  <TableCell className="py-4 text-slate-600 text-xs max-w-xs truncate">{story.historia_es}</TableCell>
-                  <TableCell className="py-4 text-slate-400 text-[10px] italic max-w-xs truncate font-medium">{story.historia_ko}</TableCell>
-                  <TableCell className="text-right pr-6 py-4">
-                    <Button variant="ghost" size="sm" onClick={async () => { if(confirm("¿Eliminar historia?")) { await deleteMutation.mutateAsync({id: index + 2}); refetch(); } }} className="h-8 w-8 p-0 text-red-400 hover:text-red-600 rounded-lg">
-                      <Trash2 className="size-4" />
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
-      </CardContent>
-    </Card>
-  );
-}
-
-// --- NEWS MANAGER ---
-function NewsManager() {
-  const { data: news, refetch } = trpc.news.adminGetAll.useQuery();
-  const runMutation = trpc.news.runAutomation.useMutation();
-  const deleteMutation = trpc.news.delete.useMutation();
-
-  return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h3 className="font-black text-slate-900 uppercase tracking-tighter text-lg">Noticias K-Pop</h3>
-        <Button onClick={async () => { await runMutation.mutateAsync(); refetch(); }} disabled={runMutation.isLoading} className="bg-amber-600 hover:bg-amber-700 text-white rounded-xl gap-2 font-bold h-11 px-6 shadow-lg shadow-amber-100">
-          <Zap className={`size-4 ${runMutation.isLoading ? 'animate-pulse' : ''}`} />
-          {runMutation.isLoading ? "Automatizando..." : "Ejecutar IA News"}
-        </Button>
-      </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {news?.map((n: any) => (
-          <Card key={n.id} className="bg-white border-slate-200 overflow-hidden rounded-[2rem] group hover:shadow-xl transition-all">
-            <div className="aspect-video relative overflow-hidden">
-              <img src={n.image} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
-              <Badge className="absolute top-4 left-4 bg-white/90 backdrop-blur-md text-slate-900 border-none font-black text-[10px] tracking-widest">{n.source}</Badge>
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {stories?.map((story) => (
+        <Card key={story.id} className="border-none shadow-lg rounded-3xl bg-white p-6">
+          <div className="flex justify-between items-start mb-4">
+            <Badge className="bg-purple-100 text-purple-700 font-black uppercase text-[10px]">{story.nombre}</Badge>
+            <span className="text-[10px] text-slate-400 font-bold uppercase">{new Date(story.fecha).toLocaleDateString()}</span>
+          </div>
+          <div className="space-y-4">
+            <div>
+              <p className="text-[9px] font-black text-slate-300 uppercase tracking-widest mb-1">Español</p>
+              <p className="text-sm text-slate-600 italic line-clamp-3">"{story.historia_es}"</p>
             </div>
-            <CardContent className="p-5">
-              <h4 className="font-bold text-slate-900 line-clamp-2 text-sm uppercase leading-tight mb-4">{n.title}</h4>
-              <div className="flex justify-between items-center pt-4 border-t border-slate-50">
-                <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{new Date(n.createdAt).toLocaleDateString()}</span>
-                <Button variant="ghost" size="sm" onClick={async () => { await deleteMutation.mutateAsync({id: n.id}); refetch(); }} className="h-8 w-8 p-0 text-red-400"><Trash2 className="size-4" /></Button>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+            <div className="p-3 bg-slate-50 rounded-2xl border border-slate-100">
+              <p className="text-[9px] font-black text-purple-400 uppercase tracking-widest mb-1">Traducción Coreana (IA)</p>
+              <p className="text-sm text-slate-900 font-medium line-clamp-3">{story.historia_ko}</p>
+            </div>
+          </div>
+        </Card>
+      ))}
     </div>
   );
 }
 
-// --- GALLERY MANAGER ---
-function GalleryManager() {
-  const [group, setGroup] = useState("bts");
-  const { data: photos, refetch } = trpc.galleries.list.useQuery({ group });
-  const addMutation = trpc.galleries.add.useMutation();
-  const deleteMutation = trpc.galleries.delete.useMutation();
-  const [url, setUrl] = useState("");
-
-  return (
-    <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-      <Card className="lg:col-span-1 border-slate-200 shadow-xl rounded-[2rem] bg-white h-fit">
-        <CardContent className="p-6 space-y-4">
-          <h3 className="font-black text-slate-900 uppercase tracking-tighter text-lg">Añadir Foto</h3>
-          <div className="space-y-3">
-            <select className="w-full h-11 px-4 rounded-xl bg-slate-50 border border-slate-100 text-sm font-bold" value={group} onChange={e => setGroup(e.target.value)}>
-              <option value="bts">BTS</option>
-              <option value="blackpink">BLACKPINK</option>
-              <option value="straykids">STRAY KIDS</option>
-              <option value="twice">TWICE</option>
-            </select>
-            <Input className="rounded-xl h-11 bg-slate-50 border-slate-100" placeholder="URL de la Imagen" value={url} onChange={e => setUrl(e.target.value)} />
-            <Button className="w-full bg-slate-900 text-white rounded-xl h-12 font-bold" onClick={async () => { await addMutation.mutateAsync({group, url}); setUrl(""); refetch(); }}>Subir Foto</Button>
-          </div>
-        </CardContent>
-      </Card>
-      <div className="lg:col-span-3 grid grid-cols-2 md:grid-cols-4 gap-4">
-        {photos?.map((p: any) => (
-          <div key={p.id} className="relative aspect-square rounded-2xl overflow-hidden group">
-            <img src={p.url} className="w-full h-full object-cover" />
-            <button onClick={async () => { await deleteMutation.mutateAsync({group, id: p.id}); refetch(); }} className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white">
-              <Trash2 className="size-6" />
-            </button>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
+// --- PLACEHOLDERS ---
+function NewsManager() { return <div className="p-12 text-center bg-white rounded-[2rem] border-2 border-dashed border-slate-200 text-slate-400 font-bold uppercase italic tracking-widest">Módulo de Noticias en mantenimiento</div>; }
+function GalleryManager() { return <div className="p-12 text-center bg-white rounded-[2rem] border-2 border-dashed border-slate-200 text-slate-400 font-bold uppercase italic tracking-widest">Módulo de Galería en mantenimiento</div>; }

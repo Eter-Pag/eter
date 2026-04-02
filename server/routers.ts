@@ -310,11 +310,11 @@ export const appRouter = router({
         z.object({
           title: z.string().min(1),
           description: z.string().optional(),
-          image: z.string().min(1), // Relaxed from .url() to .min(1)
+          image: z.string().min(1), // Acepta cualquier texto (URLs múltiples)
           totalTickets: z.number().min(1),
           pricePerTicket: z.number().min(1),
           drawDate: z.string(),
-          webhookUrl: z.string().optional(),
+          webhookUrl: z.string().optional().nullable(),
           category: z.string(),
           raffleNumber: z.number(),
           isActive: z.boolean().default(true),
@@ -334,9 +334,10 @@ export const appRouter = router({
           totalTickets: z.number().optional(),
           pricePerTicket: z.number().optional(),
           drawDate: z.string().optional(),
-          webhookUrl: z.string().optional(),
+          webhookUrl: z.string().optional().nullable(),
           category: z.string().optional(),
           isActive: z.boolean().optional(),
+          raffleNumber: z.number().optional(),
         })
       )
       .mutation(async ({ input }) => {
