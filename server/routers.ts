@@ -293,6 +293,12 @@ export const appRouter = router({
       return getAllRaffles();
     }),
 
+    getActive: publicProcedure.query(async () => {
+      const raffles = await getAllRaffles();
+      // Buscamos la rifa marcada como activa, o la más reciente si ninguna lo está
+      return raffles.find(r => r.isActive) || raffles[0] || null;
+    }),
+
     getById: publicProcedure
       .input(z.object({ id: z.number() }))
       .query(async ({ input }) => {

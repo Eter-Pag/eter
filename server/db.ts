@@ -572,26 +572,32 @@ export async function createRaffle(data: any): Promise<number> {
   if (!doc) throw new Error('Database not available');
 
   try {
-    // 1. Desactivar rifas anteriores si la nueva es activa
-    if (data.isActive) {
-      const raffleSheet = doc.sheetsByTitle['raffles'];
-      const raffleRows = await raffleSheet.getRows();
-      for (const row of raffleRows) {
-        if (row.get('isActive') === 'TRUE' || row.get('isActive') === true) {
-          row.set('isActive', 'FALSE');
-          await row.save();
-        }
+    const raffleSheet = doc.sheetsByTitle['raffles'];
+    const raffleRows = await raffleSheet.getRows();
+
+    // 1. Desactivar TODAS las rifas anteriores
+    for (const row of raffleRows) {
+      if (row.get('isActive') === 'TRUE' || row.get('isActive') === true) {
+        row.set('isActive', 'FALSE');
+        await row.save();
       }
     }
 
-    // 2. Crear la nueva rifa
-    const sheet = doc.sheetsByTitle['raffles'];
-    const rows = await sheet.getRows();
-    const maxId = rows.reduce((max, row) => Math.max(max, Number(row.id) || 0), 0);
-    const id = (maxId + 1).toString();
+    // 2. Limpiar la tabla de boletos (tickets) para la nueva rifa
+    const ticketSheet = doc.sheetsByTitle['tickets'];
+    await ticketSheet.clearRows();
+
+    // 3. Crear la nueva rifa
+    const id = Date.now().toString();
     const now = new Date().toISOString();
 
-    const safeData: Record<string, any> = { id };
+    // Forzar que la nueva rifa sea la #1 y esté activa
+    const safeData: Record<string, any> = { 
+      id, 
+      raffleNumber: '1', 
+      isActive: 'TRUE' 
+    };
+
     for (const key in data) {
       const val = data[key];
       if (val instanceof Date) {
@@ -605,16 +611,13 @@ export async function createRaffle(data: any): Promise<number> {
     safeData.createdAt = now;
     safeData.updatedAt = now;
 
-    await sheet.addRows([safeData]);
+    await raffleSheet.addRows([safeData]);
 
-    // 3. Generar boletos para esta rifa
-    const ticketSheet = doc.sheetsByTitle['tickets'];
-    await ticketSheet.clearRows(); 
-
+    // 4. Generar boletos para esta nueva rifa
     const totalTickets = Number(data.totalTickets);
     const padding = totalTickets > 10000 ? 5 : (totalTickets > 1000 ? 4 : 3);
     
-    const BATCH_SIZE = 500; // Aumentamos el bloque para mayor velocidad
+    const BATCH_SIZE = 500;
     let ticketRows = [];
     
     for (let i = 0; i < totalTickets; i++) {

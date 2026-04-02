@@ -48,6 +48,9 @@ export default function Home() {
   const [isCheckingOut, setIsCheckingOut] = useState(false);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
 
+  // Get active raffle
+  const { data: activeRaffle, isLoading: raffleLoading } = trpc.raffles.getActive.useQuery();
+
   // Diploma state
   const [diplomaName, setDiplomaName] = useState("");
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -134,12 +137,16 @@ export default function Home() {
     return count;
   }, [ticketMap]);
 
-  const totalPrice = selectedTickets.length * 3;
+  const pricePerTicket = activeRaffle ? Number(activeRaffle.pricePerTicket) / 100 : 3;
+  const totalPrice = selectedTickets.length * pricePerTicket;
 
   const handleSearch = useCallback(() => {
-    const num = searchValue.padStart(3, "0");
-    if (num.length !== 3 || isNaN(Number(num))) {
-      toast.error("Ingresa un número válido (000-999)");
+    const totalTickets = activeRaffle ? Number(activeRaffle.totalTickets) : 1000;
+    const padding = totalTickets > 1000 ? 5 : totalTickets > 100 ? 4 : 3;
+    const num = searchValue.padStart(padding - 1, "0");
+    
+    if (isNaN(Number(num))) {
+      toast.error("Ingresa un número válido");
       return;
     }
     const status = ticketMap.get(num);
@@ -231,6 +238,11 @@ export default function Home() {
     });
   }, [selectedTickets, buyerName, buyerPhone, buyerEmail, createCheckout]);
 
+  if (raffleLoading) return <div className="min-h-screen flex items-center justify-center"><Loader2 className="animate-spin size-8 text-slate-400" /></div>;
+
+  const images = activeRaffle?.image ? activeRaffle.image.split(/[\n,]+/).map(i => i.trim()).filter(Boolean) : [];
+  const mainImage = images[0] || "https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?q=80&w=2071&auto=format&fit=crop";
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -249,17 +261,17 @@ export default function Home() {
           <Button
             variant="outline"
             size="sm"
-            onClick={() => window.history.back()}
+            onClick={() => navigate("/rifas")}
             className="gap-1 text-xs flex-shrink-0 ml-2"
           >
-            ← Volver
+            ← Ver Rifas
           </Button>
         </div>
       </header>
 
       {/* Hero Section */}
       <section className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-purple-600 via-violet-600 to-fuchsia-500" />
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900" />
         <div className="absolute inset-0 opacity-10" style={{backgroundImage: 'radial-gradient(circle at 25% 25%, white 1px, transparent 1px)', backgroundSize: '24px 24px'}} />
         <div className="absolute top-4 right-4 z-10">
           <Badge variant="secondary" className="text-xs font-medium gap-1 bg-white/90 backdrop-blur">
@@ -270,20 +282,20 @@ export default function Home() {
         <div className="relative container py-16 text-center text-white">
           <div className="inline-flex items-center gap-2 bg-white/15 backdrop-blur-md rounded-full px-4 py-1.5 mb-6 text-sm font-medium">
             <Sparkles className="size-4" />
-            Sorteo Oficial
+            Sorteo Activo
           </div>
-          <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight mb-3 drop-shadow-lg">
-            {RAFFLE_CONFIG.name}
+          <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight mb-3 drop-shadow-lg uppercase italic">
+            {activeRaffle?.title || RAFFLE_CONFIG.name}
           </h1>
           <p className="text-white/90 text-sm sm:text-base max-w-lg mx-auto leading-relaxed">
-            El sorteo se realizará el <strong>{RAFFLE_CONFIG.drawDate}</strong>
+            El sorteo se realizará el <strong>{activeRaffle ? new Date(activeRaffle.drawDate).toLocaleDateString() : RAFFLE_CONFIG.drawDate}</strong>
             <br />
-            Coincide con los <strong>{RAFFLE_CONFIG.drawMethod}</strong>
+            {activeRaffle?.description}
           </p>
           <div className="flex items-center justify-center gap-6 mt-8">
             <div className="text-center">
-              <div className="text-2xl font-extrabold">{RAFFLE_CONFIG.priceDisplay}</div>
-              <div className="text-xs text-white/70 font-medium">Por boleto</div>
+              <div className="text-2xl font-extrabold">${activeRaffle ? Number(activeRaffle.pricePerTicket) / 100 : 3}</div>
+              <div className="text-xs text-white/70 font-medium uppercase tracking-widest">Por boleto</div>
             </div>
           </div>
         </div>
