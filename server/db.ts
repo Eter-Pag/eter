@@ -186,7 +186,13 @@ function getHeadersForSheet(sheetName: string): string[] {
 function rowToObject(row: any, headers: string[]): any {
   const obj: any = {};
   headers.forEach(header => {
-    obj[header] = row[header] || null;
+    // google-spreadsheet stores row data in the .get() method or as properties
+    // but the most reliable way in recent versions is accessing row.get(header)
+    // or checking the raw data if available.
+    obj[header] = row.get ? row.get(header) : row[header];
+    if (obj[header] === undefined || obj[header] === '') {
+      obj[header] = null;
+    }
   });
   return obj;
 }
