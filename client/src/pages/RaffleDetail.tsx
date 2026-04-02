@@ -42,13 +42,11 @@ export default function RaffleDetail() {
   const FALLBACK_IMAGE = "https://images.unsplash.com/photo-1579546678181-7f1a630ec3dc?q=80&w=2071&auto=format&fit=crop";
   
   const sanitizeUrl = (url: string) => {
-    try {
-      if (!url || !url.startsWith('http')) return FALLBACK_IMAGE;
-      new URL(url); // Test if it's a valid URL constructor-wise
-      return url;
-    } catch (e) {
-      return FALLBACK_IMAGE;
-    }
+    if (!url || typeof url !== 'string') return FALLBACK_IMAGE;
+    const trimmed = url.trim();
+    if (!trimmed.startsWith('http')) return FALLBACK_IMAGE;
+    // Evitamos usar new URL() directamente ya que puede fallar antes del catch en algunos entornos
+    return trimmed;
   };
 
   const rawImages = raffle.image ? raffle.image.split(/[\n,]+/).map(img => img.trim()).filter(img => img !== "") : [];
