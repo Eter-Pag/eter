@@ -75,6 +75,7 @@ function Router() {
       <Route path="/terminos" component={Terms} />
       <Route path="/privacidad" component={Privacy} />
       <Route path="/admin" component={Admin} />
+      <Route path="/admin/" component={Admin} />
       <Route path="/404" component={NotFound} />
       {/* Final fallback route */}
       <Route component={NotFound} />
