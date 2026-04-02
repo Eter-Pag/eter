@@ -61,7 +61,7 @@ export default function Raffles() {
       </header>
 
       <div className="container py-12 flex justify-center">
-        <Card
+          <Card
           className="bg-white/60 backdrop-blur-xl border-border/50 overflow-hidden hover:shadow-lg transition-shadow cursor-pointer group max-w-lg w-full"
           onClick={() => navigate(`/rifa/${activeRaffle.id}`)}
         >

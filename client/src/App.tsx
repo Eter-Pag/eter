@@ -40,23 +40,16 @@ function Router() {
   return (
     <Switch>
       <Route path="/" component={LandingHome} />
-      <Route path="/rifa" component={Home} />
-      <Route path="/rifa/:raffleNumber" component={RaffleDetail} />
-      <Route path="/rifa1" component={RaffleByNumber} />
-      <Route path="/rifa2" component={RaffleByNumber} />
-      <Route path="/rifa3" component={RaffleByNumber} />
-      <Route path="/rifa4" component={RaffleByNumber} />
-      <Route path="/rifa5" component={RaffleByNumber} />
-      <Route path="/rifa6" component={RaffleByNumber} />
-      <Route path="/rifa7" component={RaffleByNumber} />
-      <Route path="/rifa8" component={RaffleByNumber} />
-      <Route path="/rifa9" component={RaffleByNumber} />
-      <Route path="/rifa10" component={RaffleByNumber} />
+      <Route path="/rifa">
+        <Raffles />
+      </Route>
+      <Route path="/rifa/:id">
+        {(params) => <RaffleDetail raffleId={params.id} />}
+      </Route>
       <Route path="/success" component={Success} />
       <Route path="/cancel" component={Cancel} />
       <Route path="/check-tickets" component={CheckTickets} />
       <Route path="/tienda" component={Store} />
-      <Route path="/rifas" component={Raffles} />
       <Route path="/galerias" component={Galleries} />
       <Route path="/galerias/bts" component={BtsGallery} />
       <Route path="/galerias/blackpink" component={BlackpinkGallery} />
