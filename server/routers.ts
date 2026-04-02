@@ -199,7 +199,7 @@ export const appRouter = router({
                   product_data: {
                     name: activeRaffle.title,
                     description: `${input.ticketNumbers.length} boleto(s): ${input.ticketNumbers.join(", ")}`,
-                    images: [activeRaffle.image],
+                    images: activeRaffle.image ? [activeRaffle.image.split(/[\n,]+/)[0].trim()].filter(img => img.startsWith('http')) : [],
                   },
                   unit_amount: pricePerTicket,
                 },

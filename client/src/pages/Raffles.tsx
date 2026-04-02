@@ -65,7 +65,17 @@ export default function Raffles() {
                     className={`relative h-48 bg-gradient-to-br ${theme.gradient} overflow-hidden`}
                   >
                     <img
-                      src={raffle.image ? raffle.image.split(/[\n,]+/)[0].trim() : "https://images.unsplash.com/photo-1579546678181-7f1a630ec3dc?q=80&w=2071&auto=format&fit=crop"}
+                      src={(() => {
+                        const fallback = "https://images.unsplash.com/photo-1579546678181-7f1a630ec3dc?q=80&w=2071&auto=format&fit=crop";
+                        try {
+                          const first = raffle.image ? raffle.image.split(/[\n,]+/)[0].trim() : "";
+                          if (!first || !first.startsWith('http')) return fallback;
+                          new URL(first);
+                          return first;
+                        } catch (e) {
+                          return fallback;
+                        }
+                      })()}
                       alt={raffle.title}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform"
                     />

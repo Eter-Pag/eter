@@ -40,8 +40,19 @@ export default function RaffleDetail() {
 
   // Procesar campo unificado de imágenes (soporta comas y saltos de línea)
   const FALLBACK_IMAGE = "https://images.unsplash.com/photo-1579546678181-7f1a630ec3dc?q=80&w=2071&auto=format&fit=crop";
+  
+  const sanitizeUrl = (url: string) => {
+    try {
+      if (!url || !url.startsWith('http')) return FALLBACK_IMAGE;
+      new URL(url); // Test if it's a valid URL constructor-wise
+      return url;
+    } catch (e) {
+      return FALLBACK_IMAGE;
+    }
+  };
+
   const rawImages = raffle.image ? raffle.image.split(/[\n,]+/).map(img => img.trim()).filter(img => img !== "") : [];
-  const allImages = rawImages.length > 0 ? rawImages : [FALLBACK_IMAGE];
+  const allImages = rawImages.length > 0 ? rawImages.map(sanitizeUrl) : [FALLBACK_IMAGE];
 
   const handleNextImage = () => {
     setCurrentImageIndex((prev) => (prev + 1) % allImages.length);
