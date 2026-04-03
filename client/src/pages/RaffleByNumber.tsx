@@ -54,5 +54,5 @@ export default function RaffleByNumber() {
   }
 
   // Render RaffleDetail with the raffle ID
-  return <RaffleDetail raffleId={raffle.id} />;
+  return <RaffleDetail raffleId={raffle.id.toString()} />;
 }

@@ -46,6 +46,7 @@ function Router() {
       <Route path="/rifa/:id">
         {(params) => <RaffleDetail raffleId={params.id} />}
       </Route>
+      <Route path="/rifa:num" component={RaffleByNumber} />
       <Route path="/success" component={Success} />
       <Route path="/cancel" component={Cancel} />
       <Route path="/check-tickets" component={CheckTickets} />

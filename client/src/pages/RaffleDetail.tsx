@@ -8,10 +8,13 @@ import { trpc } from "@/lib/trpc";
 import { toast } from "sonner";
 import { getTheme, type RaffleCategory } from "@shared/raffleThemes";
 
-export default function RaffleDetail() {
+export default function RaffleDetail({ raffleId: propRaffleId }: { raffleId?: string | number }) {
   const [match, params] = useRoute("/rifa/:id");
   const [, navigate] = useLocation();
-  const raffleId = params?.id ? parseInt(params.id) : null;
+  
+  // Usar propRaffleId si se proporciona, de lo contrario usar params.id
+  const rawId = propRaffleId || params?.id;
+  const raffleId = rawId ? parseInt(rawId.toString()) : null;
 
   const { data: raffle, isLoading: isLoadingRaffle } = trpc.raffles.getById.useQuery(
     { id: raffleId! },

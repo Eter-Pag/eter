@@ -107,7 +107,7 @@ export const appRouter = router({
 
   tickets: router({
     list: publicProcedure.query(async () => {
-      await releaseExpiredReservations();
+      await releaseExpiredReservations(900000);
       return getAllTickets();
     }),
 
@@ -129,7 +129,7 @@ export const appRouter = router({
     random: publicProcedure
       .input(z.object({ count: z.number().min(1).max(30) }))
       .query(async ({ input }) => {
-        await releaseExpiredReservations();
+        await releaseExpiredReservations(900000);
         return getAvailableRandomTickets(input.count);
       }),
   }),
@@ -145,7 +145,7 @@ export const appRouter = router({
       })
     )
     .mutation(async ({ input, ctx }) => {
-        await releaseExpiredReservations();
+        await releaseExpiredReservations(900000);
 
         const formattedPhone = input.buyerPhone.trim();
 

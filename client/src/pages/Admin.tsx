@@ -135,13 +135,15 @@ function RaffleManager() {
       } else {
         if (!confirm("⚠️ ATENCIÓN: Crear una nueva rifa desactivará la actual y LIMPIARÁ todos los boletos vendidos. ¿Deseas continuar?")) return;
         
-        await createMutation.mutateAsync({
+        const newRaffleId = await createMutation.mutateAsync({
           ...formData,
           pricePerTicket: Math.round(formData.pricePerTicket * 100),
           raffleNumber: 1,
           isActive: true
         });
         toast.success("¡Nueva rifa creada! La anterior ha sido reemplazada.");
+        // Redirigir a la página de la rifa para confirmar que existe
+        window.open(`/rifa/${newRaffleId}`, '_blank');
       }
       
       resetForm();
