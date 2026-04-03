@@ -503,12 +503,14 @@ export async function getAllNews(): Promise<News[]> {
   });
 }
 
-export async function createNews(data: any): Promise<void> {
+export async function createNews(data: any): Promise<string> {
   const doc = await getDoc();
-  if (!doc) return;
+  if (!doc) throw new Error('DB not available');
   const sheet = doc.sheetsByTitle['news'];
+  const id = Date.now().toString();
   const now = new Date().toISOString();
-  await sheet.addRow({ ...data, id: Date.now().toString(), createdAt: now, updatedAt: now });
+  await sheet.addRow({ ...data, id, createdAt: now, updatedAt: now });
+  return id;
 }
 
 // ============ STORIES QUERIES ============
@@ -520,12 +522,14 @@ export async function getAllStories(): Promise<Story[]> {
   return rows.map(r => rowToObject(r, getHeadersForSheet('stories')));
 }
 
-export async function createStory(data: any): Promise<void> {
+export async function createStory(data: any): Promise<string> {
   const doc = await getDoc();
-  if (!doc) return;
+  if (!doc) throw new Error('DB not available');
   const sheet = doc.sheetsByTitle['stories'];
+  const id = Date.now().toString();
   const now = new Date().toISOString();
-  await sheet.addRow({ ...data, id: Date.now().toString(), createdAt: now, updatedAt: now });
+  await sheet.addRow({ ...data, id, createdAt: now, updatedAt: now });
+  return id;
 }
 
 // ============ EXTRA ORDER QUERIES ============
@@ -551,4 +555,29 @@ export async function getAvailableRandomTickets(count: number): Promise<Ticket[]
   const available = all.filter(t => t.status === 'available');
   // Mezclar y tomar 'count'
   return available.sort(() => Math.random() - 0.5).slice(0, count);
+}
+
+// ============ USER QUERIES (EXTRAS) ============
+export async function getUser(openId: string): Promise<User | null> {
+  const doc = await getDoc();
+  if (!doc) return null;
+  const sheet = doc.sheetsByTitle['users'];
+  const rows = await sheet.getRows();
+  const row = rows.find(r => r.get('openId') === openId);
+  return row ? rowToObject(row, getHeadersForSheet('users')) : null;
+}
+
+// ============ NEWS QUERIES (EXTRAS) ============
+export async function getNewsBySlug(slug: string): Promise<News | null> {
+  const all = await getAllNews();
+  return all.find(n => n.slug === slug) || null;
+}
+
+export async function deleteNews(id: number): Promise<void> {
+  const doc = await getDoc();
+  if (!doc) return;
+  const sheet = doc.sheetsByTitle['news'];
+  const rows = await sheet.getRows();
+  const row = rows.find(r => Number(r.get('id')) === id);
+  if (row) await row.delete();
 }
