@@ -185,7 +185,7 @@ export default function LandingHome() {
                 <img
                   src="https://lh3.googleusercontent.com/d/16_3UTSlqrB1VHVIVM4cMMea0n96vm7Is"
                   alt="Noticias K-POP"
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover object-top"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
               </div>
@@ -219,7 +219,7 @@ export default function LandingHome() {
                 <img
                   src="/assets/imagentienda.png"
                   alt="Tienda K-POP"
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                  className="w-full h-full object-cover object-top group-hover:scale-110 transition-transform duration-700"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
               </div>
@@ -250,7 +250,7 @@ export default function LandingHome() {
                 <img
                   src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663470405189/BXfaoAKIojRjPgam.png"
                   alt="Galerias K-POP"
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                  className="w-full h-full object-cover object-top group-hover:scale-110 transition-transform duration-700"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
               </div>
@@ -280,7 +280,7 @@ export default function LandingHome() {
                 <img
                   src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663470405189/nZHSklzIKsAgLUdi.png"
                   alt="Biografias K-POP"
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                  className="w-full h-full object-cover object-top group-hover:scale-110 transition-transform duration-700"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
               </div>
@@ -313,7 +313,7 @@ export default function LandingHome() {
                   alt="Diploma ARMY"
                   onContextMenu={(e) => e.preventDefault()}
                   onDragStart={(e) => e.preventDefault()}
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 select-none pointer-events-none"
+                  className="w-full h-full object-cover object-top group-hover:scale-110 transition-transform duration-700 select-none pointer-events-none"
                   style={{ userSelect: 'none', WebkitUserSelect: 'none' }}
                 />
                 {/* Capa invisible de protección */}
@@ -351,7 +351,7 @@ export default function LandingHome() {
                 <img
                   src="https://lh3.googleusercontent.com/d/1_Bc-X7xfBNUcvhwi5M9XsNvUaHJzkw3t"
                   alt="Muro de Ilusiones"
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                  className="w-full h-full object-cover object-top group-hover:scale-110 transition-transform duration-700"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
               </div>
