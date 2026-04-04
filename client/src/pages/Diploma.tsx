@@ -13,7 +13,7 @@ import {
   Check,
   Sparkles,
 } from "lucide-react";
-import { RAFFLE_CONFIG } from "@shared/raffle";
+import { STORE_CONFIG } from "@shared/const";
 import { jsPDF } from "jspdf";
 
 // Tipos de fuentes disponibles
@@ -283,12 +283,12 @@ export default function Diploma() {
         <div className="container flex items-center justify-between h-14">
           <div className="flex items-center gap-3">
             <img
-              src={RAFFLE_CONFIG.logoUrl}
-              alt={RAFFLE_CONFIG.storeName}
+              src={STORE_CONFIG.logoUrl}
+              alt={STORE_CONFIG.storeName}
               className="h-8 w-8 rounded-lg shadow-md"
             />
             <span className="font-bold text-sm tracking-tight">
-              {RAFFLE_CONFIG.storeName}
+              {STORE_CONFIG.storeName}
             </span>
           </div>
           <div className="flex items-center gap-2">
@@ -597,8 +597,8 @@ export default function Diploma() {
       {/* Legal Footer */}
       <LegalFooter
         title="Aviso de Privacidad y Uso Exclusivo"
-        description={`El uso de esta herramienta es exclusivo de ${RAFFLE_CONFIG.storeName}. Se prohíbe la venta, distribución, reproducción o cualquier uso no autorizado de los diplomas generados. El incumplimiento de estas restricciones puede resultar en acciones legales.`}
-        storeName={RAFFLE_CONFIG.storeName}
+        description={`El uso de esta herramienta es exclusivo de ${STORE_CONFIG.storeName}. Se prohíbe la venta, distribución, reproducción o cualquier uso no autorizado de los diplomas generados. El incumplimiento de estas restricciones puede resultar en acciones legales.`}
+        storeName={STORE_CONFIG.storeName}
       />
 
       {/* Footer */}
@@ -608,12 +608,12 @@ export default function Diploma() {
             <div className="flex flex-col items-center md:items-start gap-4">
               <div className="flex items-center gap-3">
                 <img
-                  src={RAFFLE_CONFIG.logoUrl}
-                  alt={RAFFLE_CONFIG.storeName}
+                  src={STORE_CONFIG.logoUrl}
+                  alt={STORE_CONFIG.storeName}
                   className="h-10 w-10 rounded-xl shadow-lg"
                 />
                 <span className="font-bold text-xl tracking-tight">
-                  {RAFFLE_CONFIG.storeName}
+                  {STORE_CONFIG.storeName}
                 </span>
               </div>
               <p className="text-slate-500 text-sm max-w-xs text-center md:text-left">
@@ -634,7 +634,7 @@ export default function Diploma() {
           </div>
           <div className="mt-12 pt-8 border-t border-slate-100 text-center">
             <p className="text-slate-400 text-xs">
-              © {new Date().getFullYear()} {RAFFLE_CONFIG.storeName}. Todos los
+              © {new Date().getFullYear()} {STORE_CONFIG.storeName}. Todos los
               derechos reservados.
             </p>
           </div>

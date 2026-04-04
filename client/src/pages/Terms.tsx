@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { ChevronLeft, FileText, Scale, ShieldAlert } from "lucide-react";
 import { useLocation } from "wouter";
-import { RAFFLE_CONFIG } from "@shared/raffle";
+import { STORE_CONFIG } from "@shared/const";
 
 export default function Terms() {
   const [, setLocation] = useLocation();
@@ -38,7 +38,7 @@ export default function Terms() {
                   <Scale className="h-5 w-5 text-blue-500" /> ARTÍCULO 1. IDENTIDAD Y MARCO LEGAL
                 </h2>
                 <p>
-                  El presente sitio web, identificado como <strong>{RAFFLE_CONFIG.storeName}</strong>, es operado por <strong>DEDIKA STUDIO</strong> (en adelante "EL TITULAR"). Nuestras actividades se rigen por la legislación mexicana vigente, incluyendo la <em>Ley Federal de Protección al Consumidor</em> y la <em>Ley Federal de Juegos y Sorteos</em> en lo que respecta a promociones comerciales.
+                  El presente sitio web, identificado como <strong>{STORE_CONFIG.storeName}</strong>, es operado por <strong>DEDIKA STUDIO</strong> (en adelante "EL TITULAR"). Nuestras actividades se rigen por la legislación mexicana vigente, incluyendo la <em>Ley Federal de Protección al Consumidor</em>.
                 </p>
               </section>
 
@@ -53,20 +53,8 @@ export default function Terms() {
                 </ul>
               </section>
 
-              <section className="border-l-4 border-amber-400 pl-6 py-2">
-                <h2 className="text-xl font-semibold text-slate-800 mb-3">ARTÍCULO 3. DINÁMICA DE RIFAS Y SORTEOS</h2>
-                <p>
-                  La participación en las dinámicas de {RAFFLE_CONFIG.storeName} implica la aceptación de las siguientes reglas, diseñadas bajo los principios de transparencia y legalidad:
-                </p>
-                <ul className="list-disc pl-5 space-y-2">
-                  <li><strong>Costo y Selección:</strong> Cada boleto tiene un costo de {RAFFLE_CONFIG.priceDisplay}. El ganador se determinará el {RAFFLE_CONFIG.drawDate} mediante {RAFFLE_CONFIG.drawMethod}.</li>
-                  <li><strong>Transparencia:</strong> Conforme al Reglamento de la Ley Federal de Juegos y Sorteos, los resultados son públicos y verificables.</li>
-                  <li><strong>No Reembolso:</strong> Una vez confirmada la participación, no se realizan reembolsos, salvo cancelación imputable a EL TITULAR.</li>
-                </ul>
-              </section>
-
               <section>
-                <h2 className="text-xl font-semibold text-slate-800 mb-3">ARTÍCULO 4. PROPIEDAD INTELECTUAL (FAN-BASED)</h2>
+                <h2 className="text-xl font-semibold text-slate-800 mb-3">ARTÍCULO 3. PROPIEDAD INTELECTUAL (FAN-BASED)</h2>
                 <p>
                   Reconocemos que todas las marcas, nombres de grupos (ej. BTS, Stray Kids) e imágenes de artistas pertenecen exclusivamente a sus respectivas agencias de entretenimiento. Este sitio es un proyecto de fans sin afiliación oficial, operando bajo el principio de uso informativo y editorial.
                 </p>
@@ -74,7 +62,7 @@ export default function Terms() {
 
               <section className="bg-red-50 p-6 rounded-2xl border border-red-100">
                 <h2 className="text-lg font-bold text-red-800 mb-3 flex items-center gap-2">
-                  <ShieldAlert className="h-5 w-5 text-red-600" /> ARTÍCULO 5. LIMITACIÓN DE RESPONSABILIDAD
+                  <ShieldAlert className="h-5 w-5 text-red-600" /> ARTÍCULO 4. LIMITACIÓN DE RESPONSABILIDAD
                 </h2>
                 <p className="text-sm text-red-900">
                   EL TITULAR no se hace responsable por interrupciones técnicas, errores en la red de terceros o el uso inadecuado de las herramientas digitales gratuitas proporcionadas. El usuario asume la responsabilidad total de su navegación y transacciones con terceros enlazados.
@@ -82,14 +70,14 @@ export default function Terms() {
               </section>
 
               <section>
-                <h2 className="text-xl font-semibold text-slate-800 mb-3">ARTÍCULO 6. JURISDICCIÓN</h2>
+                <h2 className="text-xl font-semibold text-slate-800 mb-3">ARTÍCULO 5. JURISDICCIÓN</h2>
                 <p>
                   Para cualquier controversia, las partes se someten a las leyes de los Estados Unidos Mexicanos y a la competencia de los tribunales de la Ciudad de México, renunciando a cualquier otro fuero.
                 </p>
               </section>
 
               <div className="pt-8 border-t border-slate-100 text-sm text-slate-400 text-center">
-                © {new Date().getFullYear()} DEDIKA STUDIO | {RAFFLE_CONFIG.storeName}
+                © {new Date().getFullYear()} DEDIKA STUDIO | {STORE_CONFIG.storeName}
               </div>
             </div>
           </CardContent>

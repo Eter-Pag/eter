@@ -1,28 +1,16 @@
 import { useLocation } from "wouter";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "../components/ui/badge";
-import { ArrowLeft, Ticket, ShoppingBag, Calendar, DollarSign, CheckCircle2, Clock, XCircle } from "lucide-react";
+import { ArrowLeft, ShoppingBag, Calendar, DollarSign, CheckCircle2, Clock, XCircle } from "lucide-react";
 import { trpc } from "@/lib/trpc";
-import { Loader } from "lucide-react";
 
 export default function PurchaseHistory() {
   const [, navigate] = useLocation();
   const { data: user } = trpc.auth.me.useQuery();
-  
+
   // This would be connected to tRPC in a real implementation
-  // For now, showing the structure
   const purchases = [
-    {
-      id: 1,
-      type: "raffle",
-      title: "BTS Album Deluxe",
-      amount: 450,
-      currency: "MXN",
-      status: "completed",
-      date: new Date("2026-03-15"),
-      tickets: ["123", "124", "125"],
-    },
     {
       id: 2,
       type: "product",
@@ -32,16 +20,6 @@ export default function PurchaseHistory() {
       status: "completed",
       date: new Date("2026-03-10"),
       quantity: 1,
-    },
-    {
-      id: 3,
-      type: "raffle",
-      title: "STRAY KIDS Concert Tickets",
-      amount: 1200,
-      currency: "MXN",
-      status: "pending",
-      date: new Date("2026-03-18"),
-      tickets: ["456", "457"],
     },
   ];
 
@@ -117,9 +95,9 @@ export default function PurchaseHistory() {
             <CardContent className="p-12 text-center">
               <ShoppingBag className="size-12 mx-auto mb-4 text-muted-foreground" />
               <p className="text-muted-foreground mb-4">No tienes compras registradas</p>
-              <Button onClick={() => navigate("/rifa")} className="gap-2">
-                <Ticket className="size-4" />
-                Explorar Rifas
+              <Button onClick={() => navigate("/tienda")} className="gap-2">
+                <ShoppingBag className="size-4" />
+                Explorar Tienda
               </Button>
             </CardContent>
           </Card>
@@ -135,11 +113,7 @@ export default function PurchaseHistory() {
                     {/* Left: Icon and Info */}
                     <div className="flex items-start gap-4 flex-1 min-w-0">
                       <div className="mt-1">
-                        {purchase.type === "raffle" ? (
-                          <Ticket className="size-6 text-purple-600" />
-                        ) : (
-                          <ShoppingBag className="size-6 text-pink-600" />
-                        )}
+                        <ShoppingBag className="size-6 text-pink-600" />
                       </div>
 
                       <div className="flex-1 min-w-0">
@@ -161,33 +135,13 @@ export default function PurchaseHistory() {
                             </span>
                           </div>
 
-                          {purchase.type === "raffle" && purchase.tickets && (
-                            <div className="flex items-center gap-1">
-                              <Ticket className="size-4" />
-                              <span>{purchase.tickets.length} boletos</span>
-                            </div>
-                          )}
-
-                          {purchase.type === "product" && purchase.quantity && (
+                          {purchase.quantity && (
                             <div className="flex items-center gap-1">
                               <ShoppingBag className="size-4" />
                               <span>Qty: {purchase.quantity}</span>
                             </div>
                           )}
                         </div>
-
-                        {purchase.type === "raffle" && purchase.tickets && (
-                          <div className="mt-3 pt-3 border-t border-border/50">
-                            <p className="text-xs text-muted-foreground mb-2">Boletos:</p>
-                            <div className="flex flex-wrap gap-2">
-                              {purchase.tickets.map((ticket) => (
-                                <Badge key={ticket} variant="secondary" className="text-xs">
-                                  #{ticket}
-                                </Badge>
-                              ))}
-                            </div>
-                          </div>
-                        )}
                       </div>
                     </div>
 

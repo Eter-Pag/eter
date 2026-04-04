@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { ChevronLeft, ShieldCheck, Lock, UserCheck, Eye } from "lucide-react";
 import { useLocation } from "wouter";
-import { RAFFLE_CONFIG } from "@shared/raffle";
+import { STORE_CONFIG } from "@shared/const";
 
 export default function Privacy() {
   const [, setLocation] = useLocation();
@@ -38,7 +38,7 @@ export default function Privacy() {
                   <UserCheck className="h-5 w-5 text-green-600" /> ARTÍCULO 1. RESPONSABLE DEL TRATAMIENTO
                 </h2>
                 <p>
-                  <strong>DEDIKA STUDIO</strong>, con domicilio para oír y recibir notificaciones en la Ciudad de México, es el responsable del tratamiento de sus datos personales en el sitio <strong>{RAFFLE_CONFIG.storeName}</strong>, de conformidad con la <em>Ley Federal de Protección de Datos Personales en Posesión de los Particulares (LFPDPPP)</em>.
+                  <strong>DEDIKA STUDIO</strong>, con domicilio para oír y recibir notificaciones en la Ciudad de México, es el responsable del tratamiento de sus datos personales en el sitio <strong>{STORE_CONFIG.storeName}</strong>, de conformidad con la <em>Ley Federal de Protección de Datos Personales en Posesión de los Particulares (LFPDPPP)</em>.
                 </p>
               </section>
 
@@ -60,7 +60,6 @@ export default function Privacy() {
                   Sus datos personales serán utilizados para las siguientes finalidades necesarias:
                 </p>
                 <ul className="list-disc pl-5 space-y-2">
-                  <li>Gestión de participación en rifas y sorteos.</li>
                   <li>Notificación de ganadores y entrega de premios.</li>
                   <li>Atención de dudas y soporte técnico.</li>
                   <li>Mejora de la experiencia del usuario y estadísticas internas.</li>
@@ -79,7 +78,7 @@ export default function Privacy() {
                   <Lock className="h-5 w-5 text-blue-500" /> ARTÍCULO 5. DERECHOS ARCO
                 </h2>
                 <p>
-                  Usted tiene derecho a <strong>Acceder, Rectificar, Cancelar u Oponerse (ARCO)</strong> al tratamiento de sus datos personales. Para ejercer estos derechos, puede enviar una solicitud a través de nuestro canal oficial de WhatsApp ({RAFFLE_CONFIG.whatsappNumber}) o correo electrónico, detallando su petición conforme al <strong>Artículo 29 de la LFPDPPP</strong>.
+                  Usted tiene derecho a <strong>Acceder, Rectificar, Cancelar u Oponerse (ARCO)</strong> al tratamiento de sus datos personales. Para ejercer estos derechos, puede enviar una solicitud a través de nuestro canal oficial de WhatsApp ({STORE_CONFIG.whatsappNumber}) o correo electrónico, detallando su petición conforme al <strong>Artículo 29 de la LFPDPPP</strong>.
                 </p>
               </section>
 
@@ -98,7 +97,7 @@ export default function Privacy() {
               </section>
 
               <div className="pt-8 border-t border-slate-100 text-sm text-slate-400 text-center">
-                © {new Date().getFullYear()} DEDIKA STUDIO | {RAFFLE_CONFIG.storeName}
+                © {new Date().getFullYear()} DEDIKA STUDIO | {STORE_CONFIG.storeName}
               </div>
             </div>
           </CardContent>

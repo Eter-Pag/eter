@@ -5,16 +5,11 @@ import { Route, Switch } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import ScrollToTop from "./components/ScrollToTop";
-import Home from "./pages/Home";
 import LandingHome from "./pages/LandingHome";
-import RaffleDetail from "./pages/RaffleDetail";
-import RaffleByNumber from "./pages/RaffleByNumber";
 import Success from "./pages/Success";
 import Cancel from "./pages/Cancel";
-import CheckTickets from "./pages/CheckTickets";
 import Store from "./pages/Store";
 import Admin from "./pages/Admin";
-import Raffles from "./pages/Raffles";
 import Galleries from "./pages/Galleries";
 import BtsGallery from "./pages/BtsGallery";
 import BlackpinkGallery from "./pages/BlackpinkGallery";
@@ -35,21 +30,11 @@ import Privacy from "./pages/Privacy";
 
 
 function Router() {
-  // Routing: / = Landing Home, /rifa = Raffle
-  // make sure to consider if you need authentication for certain routes
   return (
     <Switch>
       <Route path="/" component={LandingHome} />
-      <Route path="/rifa">
-        <Raffles />
-      </Route>
-      <Route path="/rifa/:id">
-        {(params) => <RaffleDetail raffleId={params.id} />}
-      </Route>
-      <Route path="/rifa:num" component={RaffleByNumber} />
       <Route path="/success" component={Success} />
       <Route path="/cancel" component={Cancel} />
-      <Route path="/check-tickets" component={CheckTickets} />
       <Route path="/tienda" component={Store} />
       <Route path="/galerias" component={Galleries} />
       <Route path="/galerias/bts" component={BtsGallery} />

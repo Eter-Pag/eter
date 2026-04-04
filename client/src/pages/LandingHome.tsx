@@ -21,9 +21,8 @@ import {
   Award,
   MessageCircle,
   Clock,
-  Ticket,
 } from "lucide-react";
-import { RAFFLE_CONFIG } from "@shared/raffle";
+import { STORE_CONFIG } from "@shared/const";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
 
@@ -70,12 +69,12 @@ export default function LandingHome() {
         <div className="container flex items-center justify-between h-14">
           <div className="flex items-center gap-3">
             <img
-              src={RAFFLE_CONFIG.logoUrl}
-              alt={RAFFLE_CONFIG.storeName}
+              src={STORE_CONFIG.logoUrl}
+              alt={STORE_CONFIG.storeName}
               className="h-8 w-8 rounded-lg shadow-md"
             />
             <span className="font-bold text-sm tracking-tight">
-              {RAFFLE_CONFIG.storeName}
+              {STORE_CONFIG.storeName}
             </span>
           </div>
           <div className="flex items-center gap-2">
@@ -108,8 +107,8 @@ export default function LandingHome() {
             Descubre el Mundo K-POP
           </h1>
           <p className="text-white/90 text-xs md:text-lg max-w-2xl mx-auto leading-relaxed">
-            <span className="hidden md:inline">Productos exclusivos, rifas emocionantes y contenido de tus artistas favoritos. Todo en un solo lugar.</span>
-            <span className="md:hidden">Rifas, productos y contenido K-POP</span>
+            <span className="hidden md:inline">Productos exclusivos y contenido de tus artistas favoritos. Todo en un solo lugar.</span>
+            <span className="md:hidden">Productos y contenido K-POP</span>
           </p>
           <div className="flex flex-wrap justify-center gap-2 md:gap-3 mt-4 md:mt-8">
             <div className="relative" ref={dropdownRef}>
@@ -382,9 +381,9 @@ export default function LandingHome() {
 
       {/* Legal Footer */}
       <LegalFooter
-        title={`© ${new Date().getFullYear()} ${RAFFLE_CONFIG.storeName}`}
-        description={`${RAFFLE_CONFIG.storeName} es una tienda especializada en productos K-POP. Todos los derechos de autor y marcas registradas pertenecen a sus respectivos propietarios. Los contenidos mostrados en este sitio son solo con fines informativos y educativos.`}
-        storeName={RAFFLE_CONFIG.storeName}
+        title={`© ${new Date().getFullYear()} ${STORE_CONFIG.storeName}`}
+        description={`${STORE_CONFIG.storeName} es una tienda especializada en productos K-POP. Todos los derechos de autor y marcas registradas pertenecen a sus respectivos propietarios. Los contenidos mostrados en este sitio son solo con fines informativos y educativos.`}
+        storeName={STORE_CONFIG.storeName}
       />
 
       {/* Footer */}
@@ -394,16 +393,15 @@ export default function LandingHome() {
             <div className="flex flex-col items-center md:items-start gap-4">
               <div className="flex items-center gap-3">
                 <img
-                  src={RAFFLE_CONFIG.logoUrl}
-                  alt={RAFFLE_CONFIG.storeName}
+                  src={STORE_CONFIG.logoUrl}
+                  alt={STORE_CONFIG.storeName}
                   onClick={() => setShowAdminPrompt(true)}
                   className="h-10 w-10 rounded-xl shadow-lg cursor-pointer hover:opacity-80 transition-opacity"
                   title="Eter"
                 />
                 <span className="font-bold text-xl tracking-tight">
-                  {RAFFLE_CONFIG.storeName}
-                </span>
-              </div>
+                  {STORE_CONFIG.storeName}
+                </span>              </div>
               <p className="text-slate-500 text-sm max-w-xs text-center md:text-left">
                 Tu destino número uno para todo lo relacionado con el K-POP en México.
               </p>
@@ -429,7 +427,7 @@ export default function LandingHome() {
           </div>
           <div className="mt-12 pt-8 border-t border-slate-100 text-center">
             <p className="text-slate-400 text-xs">
-              © {new Date().getFullYear()} {RAFFLE_CONFIG.storeName}. Todos los derechos reservados.
+              © {new Date().getFullYear()} {STORE_CONFIG.storeName}. Todos los derechos reservados.
             </p>
           </div>
         </div>
