@@ -581,3 +581,25 @@ export async function deleteNews(id: number): Promise<void> {
   const row = rows.find(r => Number(r.get('id')) === id);
   if (row) await row.delete();
 }
+
+export async function deleteOldNews(days: number): Promise<number> {
+  const doc = await getDoc();
+  if (!doc) return 0;
+  const sheet = doc.sheetsByTitle['news'];
+  const rows = await sheet.getRows();
+  const now = new Date();
+  const threshold = new Date(now.getTime() - days * 24 * 60 * 60 * 1000);
+  
+  let deletedCount = 0;
+  for (const row of rows) {
+    const createdAtStr = row.get('createdAt');
+    if (createdAtStr) {
+      const createdAt = new Date(createdAtStr);
+      if (createdAt < threshold) {
+        await row.delete();
+        deletedCount++;
+      }
+    }
+  }
+  return deletedCount;
+}

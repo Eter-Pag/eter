@@ -179,8 +179,15 @@ function selectBackupImage(title: string, content: string): string {
  * Clean up old news (older than 5 days)
  */
 async function cleanupOldNews(): Promise<void> {
-  // Not implemented for Sheets yet to avoid excessive API calls
-  // Sheets version of cleanup would require scanning all rows
+  try {
+    console.log("[News] Cleaning up news older than 5 days...");
+    const deletedCount = await db.deleteOldNews(5);
+    if (deletedCount > 0) {
+      console.log(`[News] Cleaned up ${deletedCount} old news articles.`);
+    }
+  } catch (error) {
+    console.error("[News] Error during cleanup:", error);
+  }
 }
 
 /**
