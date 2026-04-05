@@ -183,12 +183,25 @@ export async function upsertUser(user: any): Promise<void> {
   const rows = await sheet.getRows();
   const row = rows.find(r => r.get('openId') === user.openId);
   const now = new Date().toISOString();
+  const isOwner = user.openId === ENV.ownerOpenId;
+  const role = isOwner ? 'admin' : (user.role || 'user');
+
   if (row) {
     row.set('lastSignedIn', now);
     row.set('updatedAt', now);
+    if (isOwner && row.get('role') !== 'admin') {
+      row.set('role', 'admin');
+    }
     await row.save();
   } else {
-    await sheet.addRow({ ...user, id: Date.now().toString(), role: 'user', createdAt: now, updatedAt: now, lastSignedIn: now });
+    await sheet.addRow({ 
+      ...user, 
+      id: Date.now().toString(), 
+      role, 
+      createdAt: now, 
+      updatedAt: now, 
+      lastSignedIn: now 
+    });
   }
 }
 
