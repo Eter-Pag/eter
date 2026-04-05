@@ -14,7 +14,11 @@ export const newsRouter = router({
   getAll: publicProcedure.query(async () => {
     try {
       const articles = await getAllNews();
-      return articles.filter(a => a.isPublished).slice(0, 50);
+      // Sort by createdAt descending (newest first)
+      return articles
+        .filter(a => a.isPublished)
+        .sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime())
+        .slice(0, 50);
     } catch (error) {
       console.error("[News Router] Error fetching news:", error);
       return [];
@@ -71,7 +75,9 @@ export const newsRouter = router({
    */
   adminGetAll: publicProcedure.query(async () => {
     try {
-      return await getAllNews();
+      const articles = await getAllNews();
+      // Sort by createdAt descending (newest first)
+      return articles.sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime());
     } catch (error) {
       console.error("[News Router] Error fetching all news for admin:", error);
       return [];
