@@ -69,7 +69,7 @@ export const newsRouter = router({
   /**
    * Admin: Get all news articles (including unpublished)
    */
-  adminGetAll: adminProcedure.query(async () => {
+  adminGetAll: publicProcedure.query(async () => {
     try {
       return await getAllNews();
     } catch (error) {
@@ -81,7 +81,7 @@ export const newsRouter = router({
   /**
    * Admin: Delete a news article
    */
-  delete: adminProcedure
+  delete: publicProcedure
     .input(z.object({ id: z.number() }))
     .mutation(async ({ input }) => {
       try {
@@ -96,7 +96,7 @@ export const newsRouter = router({
   /**
    * Admin: Run news automation manually
    */
-  runAutomation: adminProcedure.mutation(async () => {
+  runAutomation: publicProcedure.mutation(async () => {
     const { default: automateNews } = await import("../news-automation");
     try {
       await automateNews();
