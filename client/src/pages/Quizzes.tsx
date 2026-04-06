@@ -689,12 +689,27 @@ export default function Quizzes() {
               <Card>
                 <CardContent className="p-0">
                   <div className="divide-y">
-                    {leaderboard.length > 0 ? leaderboard.map((s, i) => (
+                    {leaderboard.length > 0 ? leaderboard.map((s, i) => {
+                      let medalColor = "text-white";
+                      let medalBgColor = "";
+                      
+                      if (i === 0) {
+                        medalColor = "text-yellow-600";
+                        medalBgColor = "bg-yellow-100";
+                      } else if (i === 1) {
+                        medalColor = "text-gray-500";
+                        medalBgColor = "bg-gray-100";
+                      } else if (i === 2) {
+                        medalColor = "text-amber-700";
+                        medalBgColor = "bg-amber-100";
+                      }
+                      
+                      return (
                       <div key={i} className="flex items-center justify-between p-4">
                         <div className="flex items-center gap-4">
-                          <span className={`font-bold text-lg w-6 ${i === 0 ? "text-yellow-500" : i === 1 ? "text-gray-400" : i === 2 ? "text-amber-600" : ""}`}>
+                          <div className={`flex items-center justify-center w-8 h-8 rounded-full font-bold text-lg ${medalBgColor} ${medalColor}`}>
                             {i + 1}
-                          </span>
+                          </div>
                           <div>
                             <p className="font-bold">{s.name}</p>
                             <p className="text-xs text-muted-foreground">{s.date}</p>
@@ -704,7 +719,8 @@ export default function Quizzes() {
                           {s.score}/{s.total}
                         </Badge>
                       </div>
-                    )) : (
+                    );
+                    }) : (
                       <div className="p-8 text-center text-muted-foreground">
                         Aún no hay puntajes. ¡Sé el primero!
                       </div>
