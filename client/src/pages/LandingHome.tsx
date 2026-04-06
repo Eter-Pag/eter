@@ -14,6 +14,7 @@ import {
   ArrowRight,
   ChevronDown,
   Lightbulb,
+  Brain,
   Newspaper,
   Instagram,
   Youtube,
