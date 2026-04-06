@@ -505,15 +505,25 @@ export default function Quizzes() {
     
     try {
       setIsCapturing(true);
+      
+      // Configurar todas las imágenes para permitir CORS
+      const images = resultCardRef.current.querySelectorAll('img');
+      images.forEach(img => {
+        img.setAttribute('crossOrigin', 'anonymous');
+      });
+      
       const canvas = await html2canvas(resultCardRef.current, {
         backgroundColor: "#ffffff",
         scale: 2,
         logging: false,
+        useCORS: true,
+        allowTaint: false,
+        proxy: null,
       });
       return canvas.toDataURL("image/png");
     } catch (error) {
       console.error("Error capturing image:", error);
-      toast.error("Error al capturar la imagen");
+      toast.error("Error al capturar la imagen. Intenta descargarla nuevamente.");
       return null;
     } finally {
       setIsCapturing(false);
@@ -767,8 +777,11 @@ export default function Quizzes() {
                       onClick={() => handleShare("download")}
                       disabled={isCapturing}
                     >
-                      <Download className="h-4 w-4" /> {isCapturing ? "Capturando..." : "Descargar"}
+                      <Download className="h-4 w-4" /> {isCapturing ? "Generando..." : "Descargar Resultado"}
                     </Button>
+                    <p className="text-xs text-muted-foreground text-center">
+                      Descarga tu resultado como imagen y comparte en tus redes sociales 📸
+                    </p>
                     <Button variant="outline" className="w-full gap-2" onClick={() => setView("list")}>
                       <History className="h-4 w-4" /> Otros Quizzes
                     </Button>
