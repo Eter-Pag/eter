@@ -414,7 +414,6 @@ export default function Quizzes() {
   const [tempUserName, setTempUserName] = useState("");
   const [view, setView] = useState<ViewType>("list");
   const resultCardRef = useRef<HTMLDivElement>(null);
-  const [isCapturing, setIsCapturing] = useState(false);
 
   const utils = trpc.useUtils();
   const { data: leaderboard = [] } = trpc.quizzes.getLeaderboard.useQuery(
@@ -497,124 +496,6 @@ export default function Quizzes() {
     });
     const winner = Object.keys(counts).reduce((a, b) => counts[a] > counts[b] ? a : b);
     return PERSONALITY_RESULTS[winner];
-  };
-
-  const imageToBase64 = async (url: string): Promise<string> => {
-    return new Promise((resolve, reject) => {
-      const img = new Image();
-      img.crossOrigin = 'anonymous';
-      img.onload = () => {
-        const canvas = document.createElement('canvas');
-        canvas.width = img.width;
-        canvas.height = img.height;
-        const ctx = canvas.getContext('2d');
-        if (ctx) {
-          ctx.drawImage(img, 0, 0);
-          resolve(canvas.toDataURL('image/png'));
-        } else {
-          reject(new Error('Could not get canvas context'));
-        }
-      };
-      img.onerror = () => {
-        reject(new Error('Failed to load image'));
-      };
-      img.src = url;
-    });
-  };
-
-  const captureResultImage = async () => {
-    if (!resultCardRef.current) return;
-    
-    try {
-      setIsCapturing(true);
-      
-      // Convertir imágenes externas a Base64 para evitar problemas de CORS
-      const images = resultCardRef.current.querySelectorAll('img');
-      const imagePromises: Promise<void>[] = [];
-      
-      images.forEach(img => {
-        const src = img.getAttribute('src');
-        if (src && (src.includes('http') || src.includes('https'))) {
-          const promise = imageToBase64(src)
-            .then(base64 => {
-              img.setAttribute('src', base64);
-            })
-            .catch(error => {
-              console.warn('Could not convert image to base64:', error);
-              // Continuar sin esta imagen si falla
-            });
-          imagePromises.push(promise);
-        }
-      });
-      
-      // Esperar a que todas las imágenes se conviertan
-      await Promise.allSettled(imagePromises);
-      
-      // Dar un pequeño tiempo para que las imágenes se actualicen en el DOM
-      await new Promise(resolve => setTimeout(resolve, 500));
-      
-      const canvas = await html2canvas(resultCardRef.current, {
-        backgroundColor: "#ffffff",
-        scale: 2,
-        logging: false,
-        useCORS: true,
-        allowTaint: true,
-      });
-      return canvas.toDataURL("image/png");
-    } catch (error) {
-      console.error("Error capturing image:", error);
-      toast.error("Error al capturar. Por favor, intenta de nuevo.");
-      return null;
-    } finally {
-      setIsCapturing(false);
-    }
-  };
-
-  const downloadResultImage = async () => {
-    const imageData = await captureResultImage();
-    if (imageData) {
-      const link = document.createElement("a");
-      link.href = imageData;
-      const resultName = activeQuiz?.type === "personality" 
-        ? getPersonalityResult()?.name 
-        : "trivia";
-      link.download = `mi-resultado-bts-${resultName}-${userName}.png`;
-      link.click();
-      toast.success("¡Imagen descargada!");
-    }
-  };
-
-  const handleShare = (platform: "twitter" | "facebook" | "copy" | "download") => {
-    if (platform === "download") {
-      downloadResultImage();
-      return;
-    }
-
-    let shareText = "";
-    
-    if (activeQuiz?.type === "trivia") {
-      const score = calculateScore();
-      shareText = `¡Acabo de obtener ${score}/${activeQuiz.questions.length} en el quiz de BTS en ETER KPOP MX! 🎉 ¿Puedes superarme? Soy ${userName}`;
-    } else {
-      const result = getPersonalityResult();
-      shareText = `¡Descubrí que soy ${result?.name} en el quiz de personalidad de BTS en ETER KPOP MX! Yo soy ${userName}. ¿Con quién te identificas tú?`;
-    }
-
-    const siteUrl = window.location.origin;
-    const shareUrl = `${siteUrl}/quizzes`;
-
-    if (platform === "twitter") {
-      const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`;
-      window.open(twitterUrl, "_blank", "width=550,height=420");
-    } else if (platform === "facebook") {
-      const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(shareText)}`;
-      window.open(facebookUrl, "_blank", "width=550,height=420");
-    } else if (platform === "copy") {
-      const textToCopy = `${shareText}\n${shareUrl}`;
-      navigator.clipboard.writeText(textToCopy).then(() => {
-        toast.success("¡Enlace copiado al portapapeles!");
-      });
-    }
   };
 
   return (
@@ -835,23 +716,43 @@ export default function Quizzes() {
                     {leaderboard.length > 0 ? leaderboard.map((s, i) => {
                       let medalColor = "text-white";
                       let medalBgColor = "";
+                      let positionLabel = "";
                       
                       if (i === 0) {
                         medalColor = "text-yellow-600";
                         medalBgColor = "bg-yellow-100";
+                        positionLabel = "🥇";
                       } else if (i === 1) {
                         medalColor = "text-gray-500";
                         medalBgColor = "bg-gray-100";
+                        positionLabel = "🥈";
                       } else if (i === 2) {
                         medalColor = "text-amber-700";
                         medalBgColor = "bg-amber-100";
+                        positionLabel = "🥉";
+                      } else if (i < 15) {
+                        medalColor = "text-purple-600";
+                        medalBgColor = "bg-purple-100";
+                        positionLabel = `${i + 1}`;
+                      } else if (i < 50) {
+                        medalColor = "text-blue-600";
+                        medalBgColor = "bg-blue-100";
+                        positionLabel = `${i + 1}`;
+                      } else if (i < 100) {
+                        medalColor = "text-gray-600";
+                        medalBgColor = "bg-gray-100";
+                        positionLabel = `${i + 1}`;
+                      } else {
+                        medalColor = "text-gray-500";
+                        medalBgColor = "bg-gray-50";
+                        positionLabel = `${i + 1}`;
                       }
                       
                       return (
-                      <div key={i} className="flex items-center justify-between p-4">
+                      <div key={i} className="flex items-center justify-between p-4 hover:bg-purple-50 transition-colors">
                         <div className="flex items-center gap-4">
-                          <div className={`flex items-center justify-center w-8 h-8 rounded-full font-bold text-lg ${medalBgColor} ${medalColor}`}>
-                            {i + 1}
+                          <div className={`flex items-center justify-center w-10 h-10 rounded-full font-bold text-sm ${medalBgColor} ${medalColor}`}>
+                            {positionLabel}
                           </div>
                           <div>
                             <p className="font-bold">{s.name}</p>
