@@ -15,8 +15,7 @@ import {
   XCircle,
   Share2,
   Play,
-  History,
-  Download
+  History
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLocation } from "wouter";
@@ -796,39 +795,21 @@ export default function Quizzes() {
                   )}
 
                   <div className="space-y-3">
-                    <div className="grid grid-cols-2 gap-2">
-                      <Button 
-                        variant="outline" 
-                        className="gap-1 text-xs" 
-                        onClick={() => handleShare("twitter")}
-                      >
-                        🐦 Twitter
+                    {activeQuiz.type === "trivia" && (
+                      <>
+                        <Button className="w-full gap-2" onClick={() => setView("leaderboard")}>
+                          <Trophy className="h-4 w-4" /> Ver Ranking
+                        </Button>
+                        <Button variant="outline" className="w-full gap-2" onClick={() => setView("list")}>
+                          <History className="h-4 w-4" /> Otros Quizzes
+                        </Button>
+                      </>
+                    )}
+                    {activeQuiz.type === "personality" && (
+                      <Button variant="outline" className="w-full gap-2" onClick={() => setView("list")}>
+                        <History className="h-4 w-4" /> Otros Quizzes
                       </Button>
-                      <Button 
-                        variant="outline" 
-                        className="gap-1 text-xs" 
-                        onClick={() => handleShare("facebook")}
-                      >
-                        f Facebook
-                      </Button>
-                    </div>
-                    <Button 
-                      variant="outline" 
-                      className="w-full gap-2" 
-                      onClick={() => handleShare("download")}
-                      disabled={isCapturing}
-                    >
-                      <Download className="h-4 w-4" /> {isCapturing ? "Generando..." : "Descargar Resultado"}
-                    </Button>
-                    <p className="text-xs text-muted-foreground text-center">
-                      Descarga tu resultado como imagen y comparte en tus redes sociales 📸
-                    </p>
-                    <Button variant="outline" className="w-full gap-2" onClick={() => handleShare("copy")}>
-                      📋 Copiar Enlace
-                    </Button>
-                    <Button variant="outline" className="w-full gap-2" onClick={() => setView("list")}>
-                      <History className="h-4 w-4" /> Otros Quizzes
-                    </Button>
+                    )}
                   </div>
                 </CardContent>
               </Card>
