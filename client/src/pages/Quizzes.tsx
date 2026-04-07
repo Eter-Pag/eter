@@ -510,8 +510,14 @@ export default function Quizzes() {
             Volver
           </Button>
           <h1 className="font-bold text-lg">ETER Challenge</h1>
-          <Button variant="ghost" size="sm" onClick={() => setView("leaderboard")}>
-            <Trophy className="h-4 w-4 text-yellow-500" />
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={() => setView("leaderboard")}
+            className="border-yellow-200 bg-yellow-50/50 hover:bg-yellow-100 hover:border-yellow-400 transition-all shadow-sm"
+          >
+            <Trophy className="h-5 w-5 text-yellow-600 mr-1.5" />
+            <span className="font-bold text-yellow-700 text-xs hidden sm:inline">Ranking</span>
           </Button>
         </div>
       </header>
