@@ -26,6 +26,9 @@ import {
   X,
   ChevronLeft,
   ChevronRight,
+  Maximize2,
+  ExternalLink,
+  ShoppingCart,
 } from "lucide-react";
 import { STORE_CONFIG } from "@shared/const";
 import { motion } from "framer-motion";
@@ -384,32 +387,66 @@ export default function LandingHome() {
               <div className="w-full md:w-2/3 p-4 md:p-6 flex flex-col justify-between">
                 {products.length > 0 ? (
                   <>
-                    {/* Grid de Productos */}
+                    {/* Grid de Productos - Idéntico a Store.tsx */}
                     <div className="flex-grow flex items-center">
-                      <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
                         {visibleProducts.map((product) => (
                           <motion.div
                             key={product.id}
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
-                            className="bg-white/70 backdrop-blur rounded-xl p-4 text-center hover:bg-white/90 transition-all hover:shadow-lg group"
+                            whileHover={{ y: -8 }}
+                            className="cursor-pointer"
                           >
-                            <div className="w-full h-40 md:h-56 bg-gradient-to-br from-slate-100 to-slate-200 rounded-lg mb-3 flex items-center justify-center overflow-hidden group-hover:scale-105 transition-transform duration-300">
-                              {product.image ? (
+                            <Card className="group h-full bg-white border-none shadow-xl rounded-[2.5rem] overflow-hidden flex flex-col">
+                              <div className="relative aspect-square overflow-hidden bg-slate-100">
                                 <img
-                                  src={product.image}
-                                  alt={product.name}
-                                  className="w-full h-full object-contain p-2"
+                                  src={product.image || ""}
+                                  alt={product.name || "Producto"}
+                                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                                 />
-                              ) : (
-                                <Store className="size-12 text-slate-400" />
-                              )}
-                            </div>
-                            <h4 className="text-sm md:text-base font-bold text-slate-900 truncate mb-1">{product.name}</h4>
-                            <p className="text-sm md:text-lg text-blue-600 font-black">
-                              ${(Number(product.price) / 100).toFixed(2)}
-                            </p>
+                                {product.badge && (
+                                  <Badge className="absolute top-4 right-4 bg-fuchsia-600 text-white border-none px-3 py-1 rounded-full font-bold text-[10px] uppercase tracking-widest">
+                                    {product.badge}
+                                  </Badge>
+                                )}
+                                <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                  <div className="bg-white/20 backdrop-blur-md p-3 rounded-2xl">
+                                    <Maximize2 className="size-6 text-white" />
+                                  </div>
+                                </div>
+                              </div>
+                              <CardContent className="p-5 flex flex-col flex-grow">
+                                <h3 className="font-black text-slate-900 text-sm md:text-base mb-2 line-clamp-2 leading-tight uppercase tracking-tight">
+                                  {product.name || "Producto sin nombre"}
+                                </h3>
+                                <div className="mt-auto pt-4 flex flex-col gap-3">
+                                  <div className="flex items-center justify-between">
+                                    <div className="text-xl md:text-2xl font-black text-purple-600 tracking-tighter">
+                                      ${(Number(product.price) / 100).toFixed(2)} <span className="text-[10px] text-slate-400 uppercase">MXN</span>
+                                    </div>
+                                  </div>
+                                  <div className="flex flex-col gap-2">
+                                    <Button className="w-full rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-[10px] uppercase tracking-widest h-9 transition-all">
+                                      Ver Detalles
+                                    </Button>
+                                    <a
+                                      href={product.link || "#"}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      onClick={(e) => e.stopPropagation()}
+                                      className="w-full"
+                                    >
+                                      <Button
+                                        variant="outline"
+                                        className="w-full rounded-2xl border-slate-200 hover:bg-slate-50 text-slate-600 font-bold text-[10px] uppercase tracking-widest h-9 transition-all gap-2"
+                                      >
+                                        <ExternalLink className="size-3" />
+                                        Comprar
+                                      </Button>
+                                    </a>
+                                  </div>
+                                </div>
+                              </CardContent>
+                            </Card>
                           </motion.div>
                         ))}
                       </div>
