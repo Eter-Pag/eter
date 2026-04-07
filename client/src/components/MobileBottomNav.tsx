@@ -1,4 +1,4 @@
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "wouter";
 import { Home, Newspaper, ShoppingBag, Calendar, Gamepad2 } from "lucide-react";
 import { motion } from "framer-motion";
 
@@ -10,8 +10,7 @@ interface NavItem {
 }
 
 export function MobileBottomNav() {
-  const navigate = useNavigate();
-  const location = useLocation();
+  const [location, navigate] = useLocation();
 
   const navItems: NavItem[] = [
     {
@@ -46,7 +45,7 @@ export function MobileBottomNav() {
     },
   ];
 
-  const isActive = (path: string) => location.pathname === path;
+  const isActive = (path: string) => location === path;
 
   return (
     <>
