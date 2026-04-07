@@ -466,7 +466,7 @@ export default function LandingHome() {
       </section>
 
 
-      {/* Featured Section - Tienda}
+      {/* Featured Section - Tienda con Carrusel */}
       <section className="container py-12 md:py-20">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
