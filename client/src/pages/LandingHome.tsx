@@ -421,7 +421,7 @@ export default function LandingHome() {
                                 <div className="mt-auto pt-4 flex flex-col gap-3">
                                   <div className="flex items-center justify-between">
                                     <div className="text-xl md:text-2xl font-black text-purple-600 tracking-tighter">
-                                      ${(Number(product.price) / 100).toFixed(2)} <span className="text-[10px] text-slate-400 uppercase">MXN</span>
+                                      ${product.price} <span className="text-[10px] text-slate-400 uppercase">MXN</span>
                                     </div>
                                   </div>
                                   <div className="flex flex-col gap-2">
