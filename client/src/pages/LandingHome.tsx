@@ -345,30 +345,48 @@ export default function LandingHome() {
         >
           <Card className="glass-effect overflow-hidden hover:shadow-2xl transition-all duration-500 group">
             <CardContent className="p-0 flex flex-col md:flex-row">
-              <div className="relative w-full md:w-1/2 h-64 md:h-80 bg-gradient-to-br from-blue-500 to-indigo-500 overflow-hidden">
-                <img
-                  src="/assets/imagentienda.png"
-                  alt="Tienda K-POP"
-                  className="w-full h-full object-cover object-top group-hover:scale-110 transition-transform duration-700"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
-              </div>
-              <div className="p-6 md:p-12 flex flex-col justify-between md:w-1/2">
-                <div>
-                  <div className="flex items-center gap-2 mb-4">
-                    <div className="w-1 h-8 bg-gradient-to-b from-blue-500 to-indigo-500 rounded-full" />
-                    <h2 className="text-2xl md:text-4xl font-black">Tienda K-POP</h2>
-                  </div>
-                  <p className="text-slate-600 text-base md:text-lg mb-6 leading-relaxed">
-                    Explora nuestra colección exclusiva de álbumes, mercancía oficial y productos premium de tus artistas favoritos.
-                  </p>
+              {/* Columna Izquierda: Imagen, Texto y Botón */}
+              <div className="w-full md:w-1/3 flex flex-col">
+                {/* Imagen */}
+                <div className="relative h-48 md:h-80 bg-gradient-to-br from-blue-500 to-indigo-500 overflow-hidden">
+                  <img
+                    src="/assets/imagentienda.png"
+                    alt="Tienda K-POP"
+                    className="w-full h-full object-cover object-top group-hover:scale-110 transition-transform duration-700"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
                 </div>
 
-                {/* Carrusel de Productos */}
-                <div className="space-y-4">
-                  {products.length > 0 ? (
-                    <>
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                {/* Texto y Botón */}
+                <div className="p-4 md:p-6 flex flex-col justify-between flex-grow">
+                  <div>
+                    <div className="flex items-center gap-2 mb-2">
+                      <div className="w-1 h-6 bg-gradient-to-b from-blue-500 to-indigo-500 rounded-full" />
+                      <h2 className="text-lg md:text-2xl font-black">Tienda K-POP</h2>
+                    </div>
+                    <p className="text-slate-600 text-xs md:text-sm mb-4 leading-relaxed">
+                      Explora nuestra colección exclusiva de álbumes, mercancía oficial y productos premium.
+                    </p>
+                  </div>
+
+                  <Button
+                    onClick={() => navigate("/tienda")}
+                    className="w-full gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold px-6 h-10 rounded-lg text-sm"
+                  >
+                    <Store className="size-4" />
+                    Ver tienda
+                    <ArrowRight className="size-4" />
+                  </Button>
+                </div>
+              </div>
+
+              {/* Columna Derecha: Carrusel de Productos */}
+              <div className="w-full md:w-2/3 p-4 md:p-6 flex flex-col justify-between">
+                {products.length > 0 ? (
+                  <>
+                    {/* Grid de Productos */}
+                    <div className="flex-grow flex items-center">
+                      <div className="w-full grid grid-cols-2 md:grid-cols-4 gap-3">
                         {visibleProducts.map((product) => (
                           <motion.div
                             key={product.id}
@@ -395,54 +413,45 @@ export default function LandingHome() {
                           </motion.div>
                         ))}
                       </div>
-
-                      {/* Controles del Carrusel */}
-                      <div className="flex items-center justify-between gap-2">
-                        <Button
-                          onClick={handlePrevProduct}
-                          variant="outline"
-                          size="icon"
-                          className="rounded-full hover:bg-blue-50 hover:text-blue-600"
-                        >
-                          <ChevronLeft className="size-4" />
-                        </Button>
-                        <div className="flex gap-1">
-                          {Array.from({ length: Math.ceil(products.length / itemsPerPageDesktop) }).map((_, i) => (
-                            <div
-                              key={i}
-                              className={`h-2 rounded-full transition-all ${
-                                i === Math.floor(productCarouselIndex / itemsPerPageDesktop)
-                                  ? "w-6 bg-blue-600"
-                                  : "w-2 bg-slate-300"
-                              }`}
-                            />
-                          ))}
-                        </div>
-                        <Button
-                          onClick={handleNextProduct}
-                          variant="outline"
-                          size="icon"
-                          className="rounded-full hover:bg-blue-50 hover:text-blue-600"
-                        >
-                          <ChevronRight className="size-4" />
-                        </Button>
-                      </div>
-                    </>
-                  ) : (
-                    <div className="text-center py-6">
-                      <p className="text-slate-500 text-sm">Cargando productos...</p>
                     </div>
-                  )}
 
-                  <Button
-                    onClick={() => navigate("/tienda")}
-                    className="w-full gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold px-8 h-12 rounded-full"
-                  >
-                    <Store className="size-5" />
-                    Ver toda la tienda
-                    <ArrowRight className="size-5" />
-                  </Button>
-                </div>
+                    {/* Controles del Carrusel */}
+                    <div className="flex items-center justify-center gap-4 mt-4">
+                      <Button
+                        onClick={handlePrevProduct}
+                        variant="outline"
+                        size="icon"
+                        className="rounded-full hover:bg-blue-50 hover:text-blue-600"
+                      >
+                        <ChevronLeft className="size-5" />
+                      </Button>
+                      <div className="flex gap-1">
+                        {Array.from({ length: Math.ceil(products.length / itemsPerPageDesktop) }).map((_, i) => (
+                          <div
+                            key={i}
+                            className={`h-2 rounded-full transition-all ${
+                              i === Math.floor(productCarouselIndex / itemsPerPageDesktop)
+                                ? "w-6 bg-blue-600"
+                                : "w-2 bg-slate-300"
+                            }`}
+                          />
+                        ))}
+                      </div>
+                      <Button
+                        onClick={handleNextProduct}
+                        variant="outline"
+                        size="icon"
+                        className="rounded-full hover:bg-blue-50 hover:text-blue-600"
+                      >
+                        <ChevronRight className="size-5" />
+                      </Button>
+                    </div>
+                  </>
+                ) : (
+                  <div className="text-center py-12">
+                    <p className="text-slate-500 text-sm">Cargando productos...</p>
+                  </div>
+                )}
               </div>
             </CardContent>
           </Card>
