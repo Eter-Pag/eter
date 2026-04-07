@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -12,19 +12,14 @@ import {
   Calendar as CalendarIcon,
   Sparkles,
   Film,
+  Loader2,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLocation } from "wouter";
-import { BIRTHDAYS } from "@shared/birthdays";
+import { BirthdayData, BirthdayEntry } from "@shared/birthdays"; // Importar interfaces
+
 
 type Category = "all" | "K-Pop" | "K-Drama" | "K-Movie";
-
-interface BirthdayEntry {
-  name: string;
-  group?: string;
-  category: string;
-  year?: number;
-}
 
 const MONTHS = [
   "Enero",
@@ -51,23 +46,47 @@ export default function Calendar() {
   const [selectedCategory, setSelectedCategory] = useState<Category>("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
+  const [monthlyBirthdays, setMonthlyBirthdays] = useState<BirthdayData | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const fetchMonthlyBirthdays = useCallback(async (monthIndex: number) => {
+    setIsLoading(true);
+    try {
+      const monthNum = String(monthIndex + 1).padStart(2, "0");
+      const module = await import(`@shared/birthdays_data/birthdays_${monthNum}`);
+      setMonthlyBirthdays(module[`BIRTHDAYS_MONTH_${monthIndex + 1}`]);
+    } catch (error) {
+      console.error("Error loading birthdays for month", monthIndex, error);
+      setMonthlyBirthdays({});
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchMonthlyBirthdays(currentMonth);
+  }, [currentMonth, fetchMonthlyBirthdays]);
 
   // Obtener cumpleaños de hoy
   const today = new Date();
   const todayKey = `${String(today.getMonth() + 1).padStart(2, "0")}-${String(
     today.getDate()
   ).padStart(2, "0")}`;
-  const todayBirthdays = BIRTHDAYS[todayKey] || [];
+  const todayBirthdays = useMemo(() => {
+    if (!monthlyBirthdays || today.getMonth() !== currentMonth) return [];
+    return monthlyBirthdays[todayKey] || [];
+  }, [monthlyBirthdays, todayKey, currentMonth, today]);
 
-  // Obtener cumpleaños del mes actual
-  const monthBirthdays = useMemo(() => {
+  // Obtener cumpleaños del mes actual (filtrados y buscados)
+  const filteredMonthBirthdays = useMemo(() => {
     const result: { [key: number]: BirthdayEntry[] } = {};
+    if (!monthlyBirthdays) return result;
 
     for (let day = 1; day <= DAYS_IN_MONTH[currentMonth]; day++) {
       const dateKey = `${String(currentMonth + 1).padStart(2, "0")}-${String(
         day
       ).padStart(2, "0")}`;
-      const entries = BIRTHDAYS[dateKey] || [];
+      const entries = monthlyBirthdays[dateKey] || [];
 
       let filtered = entries;
       if (selectedCategory !== "all") {
@@ -87,7 +106,7 @@ export default function Calendar() {
     }
 
     return result;
-  }, [currentMonth, selectedCategory, searchQuery]);
+  }, [monthlyBirthdays, currentMonth, selectedCategory, searchQuery]);
 
   const getCategoryColor = (category: string) => {
     switch (category) {
@@ -296,7 +315,7 @@ export default function Calendar() {
                       animate={{ opacity: 1, y: 0 }}
                       className="text-2xl font-black text-center flex-1 bg-gradient-to-r from-yellow-300 via-pink-300 to-purple-300 bg-clip-text text-transparent drop-shadow-lg"
                     >
-                      {MONTHS[currentMonth]}
+                      {MONTHS[currentMonth]} {currentYear}
                     </motion.h2>
                     
                     <motion.button
@@ -326,64 +345,70 @@ export default function Calendar() {
                   </div>
 
                   {/* Grid de días */}
-                  <div className="grid grid-cols-7 gap-1">
-                    {Array.from({ length: DAYS_IN_MONTH[currentMonth] }).map(
-                      (_, day) => {
-                        const dayNum = day + 1;
-                        const hasBirthdays = monthBirthdays[dayNum];
-                        const isToday =
-                          dayNum === today.getDate() &&
-                          currentMonth === today.getMonth();
-                        const isSelected = selectedDay === dayNum;
+                  {isLoading ? (
+                    <div className="flex items-center justify-center h-48">
+                      <Loader2 className="h-8 w-8 animate-spin text-purple-400" />
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-7 gap-1">
+                      {Array.from({ length: DAYS_IN_MONTH[currentMonth] }).map(
+                        (_, day) => {
+                          const dayNum = day + 1;
+                          const hasBirthdays = filteredMonthBirthdays[dayNum];
+                          const isToday =
+                            dayNum === today.getDate() &&
+                            currentMonth === today.getMonth();
+                          const isSelected = selectedDay === dayNum;
 
-                        return (
-                          <motion.button
-                            key={dayNum}
-                            onClick={() =>
-                              setSelectedDay(
-                                selectedDay === dayNum ? null : dayNum
-                              )
-                            }
-                            whileHover={{ scale: 1.05 }}
-                            whileTap={{ scale: 0.95 }}
-                            className={`aspect-square p-1 rounded-lg font-bold text-xs transition-all relative overflow-hidden group ${
-                              isToday
-                                ? "bg-gradient-to-br from-yellow-400 to-orange-400 text-white shadow-lg shadow-yellow-500/50 border-2 border-yellow-300"
-                                : hasBirthdays
-                                ? "bg-gradient-to-br from-purple-500/30 to-pink-500/30 text-white border-2 border-purple-400/50 hover:border-purple-400 hover:shadow-lg hover:shadow-purple-500/30 cursor-pointer"
-                                : "bg-white/5 text-white/60 border border-white/10 hover:bg-white/10 hover:border-white/20"
-                            } ${
-                              isSelected
-                                ? "ring-2 ring-yellow-400 ring-offset-2 ring-offset-slate-900"
-                                : ""
-                            }`}
-                          >
-                            {/* Fondo animado para días con cumpleaños */}
-                            {hasBirthdays && !isToday && (
-                              <motion.div
-                                className="absolute inset-0 bg-gradient-to-br from-purple-400/20 to-pink-400/20"
-                                animate={{ opacity: [0.5, 0.8, 0.5] }}
-                                transition={{ duration: 3, repeat: Infinity }}
-                              />
-                            )}
-
-                            <div className="relative z-10 flex flex-col items-center justify-center h-full">
-                              <span>{dayNum}</span>
-                              {hasBirthdays && (
-                                <motion.span
-                                  initial={{ scale: 0 }}
-                                  animate={{ scale: 1 }}
-                                  className="text-[10px] font-black"
-                                >
-                                  •
-                                </motion.span>
+                          return (
+                            <motion.button
+                              key={dayNum}
+                              onClick={() =>
+                                setSelectedDay(
+                                  selectedDay === dayNum ? null : dayNum
+                                )
+                              }
+                              whileHover={{ scale: 1.05 }}
+                              whileTap={{ scale: 0.95 }}
+                              className={`aspect-square p-1 rounded-lg font-bold text-xs transition-all relative overflow-hidden group ${
+                                isToday
+                                  ? "bg-gradient-to-br from-yellow-400 to-orange-400 text-white shadow-lg shadow-yellow-500/50 border-2 border-yellow-300"
+                                  : hasBirthdays
+                                  ? "bg-gradient-to-br from-purple-500/30 to-pink-500/30 text-white border-2 border-purple-400/50 hover:border-purple-400 hover:shadow-lg hover:shadow-purple-500/30 cursor-pointer"
+                                  : "bg-white/5 text-white/60 border border-white/10 hover:bg-white/10 hover:border-white/20"
+                              } ${
+                                isSelected
+                                  ? "ring-2 ring-yellow-400 ring-offset-2 ring-offset-slate-900"
+                                  : ""
+                              }`}
+                            >
+                              {/* Fondo animado para días con cumpleaños */}
+                              {hasBirthdays && !isToday && (
+                                <motion.div
+                                  className="absolute inset-0 bg-gradient-to-br from-purple-400/20 to-pink-400/20"
+                                  animate={{ opacity: [0.5, 0.8, 0.5] }}
+                                  transition={{ duration: 3, repeat: Infinity }}
+                                />
                               )}
-                            </div>
-                          </motion.button>
-                        );
-                      }
-                    )}
-                  </div>
+
+                              <div className="relative z-10 flex flex-col items-center justify-center h-full">
+                                <span>{dayNum}</span>
+                                {hasBirthdays && (
+                                  <motion.span
+                                    initial={{ scale: 0 }}
+                                    animate={{ scale: 1 }}
+                                    className="text-[10px] font-black"
+                                  >
+                                    •
+                                  </motion.span>
+                                )}
+                              </div>
+                            </motion.button>
+                          );
+                        }
+                      )}
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             </div>
@@ -416,9 +441,13 @@ export default function Calendar() {
                 </CardHeader>
                 
                 <CardContent className="pt-4 flex-1 overflow-y-auto">
-                  {selectedDay && monthBirthdays[selectedDay] ? (
+                  {isLoading ? (
+                    <div className="flex items-center justify-center h-full">
+                      <Loader2 className="h-8 w-8 animate-spin text-purple-400" />
+                    </div>
+                  ) : selectedDay && filteredMonthBirthdays[selectedDay] ? (
                     <div className="space-y-3">
-                      {monthBirthdays[selectedDay].map((entry, idx) => {
+                      {filteredMonthBirthdays[selectedDay].map((entry, idx) => {
                         const colors = getCategoryColor(entry.category);
                         return (
                           <motion.div
@@ -479,57 +508,63 @@ export default function Calendar() {
               </CardHeader>
               
               <CardContent className="pt-6">
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  {[
-                    {
-                      label: "Días con cumpleaños",
-                      value: Object.keys(monthBirthdays).length,
-                      gradient: "from-purple-500 to-pink-500",
-                      icon: "📅",
-                    },
-                    {
-                      label: "Cumpleaños totales",
-                      value: Object.values(monthBirthdays).reduce(
-                        (sum, arr) => sum + arr.length,
-                        0
-                      ),
-                      gradient: "from-pink-500 to-rose-500",
-                      icon: "🎂",
-                    },
-                    {
-                      label: "K-Pop",
-                      value: Object.values(monthBirthdays)
-                        .flat()
-                        .filter((e) => e.category === "K-Pop").length,
-                      gradient: "from-purple-600 to-violet-600",
-                      icon: "✨",
-                    },
-                    {
-                      label: "K-Drama & K-Movie",
-                      value: Object.values(monthBirthdays)
-                        .flat()
-                        .filter((e) => e.category !== "K-Pop").length,
-                      gradient: "from-blue-600 to-cyan-600",
-                      icon: "🎬",
-                    },
-                  ].map((stat, idx) => (
-                    <motion.div
-                      key={idx}
-                      initial={{ opacity: 0, scale: 0.8 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      transition={{ delay: idx * 0.1 }}
-                      className={`p-4 rounded-2xl bg-gradient-to-br ${stat.gradient} bg-opacity-20 border-2 border-white/20 text-center hover:border-white/40 transition-all`}
-                    >
-                      <p className="text-2xl mb-2">{stat.icon}</p>
-                      <p className="text-3xl font-black text-white mb-2">
-                        {stat.value}
-                      </p>
-                      <p className="text-xs font-bold text-white/80">
-                        {stat.label}
-                      </p>
-                    </motion.div>
-                  ))}
-                </div>
+                {isLoading ? (
+                  <div className="flex items-center justify-center h-24">
+                    <Loader2 className="h-8 w-8 animate-spin text-purple-400" />
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    {[
+                      {
+                        label: "Días con cumpleaños",
+                        value: Object.keys(filteredMonthBirthdays).length,
+                        gradient: "from-purple-500 to-pink-500",
+                        icon: "📅",
+                      },
+                      {
+                        label: "Cumpleaños totales",
+                        value: Object.values(filteredMonthBirthdays).reduce(
+                          (sum, arr) => sum + arr.length,
+                          0
+                        ),
+                        gradient: "from-pink-500 to-rose-500",
+                        icon: "🎂",
+                      },
+                      {
+                        label: "K-Pop",
+                        value: Object.values(filteredMonthBirthdays)
+                          .flat()
+                          .filter((e) => e.category === "K-Pop").length,
+                        gradient: "from-purple-600 to-violet-600",
+                        icon: "✨",
+                      },
+                      {
+                        label: "K-Drama & K-Movie",
+                        value: Object.values(filteredMonthBirthdays)
+                          .flat()
+                          .filter((e) => e.category !== "K-Pop").length,
+                        gradient: "from-blue-600 to-cyan-600",
+                        icon: "🎬",
+                      },
+                    ].map((stat, idx) => (
+                      <motion.div
+                        key={idx}
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ delay: idx * 0.1 }}
+                        className={`p-4 rounded-2xl bg-gradient-to-br ${stat.gradient} bg-opacity-20 border-2 border-white/20 text-center hover:border-white/40 transition-all`}
+                      >
+                        <p className="text-2xl mb-2">{stat.icon}</p>
+                        <p className="text-3xl font-black text-white mb-2">
+                          {stat.value}
+                        </p>
+                        <p className="text-xs font-bold text-white/80">
+                          {stat.label}
+                        </p>
+                      </motion.div>
+                    ))}
+                  </div>
+                )}
               </CardContent>
             </Card>
           </div>
