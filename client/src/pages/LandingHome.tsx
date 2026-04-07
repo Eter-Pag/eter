@@ -53,7 +53,7 @@ export default function LandingHome() {
   
   // Fetch news
   const { data: allNews = [] } = trpc.news.getAll.useQuery();
-  const recentNews = allNews.slice(0, 4);
+  const recentNews = allNews.slice(0, 3);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -391,7 +391,7 @@ export default function LandingHome() {
                   <>
                     {/* Grid de Noticias */}
                     <div className="flex-grow flex items-center">
-                      <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+                      <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-4">
                         {recentNews.map((article: any) => (
                           <motion.div
                             key={article.id}
