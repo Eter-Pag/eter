@@ -125,7 +125,7 @@ export default function LandingHome() {
       description: "Pon a prueba tu pasión y demuestra cuánto sabes de tus grupos favoritos.",
       path: "/quizzes",
       color: "from-violet-500 to-fuchsia-500",
-      image: "https://lh3.googleusercontent.com/d/16_3UTSlqrB1VHVIVM4cMMea0n96vm7Is",
+      image: "https://i.ytimg.com/vi/b99I-DEGsNs/hq720.jpg?sqp=-oaymwEhCK4FEIIDSFryq4qpAxMIARUAAAAAGAElAADIQj0AgKJD&rs=AOn4CLBkP3CTdQN3dIToOAH8_FJDxg2vEA",
     },
   ];
 

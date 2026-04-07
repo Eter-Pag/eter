@@ -56,7 +56,7 @@ const QUIZZES: Quiz[] = [
     title: "¿Eres un verdadero ARMY?",
     description: "El examen definitivo sobre la historia y logros de BTS.",
     type: "trivia",
-    image: "https://lh3.googleusercontent.com/d/16_3UTSlqrB1VHVIVM4cMMea0n96vm7Is",
+    image: "https://i.ytimg.com/vi/N6fNBneJ_fg/hq720.jpg?sqp=-oaymwEhCK4FEIIDSFryq4qpAxMIARUAAAAAGAElAADIQj0AgKJD&rs=AOn4CLCKL_lHBLJ2SL4sQXNyRjEbxuRlGg",
     questions: [
       {
         id: 1,
@@ -230,7 +230,7 @@ const QUIZZES: Quiz[] = [
     title: "¿Con qué integrante de BTS compartes tu energía?",
     description: "Descubre qué miembro de BTS se alinea más con tu personalidad.",
     type: "personality",
-    image: "https://lh3.googleusercontent.com/d/16_3UTSlqrB1VHVIVM4cMMea0n96vm7Is",
+    image: "https://img.buzzfeed.com/buzzfeed-static/static/2024-12/17/16/enhanced/7893ea4e24d2/original-515-1734451882-11.jpg?fill=1200:675",
     questions: [
       {
         id: 1,
