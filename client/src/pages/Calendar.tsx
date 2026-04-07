@@ -134,14 +134,19 @@ export default function Calendar() {
   }, [monthlyBirthdays, currentMonth, selectedCategory, searchQuery]);
 
   const handleInfoClick = useCallback(
-    async (artistName: string, event: React.MouseEvent) => {
+    async (artistName: string, group: string | undefined, category: string, event: React.MouseEvent) => {
       const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
       setPopoverPosition({
         x: rect.left + rect.width / 2,
         y: rect.top,
       });
 
-      const result = await searchWikipedia(artistName);
+      // Construir la búsqueda combinada: Nombre + Grupo + Categoría
+      const searchQuery = group 
+        ? `${artistName} ${group}` 
+        : `${artistName} ${category}`;
+
+      const result = await searchWikipedia(searchQuery);
       if (result) {
         setPopoverData({
           title: result.title,
@@ -521,7 +526,7 @@ export default function Calendar() {
                                 )}
                               </div>
                               <button
-                                onClick={(e) => handleInfoClick(entry.name, e)}
+                                onClick={(e) => handleInfoClick(entry.name, entry.group, entry.category, e)}
                                 className={`p-1.5 rounded-lg hover:bg-white/30 transition-all flex-shrink-0 ${colors.text}`}
                                 title="¿Quién es?"
                               >
