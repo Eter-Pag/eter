@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect, useCallback } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -12,11 +12,13 @@ import {
   Calendar as CalendarIcon,
   Sparkles,
   Film,
-  Loader2,
+  Info,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLocation } from "wouter";
 import { BirthdayData, BirthdayEntry } from "@shared/birthdays";
+import { ArtistInfoPopover } from "@/components/ArtistInfoPopover";
+import { useWikipediaSearch } from "@/hooks/useWikipediaSearch";
 
 // Importar todos los meses
 import { BIRTHDAYS_MONTH_1 } from "@shared/birthdays_data/birthdays_01";
@@ -74,6 +76,17 @@ export default function Calendar() {
   const [selectedCategory, setSelectedCategory] = useState<Category>("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
+  
+  // Estado para el popover de información
+  const [popoverOpen, setPopoverOpen] = useState(false);
+  const [popoverData, setPopoverData] = useState({
+    title: "",
+    extract: "",
+    thumbnail: "",
+  });
+  const [popoverPosition, setPopoverPosition] = useState({ x: 0, y: 0 });
+  
+  const { search: searchWikipedia, loading: wikiLoading, error: wikiError } = useWikipediaSearch();
 
   // Obtener cumpleaños de hoy
   const today = new Date();
@@ -117,6 +130,27 @@ export default function Calendar() {
 
     return result;
   }, [monthlyBirthdays, currentMonth, selectedCategory, searchQuery]);
+
+  const handleInfoClick = useCallback(
+    async (artistName: string, event: React.MouseEvent) => {
+      const rect = (event.currentTarget as HTMLElement).getBoundingClientRect();
+      setPopoverPosition({
+        x: rect.left + rect.width / 2,
+        y: rect.top,
+      });
+
+      const result = await searchWikipedia(artistName);
+      if (result) {
+        setPopoverData({
+          title: result.title,
+          extract: result.extract,
+          thumbnail: result.thumbnail?.source || "",
+        });
+        setPopoverOpen(true);
+      }
+    },
+    [searchWikipedia]
+  );
 
   const getCategoryColor = (category: string) => {
     switch (category) {
@@ -173,6 +207,18 @@ export default function Calendar() {
       {/* Fondo decorativo */}
       <div className="fixed inset-0 opacity-20 pointer-events-none" style={{backgroundImage: 'radial-gradient(circle at 25% 25%, white 1px, transparent 1px)', backgroundSize: '24px 24px'}} />
       
+      {/* Popover de Información */}
+      <ArtistInfoPopover
+        isOpen={popoverOpen}
+        onClose={() => setPopoverOpen(false)}
+        title={popoverData.title}
+        extract={popoverData.extract}
+        thumbnail={popoverData.thumbnail}
+        loading={wikiLoading}
+        error={wikiError}
+        position={popoverPosition}
+      />
+
       {/* Header */}
       <header className="sticky top-0 z-50 bg-white/10 backdrop-blur-2xl border-b border-white/20 p-4">
         <div className="container flex items-center justify-between">
@@ -457,14 +503,25 @@ export default function Calendar() {
                             transition={{ delay: idx * 0.1 }}
                             className={`p-3 rounded-xl bg-gradient-to-br ${colors.light} border-2 ${colors.border} shadow-lg hover:shadow-xl transition-all hover:scale-105 group cursor-pointer`}
                           >
-                            <p className={`font-black text-sm ${colors.text} line-clamp-1`}>
-                              {entry.name}
-                            </p>
-                            {entry.group && (
-                              <p className={`text-xs opacity-75 ${colors.text} line-clamp-1 mt-0.5`}>
-                                {entry.group}
-                              </p>
-                            )}
+                            <div className="flex items-start justify-between gap-2">
+                              <div className="flex-1">
+                                <p className={`font-black text-sm ${colors.text} line-clamp-1`}>
+                                  {entry.name}
+                                </p>
+                                {entry.group && (
+                                  <p className={`text-xs opacity-75 ${colors.text} line-clamp-1 mt-0.5`}>
+                                    {entry.group}
+                                  </p>
+                                )}
+                              </div>
+                              <button
+                                onClick={(e) => handleInfoClick(entry.name, e)}
+                                className={`p-1.5 rounded-lg hover:bg-white/30 transition-all flex-shrink-0 ${colors.text}`}
+                                title="¿Quién es?"
+                              >
+                                <Info className="h-4 w-4" />
+                              </button>
+                            </div>
                             
                             <div className="flex items-center gap-2 mt-2 flex-wrap">
                               <Badge className={`gap-1 text-xs ${colors.badge}`}>
