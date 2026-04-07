@@ -127,8 +127,8 @@ export default function LandingHome() {
   ];
 
   // Carousel logic
-  const itemsPerPageDesktop = 4;
-  const itemsPerPageMobile = 2;
+  const itemsPerPageDesktop = 3;
+  const itemsPerPageMobile = 1;
 
   const handlePrevProduct = () => {
     setProductCarouselIndex((prev) => (prev === 0 ? Math.max(0, products.length - itemsPerPageDesktop) : prev - 1));
@@ -386,28 +386,28 @@ export default function LandingHome() {
                   <>
                     {/* Grid de Productos */}
                     <div className="flex-grow flex items-center">
-                      <div className="w-full grid grid-cols-2 md:grid-cols-4 gap-3">
+                      <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-4">
                         {visibleProducts.map((product) => (
                           <motion.div
                             key={product.id}
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
-                            className="bg-white/60 backdrop-blur rounded-lg p-3 text-center hover:bg-white/80 transition-all"
+                            className="bg-white/70 backdrop-blur rounded-xl p-4 text-center hover:bg-white/90 transition-all hover:shadow-lg group"
                           >
-                            <div className="w-full h-20 md:h-24 bg-gradient-to-br from-slate-200 to-slate-300 rounded-lg mb-2 flex items-center justify-center overflow-hidden">
+                            <div className="w-full h-40 md:h-56 bg-gradient-to-br from-slate-100 to-slate-200 rounded-lg mb-3 flex items-center justify-center overflow-hidden group-hover:scale-105 transition-transform duration-300">
                               {product.image ? (
                                 <img
                                   src={product.image}
                                   alt={product.name}
-                                  className="w-full h-full object-contain p-1"
+                                  className="w-full h-full object-contain p-2"
                                 />
                               ) : (
-                                <Store className="size-8 text-slate-400" />
+                                <Store className="size-12 text-slate-400" />
                               )}
                             </div>
-                            <h4 className="text-xs md:text-sm font-bold text-slate-900 truncate">{product.name}</h4>
-                            <p className="text-xs text-slate-600 font-semibold">
+                            <h4 className="text-sm md:text-base font-bold text-slate-900 truncate mb-1">{product.name}</h4>
+                            <p className="text-sm md:text-lg text-blue-600 font-black">
                               ${(Number(product.price) / 100).toFixed(2)}
                             </p>
                           </motion.div>
