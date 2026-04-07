@@ -524,7 +524,7 @@ export default function Quizzes() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
-              className="grid gap-6"
+              className="space-y-8"
             >
               <div className="text-center mb-4">
                 <Badge variant="outline" className="mb-2">NUEVO</Badge>
@@ -532,23 +532,25 @@ export default function Quizzes() {
                 <p className="text-muted-foreground">Elige un quiz y demuestra cuánto sabes.</p>
               </div>
               
-              {QUIZZES.map((quiz) => (
-                <Card key={quiz.id} className="overflow-hidden hover:shadow-md transition-shadow cursor-pointer" onClick={() => startQuiz(quiz)}>
-                  <div className="h-32 bg-cover bg-center" style={{ backgroundImage: `url(${quiz.image})` }} />
-                  <CardHeader className="p-4">
-                    <div className="flex justify-between items-start">
-                      <CardTitle className="text-lg">{quiz.title}</CardTitle>
-                      <Badge>{quiz.type === "trivia" ? "Trivia" : "Personalidad"}</Badge>
-                    </div>
-                    <CardDescription>{quiz.description}</CardDescription>
-                  </CardHeader>
-                  <CardContent className="p-4 pt-0">
-                    <Button className="w-full gap-2">
-                      <Play className="h-4 w-4" /> Comenzar
-                    </Button>
-                  </CardContent>
-                </Card>
-              ))}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {QUIZZES.map((quiz) => (
+                  <Card key={quiz.id} className="overflow-hidden hover:shadow-md transition-shadow cursor-pointer flex flex-col h-full" onClick={() => startQuiz(quiz)}>
+                    <div className="h-48 bg-cover bg-center shrink-0" style={{ backgroundImage: `url(${quiz.image})` }} />
+                    <CardHeader className="p-4 flex-grow">
+                      <div className="flex justify-between items-start gap-2 mb-2">
+                        <CardTitle className="text-lg leading-tight">{quiz.title}</CardTitle>
+                        <Badge className="shrink-0">{quiz.type === "trivia" ? "Trivia" : "Personalidad"}</Badge>
+                      </div>
+                      <CardDescription className="line-clamp-2">{quiz.description}</CardDescription>
+                    </CardHeader>
+                    <CardContent className="p-4 pt-0 mt-auto">
+                      <Button className="w-full gap-2">
+                        <Play className="h-4 w-4" /> Comenzar
+                      </Button>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
             </motion.div>
           )}
 
