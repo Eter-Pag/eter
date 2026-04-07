@@ -355,7 +355,7 @@ export default function LandingHome() {
                   <img
                     src="/assets/imagentienda.png"
                     alt="Tienda K-POP"
-                    className="w-full h-full object-cover object-top group-hover:scale-110 transition-transform duration-700"
+                    className="w-full h-full object-cover object-top"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
                 </div>
@@ -401,7 +401,7 @@ export default function LandingHome() {
                                 <img
                                   src={product.image || ""}
                                   alt={product.name || "Producto"}
-                                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-103"
+                                  className="w-full h-full object-cover"
                                 />
                                 {product.badge && (
                                   <Badge className="absolute top-4 right-4 bg-fuchsia-600 text-white border-none px-3 py-1 rounded-full font-bold text-[10px] uppercase tracking-widest">
