@@ -7,6 +7,7 @@ import cron, { type ScheduledTask } from "node-cron";
 import automateNews from "./news-automation";
 
 let newsJobMorning: ScheduledTask | null = null;
+let newsJobAfternoon: ScheduledTask | null = null;
 let newsJobEvening: ScheduledTask | null = null;
 
 /**
@@ -27,6 +28,17 @@ export function initializeCronJobs(): void {
     }
   });
 
+  // Afternoon news fetch: 3:00 PM (UTC)
+  // Adjust the hour based on your timezone
+  newsJobAfternoon = cron.schedule("0 15 * * *", async () => {
+    console.log("[Cron] Running afternoon news automation...");
+    try {
+      await automateNews();
+    } catch (error) {
+      console.error("[Cron] Afternoon news automation failed:", error);
+    }
+  });
+
   // Evening news fetch: 8:00 PM (UTC)
   // Adjust the hour based on your timezone
   newsJobEvening = cron.schedule("0 20 * * *", async () => {
@@ -40,6 +52,7 @@ export function initializeCronJobs(): void {
 
   console.log("[Cron] Scheduled tasks initialized");
   console.log("[Cron] Morning task: 08:00 UTC");
+  console.log("[Cron] Afternoon task: 15:00 UTC");
   console.log("[Cron] Evening task: 20:00 UTC");
 }
 
@@ -51,6 +64,10 @@ export function stopCronJobs(): void {
   if (newsJobMorning) {
     newsJobMorning.stop();
     console.log("[Cron] Morning news job stopped");
+  }
+  if (newsJobAfternoon) {
+    newsJobAfternoon.stop();
+    console.log("[Cron] Afternoon news job stopped");
   }
   if (newsJobEvening) {
     newsJobEvening.stop();
