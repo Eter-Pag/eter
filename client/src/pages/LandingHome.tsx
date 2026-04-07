@@ -29,6 +29,7 @@ import {
   Maximize2,
   ExternalLink,
   ShoppingCart,
+  Calendar
 } from "lucide-react";
 import { STORE_CONFIG } from "@shared/const";
 import { motion } from "framer-motion";
@@ -84,6 +85,7 @@ export default function LandingHome() {
     { icon: Users, label: "Biografías", path: "/biografias" },
     { icon: MessageCircle, label: "Historias", path: "/historias" },
     { icon: Brain, label: "Quizzes", path: "/quizzes" },
+    { icon: Calendar, label: "Calendario", path: "/calendario" },
   ];
 
   const sections = [
@@ -126,6 +128,14 @@ export default function LandingHome() {
       path: "/quizzes",
       color: "from-violet-500 to-fuchsia-500",
       image: "https://i.ytimg.com/vi/b99I-DEGsNs/hq720.jpg?sqp=-oaymwEhCK4FEIIDSFryq4qpAxMIARUAAAAAGAElAADIQj0AgKJD&rs=AOn4CLBkP3CTdQN3dIToOAH8_FJDxg2vEA",
+    },
+    {
+      icon: Calendar,
+      title: "Calendario",
+      description: "Descubre los cumpleaños de tus idols favoritos cada día del año.",
+      path: "/calendario",
+      color: "from-amber-500 to-orange-500",
+      image: "https://images.unsplash.com/photo-1506157786151-b8491531f063?w=800&h=600&fit=crop",
     },
   ];
 

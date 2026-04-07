@@ -28,6 +28,7 @@ import Diploma from "./pages/Diploma";
 import Terms from "./pages/Terms";
 import Privacy from "./pages/Privacy";
 import Quizzes from "./pages/Quizzes";
+import Calendar from "./pages/Calendar";
 
 
 function Router() {
@@ -55,6 +56,7 @@ function Router() {
       <Route path="/terminos" component={Terms} />
       <Route path="/privacidad" component={Privacy} />
       <Route path="/quizzes" component={Quizzes} />
+      <Route path="/calendario" component={Calendar} />
       <Route path="/admin" component={Admin} />
       <Route path="/admin/" component={Admin} />
       <Route path="/404" component={NotFound} />
