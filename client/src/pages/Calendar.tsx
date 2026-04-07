@@ -164,35 +164,34 @@ export default function Calendar() {
         </div>
       </header>
 
-      <main className="container py-8 px-4 relative z-10">
-        {/* Cumpleaños de Hoy */}
+      <main className="container py-8 px-4 relative z-10 max-w-7xl">
+        {/* Cumpleaños de Hoy - Tarjetas Compactas */}
         <AnimatePresence>
           {todayBirthdays.length > 0 && (
             <motion.div
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
-              className="mb-8"
+              className="mb-6"
             >
               <div className="relative">
                 {/* Glow effect */}
                 <div className="absolute -inset-1 bg-gradient-to-r from-yellow-400 via-orange-400 to-pink-400 rounded-2xl blur-xl opacity-30 group-hover:opacity-50 transition duration-1000 animate-pulse" />
                 
                 <Card className="relative bg-gradient-to-br from-yellow-50/95 to-orange-50/95 border-2 border-yellow-300 shadow-2xl backdrop-blur-xl">
-                  <CardHeader className="pb-4">
-                    <CardTitle className="flex items-center gap-3 text-yellow-900">
-                      <motion.div
+                  <CardHeader className="pb-3">
+                    <CardTitle className="flex items-center gap-2 text-yellow-900 text-base">
+                      <motion.span
                         animate={{ rotate: 360 }}
                         transition={{ duration: 2, repeat: Infinity }}
-                        className="text-2xl"
                       >
                         🎂
-                      </motion.div>
+                      </motion.span>
                       Cumpleaños de Hoy
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div className="flex flex-wrap gap-2">
                       {todayBirthdays.map((entry, idx) => {
                         const colors = getCategoryColor(entry.category);
                         return (
@@ -200,24 +199,15 @@ export default function Calendar() {
                             key={idx}
                             initial={{ opacity: 0, scale: 0.8 }}
                             animate={{ opacity: 1, scale: 1 }}
-                            transition={{ delay: idx * 0.1 }}
-                            className={`p-4 rounded-xl bg-gradient-to-br ${colors.light} border-2 ${colors.border} shadow-lg hover:shadow-xl transition-all hover:scale-105`}
+                            transition={{ delay: idx * 0.05 }}
+                            className={`px-3 py-2 rounded-lg bg-gradient-to-r ${colors.gradient} bg-opacity-20 border border-yellow-200 text-xs font-bold ${colors.text} flex items-center gap-1.5`}
                           >
-                            <p className={`font-black text-sm ${colors.text}`}>{entry.name}</p>
-                            {entry.group && (
-                              <p className={`text-xs opacity-75 ${colors.text} mt-1`}>{entry.group}</p>
+                            {entry.name}
+                            {entry.year && (
+                              <span className="opacity-75">
+                                ({new Date().getFullYear() - entry.year}a)
+                              </span>
                             )}
-                            <div className="flex items-center gap-2 mt-3">
-                              <Badge className={`text-xs gap-1 ${colors.badge}`}>
-                                {getCategoryIcon(entry.category)}
-                                {entry.category}
-                              </Badge>
-                              {entry.year && (
-                                <span className={`text-xs font-semibold ${colors.text}`}>
-                                  {new Date().getFullYear() - entry.year} años
-                                </span>
-                              )}
-                            </div>
                           </motion.div>
                         );
                       })}
@@ -234,7 +224,7 @@ export default function Calendar() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="mb-8 space-y-4"
+          className="mb-6 space-y-3"
         >
           <div className="relative">
             <Search className="absolute left-4 top-3.5 h-4 w-4 text-white/60" />
@@ -254,16 +244,16 @@ export default function Calendar() {
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={() => setSelectedCategory(category)}
-                  className={`px-4 py-2 rounded-full font-bold text-sm gap-2 flex items-center transition-all ${
+                  className={`px-3 py-1.5 rounded-full font-bold text-xs gap-2 flex items-center transition-all ${
                     selectedCategory === category
                       ? "bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg shadow-purple-500/50"
                       : "bg-white/10 text-white border border-white/20 hover:bg-white/20 backdrop-blur-xl"
                   }`}
                 >
-                  {category === "all" && <CalendarIcon className="h-4 w-4" />}
-                  {category === "K-Pop" && <Sparkles className="h-4 w-4" />}
+                  {category === "all" && <CalendarIcon className="h-3 w-3" />}
+                  {category === "K-Pop" && <Sparkles className="h-3 w-3" />}
                   {(category === "K-Drama" || category === "K-Movie") && (
-                    <Film className="h-4 w-4" />
+                    <Film className="h-3 w-3" />
                   )}
                   {category === "all" ? "Todos" : category}
                 </motion.button>
@@ -272,191 +262,189 @@ export default function Calendar() {
           </div>
         </motion.div>
 
-        {/* Calendario Principal */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="mb-8"
-        >
-          <div className="relative">
-            {/* Glow effect */}
-            <div className="absolute -inset-1 bg-gradient-to-r from-purple-600 via-pink-600 to-purple-600 rounded-3xl blur-2xl opacity-20 group-hover:opacity-30 transition duration-1000" />
-            
-            <Card className="relative bg-white/10 border-2 border-white/20 shadow-2xl backdrop-blur-2xl overflow-hidden">
-              {/* Header del Calendario */}
-              <CardHeader className="pb-6 border-b border-white/10">
-                <div className="flex items-center justify-between">
-                  <motion.button
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.9 }}
-                    onClick={() =>
-                      setCurrentMonth((prev) => (prev === 0 ? 11 : prev - 1))
-                    }
-                    className="p-2 hover:bg-white/20 rounded-lg transition-all"
-                  >
-                    <ChevronLeft className="h-6 w-6 text-white" />
-                  </motion.button>
-                  
-                  <motion.h2
-                    key={currentMonth}
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="text-3xl font-black text-center flex-1 bg-gradient-to-r from-yellow-300 via-pink-300 to-purple-300 bg-clip-text text-transparent drop-shadow-lg"
-                  >
-                    {MONTHS[currentMonth]} {currentYear}
-                  </motion.h2>
-                  
-                  <motion.button
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.9 }}
-                    onClick={() =>
-                      setCurrentMonth((prev) => (prev === 11 ? 0 : prev + 1))
-                    }
-                    className="p-2 hover:bg-white/20 rounded-lg transition-all"
-                  >
-                    <ChevronRight className="h-6 w-6 text-white" />
-                  </motion.button>
-                </div>
-              </CardHeader>
-
-              <CardContent className="p-6">
-                {/* Días de la semana */}
-                <div className="grid grid-cols-7 gap-2 mb-4">
-                  {DAYS_OF_WEEK.map((day) => (
-                    <div
-                      key={day}
-                      className="text-center font-black text-white/70 text-sm py-3 border-b border-white/10"
+        {/* Layout de Dos Columnas */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+          {/* Calendario - Columna Izquierda (2/3) */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="lg:col-span-2"
+          >
+            <div className="relative">
+              {/* Glow effect */}
+              <div className="absolute -inset-1 bg-gradient-to-r from-purple-600 via-pink-600 to-purple-600 rounded-3xl blur-2xl opacity-20 group-hover:opacity-30 transition duration-1000" />
+              
+              <Card className="relative bg-white/10 border-2 border-white/20 shadow-2xl backdrop-blur-2xl overflow-hidden">
+                {/* Header del Calendario */}
+                <CardHeader className="pb-4 border-b border-white/10">
+                  <div className="flex items-center justify-between">
+                    <motion.button
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.9 }}
+                      onClick={() =>
+                        setCurrentMonth((prev) => (prev === 0 ? 11 : prev - 1))
+                      }
+                      className="p-2 hover:bg-white/20 rounded-lg transition-all"
                     >
-                      {day}
-                    </div>
-                  ))}
-                </div>
+                      <ChevronLeft className="h-5 w-5 text-white" />
+                    </motion.button>
+                    
+                    <motion.h2
+                      key={currentMonth}
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="text-2xl font-black text-center flex-1 bg-gradient-to-r from-yellow-300 via-pink-300 to-purple-300 bg-clip-text text-transparent drop-shadow-lg"
+                    >
+                      {MONTHS[currentMonth]}
+                    </motion.h2>
+                    
+                    <motion.button
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.9 }}
+                      onClick={() =>
+                        setCurrentMonth((prev) => (prev === 11 ? 0 : prev + 1))
+                      }
+                      className="p-2 hover:bg-white/20 rounded-lg transition-all"
+                    >
+                      <ChevronRight className="h-5 w-5 text-white" />
+                    </motion.button>
+                  </div>
+                </CardHeader>
 
-                {/* Grid de días */}
-                <div className="grid grid-cols-7 gap-2">
-                  {Array.from({ length: DAYS_IN_MONTH[currentMonth] }).map(
-                    (_, day) => {
-                      const dayNum = day + 1;
-                      const hasBirthdays = monthBirthdays[dayNum];
-                      const isToday =
-                        dayNum === today.getDate() &&
-                        currentMonth === today.getMonth();
-                      const isSelected = selectedDay === dayNum;
-
-                      return (
-                        <motion.button
-                          key={dayNum}
-                          onClick={() =>
-                            setSelectedDay(
-                              selectedDay === dayNum ? null : dayNum
-                            )
-                          }
-                          whileHover={{ scale: 1.08 }}
-                          whileTap={{ scale: 0.95 }}
-                          className={`aspect-square p-2 rounded-xl font-bold text-sm transition-all relative overflow-hidden group ${
-                            isToday
-                              ? "bg-gradient-to-br from-yellow-400 to-orange-400 text-white shadow-lg shadow-yellow-500/50 border-2 border-yellow-300"
-                              : hasBirthdays
-                              ? "bg-gradient-to-br from-purple-500/30 to-pink-500/30 text-white border-2 border-purple-400/50 hover:border-purple-400 hover:shadow-lg hover:shadow-purple-500/30 cursor-pointer"
-                              : "bg-white/5 text-white/60 border border-white/10 hover:bg-white/10 hover:border-white/20"
-                          } ${
-                            isSelected
-                              ? "ring-2 ring-yellow-400 ring-offset-2 ring-offset-slate-900"
-                              : ""
-                          }`}
-                        >
-                          {/* Fondo animado para días con cumpleaños */}
-                          {hasBirthdays && !isToday && (
-                            <motion.div
-                              className="absolute inset-0 bg-gradient-to-br from-purple-400/20 to-pink-400/20"
-                              animate={{ opacity: [0.5, 0.8, 0.5] }}
-                              transition={{ duration: 3, repeat: Infinity }}
-                            />
-                          )}
-
-                          <div className="relative z-10 flex flex-col items-center justify-center h-full">
-                            <span className="text-lg">{dayNum}</span>
-                            {hasBirthdays && (
-                              <motion.span
-                                initial={{ scale: 0 }}
-                                animate={{ scale: 1 }}
-                                className="text-xs font-black mt-0.5"
-                              >
-                                {hasBirthdays.length} 🎂
-                              </motion.span>
-                            )}
-                          </div>
-                        </motion.button>
-                      );
-                    }
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </motion.div>
-
-        {/* Detalles del día seleccionado */}
-        <AnimatePresence>
-          {selectedDay && monthBirthdays[selectedDay] && (
-            <motion.div
-              initial={{ opacity: 0, y: 30, scale: 0.9 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: -30, scale: 0.9 }}
-              className="mb-8"
-            >
-              <div className="relative">
-                {/* Glow effect */}
-                <div className="absolute -inset-1 bg-gradient-to-r from-pink-600 via-purple-600 to-pink-600 rounded-3xl blur-2xl opacity-20 transition duration-1000" />
-                
-                <Card className="relative bg-white/10 border-2 border-white/20 shadow-2xl backdrop-blur-2xl">
-                  <CardHeader className="pb-4 border-b border-white/10">
-                    <CardTitle className="flex items-center gap-3 text-white">
-                      <motion.span
-                        animate={{ rotate: [0, 10, -10, 0] }}
-                        transition={{ duration: 0.5, repeat: Infinity }}
-                        className="text-2xl"
+                <CardContent className="p-4">
+                  {/* Días de la semana */}
+                  <div className="grid grid-cols-7 gap-1 mb-2">
+                    {DAYS_OF_WEEK.map((day) => (
+                      <div
+                        key={day}
+                        className="text-center font-bold text-white/70 text-xs py-2 border-b border-white/10"
                       >
-                        🎉
-                      </motion.span>
-                      Cumpleaños del {selectedDay} de {MONTHS[currentMonth]}
-                    </CardTitle>
-                  </CardHeader>
-                  
-                  <CardContent className="pt-6">
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        {day}
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Grid de días */}
+                  <div className="grid grid-cols-7 gap-1">
+                    {Array.from({ length: DAYS_IN_MONTH[currentMonth] }).map(
+                      (_, day) => {
+                        const dayNum = day + 1;
+                        const hasBirthdays = monthBirthdays[dayNum];
+                        const isToday =
+                          dayNum === today.getDate() &&
+                          currentMonth === today.getMonth();
+                        const isSelected = selectedDay === dayNum;
+
+                        return (
+                          <motion.button
+                            key={dayNum}
+                            onClick={() =>
+                              setSelectedDay(
+                                selectedDay === dayNum ? null : dayNum
+                              )
+                            }
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                            className={`aspect-square p-1 rounded-lg font-bold text-xs transition-all relative overflow-hidden group ${
+                              isToday
+                                ? "bg-gradient-to-br from-yellow-400 to-orange-400 text-white shadow-lg shadow-yellow-500/50 border-2 border-yellow-300"
+                                : hasBirthdays
+                                ? "bg-gradient-to-br from-purple-500/30 to-pink-500/30 text-white border-2 border-purple-400/50 hover:border-purple-400 hover:shadow-lg hover:shadow-purple-500/30 cursor-pointer"
+                                : "bg-white/5 text-white/60 border border-white/10 hover:bg-white/10 hover:border-white/20"
+                            } ${
+                              isSelected
+                                ? "ring-2 ring-yellow-400 ring-offset-2 ring-offset-slate-900"
+                                : ""
+                            }`}
+                          >
+                            {/* Fondo animado para días con cumpleaños */}
+                            {hasBirthdays && !isToday && (
+                              <motion.div
+                                className="absolute inset-0 bg-gradient-to-br from-purple-400/20 to-pink-400/20"
+                                animate={{ opacity: [0.5, 0.8, 0.5] }}
+                                transition={{ duration: 3, repeat: Infinity }}
+                              />
+                            )}
+
+                            <div className="relative z-10 flex flex-col items-center justify-center h-full">
+                              <span>{dayNum}</span>
+                              {hasBirthdays && (
+                                <motion.span
+                                  initial={{ scale: 0 }}
+                                  animate={{ scale: 1 }}
+                                  className="text-[10px] font-black"
+                                >
+                                  •
+                                </motion.span>
+                              )}
+                            </div>
+                          </motion.button>
+                        );
+                      }
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </motion.div>
+
+          {/* Lista de Cumpleaños del Día - Columna Derecha (1/3) */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            className="lg:col-span-1"
+          >
+            <div className="relative h-full">
+              {/* Glow effect */}
+              <div className="absolute -inset-1 bg-gradient-to-r from-pink-600 via-purple-600 to-pink-600 rounded-3xl blur-2xl opacity-20 transition duration-1000" />
+              
+              <Card className="relative bg-white/10 border-2 border-white/20 shadow-2xl backdrop-blur-2xl h-full overflow-hidden flex flex-col">
+                <CardHeader className="pb-3 border-b border-white/10 shrink-0">
+                  <CardTitle className="text-white text-base flex items-center gap-2">
+                    <motion.span
+                      animate={{ rotate: [0, 10, -10, 0] }}
+                      transition={{ duration: 0.5, repeat: Infinity }}
+                    >
+                      🎉
+                    </motion.span>
+                    {selectedDay
+                      ? `${selectedDay} de ${MONTHS[currentMonth]}`
+                      : "Selecciona un día"}
+                  </CardTitle>
+                </CardHeader>
+                
+                <CardContent className="pt-4 flex-1 overflow-y-auto">
+                  {selectedDay && monthBirthdays[selectedDay] ? (
+                    <div className="space-y-3">
                       {monthBirthdays[selectedDay].map((entry, idx) => {
                         const colors = getCategoryColor(entry.category);
                         return (
                           <motion.div
                             key={idx}
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
+                            initial={{ opacity: 0, x: 20 }}
+                            animate={{ opacity: 1, x: 0 }}
                             transition={{ delay: idx * 0.1 }}
-                            className={`p-5 rounded-2xl bg-gradient-to-br ${colors.light} border-2 ${colors.border} shadow-xl hover:shadow-2xl transition-all hover:scale-105 group cursor-pointer`}
+                            className={`p-3 rounded-xl bg-gradient-to-br ${colors.light} border-2 ${colors.border} shadow-lg hover:shadow-xl transition-all hover:scale-105 group cursor-pointer`}
                           >
-                            <div className="flex items-start justify-between mb-3">
-                              <div className="flex-1">
-                                <p className={`font-black text-lg ${colors.text}`}>
-                                  {entry.name}
-                                </p>
-                                {entry.group && (
-                                  <p className={`text-sm opacity-75 ${colors.text} mt-1`}>
-                                    {entry.group}
-                                  </p>
-                                )}
-                              </div>
-                            </div>
+                            <p className={`font-black text-sm ${colors.text} line-clamp-1`}>
+                              {entry.name}
+                            </p>
+                            {entry.group && (
+                              <p className={`text-xs opacity-75 ${colors.text} line-clamp-1 mt-0.5`}>
+                                {entry.group}
+                              </p>
+                            )}
                             
-                            <div className="flex items-center gap-2 flex-wrap">
-                              <Badge className={`gap-1.5 ${colors.badge}`}>
+                            <div className="flex items-center gap-2 mt-2 flex-wrap">
+                              <Badge className={`gap-1 text-xs ${colors.badge}`}>
                                 {getCategoryIcon(entry.category)}
                                 {entry.category}
                               </Badge>
                               {entry.year && (
-                                <span className={`text-xs font-bold ${colors.text} bg-white/30 px-3 py-1 rounded-full`}>
-                                  {new Date().getFullYear() - entry.year} años
+                                <span className={`text-xs font-bold ${colors.text} bg-white/30 px-2 py-0.5 rounded-full`}>
+                                  {new Date().getFullYear() - entry.year}a
                                 </span>
                               )}
                             </div>
@@ -464,19 +452,22 @@ export default function Calendar() {
                         );
                       })}
                     </div>
-                  </CardContent>
-                </Card>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+                  ) : (
+                    <div className="flex items-center justify-center h-full text-white/50 text-sm text-center">
+                      Haz clic en un día para ver los cumpleaños
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
+          </motion.div>
+        </div>
 
-        {/* Resumen del mes */}
+        {/* Resumen del mes - Ancho Completo */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-          className="mb-8"
+          transition={{ delay: 0.4 }}
         >
           <div className="relative">
             {/* Glow effect */}
@@ -533,7 +524,7 @@ export default function Calendar() {
                       <p className="text-3xl font-black text-white mb-2">
                         {stat.value}
                       </p>
-                      <p className="text-sm font-bold text-white/80">
+                      <p className="text-xs font-bold text-white/80">
                         {stat.label}
                       </p>
                     </motion.div>
