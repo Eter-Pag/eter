@@ -83,6 +83,8 @@ export default function Calendar() {
     title: "",
     extract: "",
     thumbnail: "",
+    source: "wikipedia" as const,
+    googleSearchUrl: "",
   });
   const [popoverPosition, setPopoverPosition] = useState({ x: 0, y: 0 });
   
@@ -144,7 +146,9 @@ export default function Calendar() {
         setPopoverData({
           title: result.title,
           extract: result.extract,
-          thumbnail: result.thumbnail?.source || "",
+          thumbnail: result.thumbnail || "",
+          source: result.source,
+          googleSearchUrl: result.googleSearchUrl || "",
         });
         setPopoverOpen(true);
       }
@@ -217,6 +221,8 @@ export default function Calendar() {
         loading={wikiLoading}
         error={wikiError}
         position={popoverPosition}
+        source={popoverData.source}
+        googleSearchUrl={popoverData.googleSearchUrl}
       />
 
       {/* Header */}

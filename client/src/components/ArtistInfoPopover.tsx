@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Loader2 } from 'lucide-react';
+import { X, Loader2, ExternalLink } from 'lucide-react';
 import { useEffect, useRef } from 'react';
 
 interface ArtistInfoPopoverProps {
@@ -11,6 +11,8 @@ interface ArtistInfoPopoverProps {
   loading?: boolean;
   error?: string | null;
   position?: { x: number; y: number };
+  source?: 'wikipedia' | 'google';
+  googleSearchUrl?: string;
 }
 
 export function ArtistInfoPopover({
@@ -22,6 +24,8 @@ export function ArtistInfoPopover({
   loading = false,
   error = null,
   position = { x: 0, y: 0 },
+  source = 'wikipedia',
+  googleSearchUrl,
 }: ArtistInfoPopoverProps) {
   const popoverRef = useRef<HTMLDivElement>(null);
 
@@ -66,6 +70,11 @@ export function ArtistInfoPopover({
               <h3 className="font-black text-slate-900 text-sm line-clamp-2">
                 {title}
               </h3>
+              {source === 'google' && (
+                <p className="text-xs text-orange-600 font-bold mt-1">
+                  Búsqueda en Google
+                </p>
+              )}
             </div>
             <button
               onClick={onClose}
@@ -97,16 +106,46 @@ export function ArtistInfoPopover({
                 <p className="text-xs text-slate-700 leading-relaxed line-clamp-4">
                   {extract}
                 </p>
-                <a
-                  href={`https://en.wikipedia.org/wiki/${encodeURIComponent(
-                    title
-                  )}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-block text-xs font-bold text-purple-600 hover:text-purple-700 transition-colors"
-                >
-                  Ver más en Wikipedia →
-                </a>
+                
+                {/* Botones de acción */}
+                <div className="flex gap-2 pt-2">
+                  {source === 'wikipedia' ? (
+                    <>
+                      <a
+                        href={`https://en.wikipedia.org/wiki/${encodeURIComponent(
+                          title
+                        )}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex-1 inline-flex items-center justify-center gap-1 text-xs font-bold text-white bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800 px-3 py-2 rounded-lg transition-all"
+                      >
+                        <ExternalLink className="h-3 w-3" />
+                        Wikipedia
+                      </a>
+                      <a
+                        href={`https://www.google.com/search?q=${encodeURIComponent(
+                          title + ' K-Pop'
+                        )}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex-1 inline-flex items-center justify-center gap-1 text-xs font-bold text-slate-700 bg-slate-200 hover:bg-slate-300 px-3 py-2 rounded-lg transition-all"
+                      >
+                        <ExternalLink className="h-3 w-3" />
+                        Google
+                      </a>
+                    </>
+                  ) : (
+                    <a
+                      href={googleSearchUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="w-full inline-flex items-center justify-center gap-2 text-xs font-bold text-white bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 px-3 py-2 rounded-lg transition-all"
+                    >
+                      <ExternalLink className="h-3 w-3" />
+                      Buscar en Google
+                    </a>
+                  )}
+                </div>
               </div>
             )}
           </div>
