@@ -29,11 +29,13 @@ import Terms from "./pages/Terms";
 import Privacy from "./pages/Privacy";
 import Quizzes from "./pages/Quizzes";
 import Calendar from "./pages/Calendar";
+import { MobileBottomNav } from "./components/MobileBottomNav";
 
 
 function Router() {
   return (
-    <Switch>
+    <>
+      <Switch>
       <Route path="/" component={LandingHome} />
       <Route path="/success" component={Success} />
       <Route path="/cancel" component={Cancel} />
@@ -63,6 +65,8 @@ function Router() {
       {/* Final fallback route */}
       <Route component={NotFound} />
     </Switch>
+      <MobileBottomNav />
+    </>
   );
 }
 

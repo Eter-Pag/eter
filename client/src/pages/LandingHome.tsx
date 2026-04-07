@@ -35,6 +35,7 @@ import { STORE_CONFIG } from "@shared/const";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { trpc } from "@/lib/trpc";
+import { QuickLinks } from "@/components/QuickLinks";
 
 export default function LandingHome() {
   const [, navigate] = useLocation();
@@ -340,7 +341,10 @@ export default function LandingHome() {
         </div>
       </section>
 
-            {/* Featured Section - Noticias con Grid */}
+      {/* Quick Links - Solo en móviles */}
+      <QuickLinks />
+
+      {/* Featured Section - Noticias con Grid */}
       <section className="container py-12 md:py-20">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
