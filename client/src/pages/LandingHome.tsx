@@ -41,6 +41,7 @@ export default function LandingHome() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [productCarouselIndex, setProductCarouselIndex] = useState(0);
+  const [newsCarouselIndex, setNewsCarouselIndex] = useState(0);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   // Admin Access State
@@ -49,6 +50,10 @@ export default function LandingHome() {
 
   // Fetch products
   const { data: products = [] } = trpc.products.list.useQuery();
+  
+  // Fetch news
+  const { data: allNews = [] } = trpc.news.getAll.useQuery();
+  const recentNews = allNews.slice(0, 4);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -67,6 +72,25 @@ export default function LandingHome() {
     setIsMobileMenuOpen(false);
   };
 
+  const formatDate = (date: any) => {
+    try {
+      const d = new Date(date);
+      if (isNaN(d.getTime())) return "Fecha no disponible";
+      return d.toLocaleDateString("es-ES", {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+      });
+    } catch (e) {
+      return "Fecha no disponible";
+    }
+  };
+
+  const stripHtml = (html: string) => {
+    const doc = new DOMParser().parseFromString(html, 'text/html');
+    return doc.body.textContent || "";
+  };
+
   const handleAdminAccess = () => {
     if (adminPassword === "panochonas12") {
       setShowAdminPrompt(false);
@@ -76,6 +100,14 @@ export default function LandingHome() {
       toast.error("Contraseña incorrecta");
       setAdminPassword("");
     }
+  };
+
+  const handlePrevNews = () => {
+    setNewsCarouselIndex((prev) => (prev === 0 ? Math.max(0, recentNews.length - 1) : prev - 1));
+  };
+
+  const handleNextNews = () => {
+    setNewsCarouselIndex((prev) => (prev === Math.max(0, recentNews.length - 1) ? 0 : prev + 1));
   };
 
   const menuItems = [
@@ -308,7 +340,7 @@ export default function LandingHome() {
         </div>
       </section>
 
-      {/* Featured Section - Noticias */}
+            {/* Featured Section - Noticias con Grid */}
       <section className="container py-12 md:py-20">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -318,37 +350,123 @@ export default function LandingHome() {
         >
           <Card className="glass-effect overflow-hidden hover:shadow-2xl transition-all duration-500 group">
             <CardContent className="p-0 flex flex-col md:flex-row">
-              <div className="relative w-full md:w-1/2 h-64 md:h-80 bg-gradient-to-br from-emerald-500 to-teal-500 overflow-hidden">
-                <img
-                  src="https://lh3.googleusercontent.com/d/16_3UTSlqrB1VHVIVM4cMMea0n96vm7Is"
-                  alt="Noticias K-POP"
-                  className="w-full h-full object-cover object-center group-hover:scale-110 transition-transform duration-700"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
-              </div>
-              <div className="p-6 md:p-12 flex flex-col justify-center md:w-1/2">
-                <div className="flex items-center gap-2 mb-4">
-                  <div className="w-1 h-8 bg-gradient-to-b from-emerald-500 to-teal-500 rounded-full" />
-                  <h2 className="text-2xl md:text-4xl font-black">Noticias K-POP</h2>
+              {/* Columna Izquierda: Imagen, Texto y Botón */}
+              <div className="w-full md:w-1/3 flex flex-col">
+                {/* Imagen */}
+                <div className="relative h-48 md:h-80 bg-gradient-to-br from-emerald-500 to-teal-500 overflow-hidden">
+                  <img
+                    src="https://lh3.googleusercontent.com/d/16_3UTSlqrB1VHVIVM4cMMea0n96vm7Is"
+                    alt="Noticias K-POP"
+                    className="w-full h-full object-cover object-center group-hover:scale-110 transition-transform duration-700"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
                 </div>
-                <p className="text-slate-600 text-base md:text-lg mb-6 leading-relaxed">
-                  Mantente al día con las últimas novedades, regresos, conciertos y eventos de tus grupos favoritos. Cobertura completa del mundo K-POP en México.
-                </p>
-                <Button
-                  onClick={() => navigate("/noticias")}
-                  className="w-full md:w-fit gap-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-semibold px-8 h-12 rounded-full"
-                >
-                  <Newspaper className="size-5" />
-                  Ver todas las noticias
-                  <ArrowRight className="size-5" />
-                </Button>
+
+                {/* Texto y Botón */}
+                <div className="p-4 md:p-6 flex flex-col justify-between flex-grow">
+                  <div>
+                    <div className="flex items-center gap-2 mb-2">
+                      <div className="w-1 h-6 bg-gradient-to-b from-emerald-500 to-teal-500 rounded-full" />
+                      <h2 className="text-lg md:text-2xl font-black">Noticias K-POP</h2>
+                    </div>
+                    <p className="text-slate-600 text-xs md:text-sm mb-4 leading-relaxed">
+                      Mantente al día con las últimas novedades, regresos, conciertos y eventos.
+                    </p>
+                  </div>
+
+                  <Button
+                    onClick={() => navigate("/noticias")}
+                    className="w-full gap-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-semibold px-6 h-10 rounded-lg text-sm"
+                  >
+                    <Newspaper className="size-4" />
+                    Ver noticias
+                    <ArrowRight className="size-4" />
+                  </Button>
+                </div>
+              </div>
+
+              {/* Columna Derecha: Grid de Noticias */}
+              <div className="w-full md:w-2/3 p-4 md:p-6 flex flex-col justify-between">
+                {recentNews.length > 0 ? (
+                  <>
+                    {/* Grid de Noticias */}
+                    <div className="flex-grow flex items-center">
+                      <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+                        {recentNews.map((article: any) => (
+                          <motion.div
+                            key={article.id}
+                            whileHover={{ y: -4 }}
+                            className="cursor-pointer"
+                            onClick={() => navigate(`/noticias#${article.slug}`)}
+                          >
+                            <Card className="group h-full bg-white border-none shadow-lg rounded-2xl overflow-hidden flex flex-col hover:shadow-xl transition-all">
+                              {article.image && (
+                                <div className="relative aspect-video overflow-hidden bg-slate-100">
+                                  <img
+                                    src={article.image}
+                                    alt={article.title}
+                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                  />
+                                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all" />
+                                </div>
+                              )}
+                              <CardContent className="p-4 flex flex-col flex-grow">
+                                <div className="flex items-center gap-2 mb-2">
+                                  <Badge className="bg-emerald-100 text-emerald-700 border-none text-[10px] font-bold uppercase tracking-widest">
+                                    {article.source}
+                                  </Badge>
+                                  <span className="text-[10px] text-slate-500 font-medium">
+                                    {formatDate(article.createdAt)}
+                                  </span>
+                                </div>
+                                <h3 className="font-black text-slate-900 text-sm mb-2 line-clamp-2 leading-tight">
+                                  {article.title}
+                                </h3>
+                                <p className="text-xs text-slate-600 line-clamp-2 flex-grow mb-3">
+                                  {article.summary || stripHtml(article.content)}
+                                </p>
+                                <div className="flex gap-2 mt-auto">
+                                  <Button className="flex-1 rounded-lg bg-slate-900 hover:bg-slate-800 text-white font-bold text-[10px] uppercase tracking-widest h-8 transition-all">
+                                    Leer Más
+                                  </Button>
+                                  {article.sourceUrl && (
+                                    <a
+                                      href={article.sourceUrl}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      onClick={(e) => e.stopPropagation()}
+                                      className="flex-1"
+                                    >
+                                      <Button
+                                        variant="outline"
+                                        className="w-full rounded-lg border-slate-200 hover:bg-slate-50 text-slate-600 font-bold text-[10px] uppercase tracking-widest h-8 transition-all gap-1"
+                                      >
+                                        <ExternalLink className="size-3" />
+                                        Fuente
+                                      </Button>
+                                    </a>
+                                  )}
+                                </div>
+                              </CardContent>
+                            </Card>
+                          </motion.div>
+                        ))}
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  <div className="text-center py-12">
+                    <p className="text-slate-500 text-sm">Cargando noticias...</p>
+                  </div>
+                )}
               </div>
             </CardContent>
           </Card>
         </motion.div>
       </section>
 
-      {/* Featured Section - Tienda con Carrusel */}
+
+      {/* Featured Section - Tienda}
       <section className="container py-12 md:py-20">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
