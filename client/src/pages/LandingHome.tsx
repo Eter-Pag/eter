@@ -305,11 +305,11 @@ export default function LandingHome() {
         >
           <Card className="glass-effect overflow-hidden hover:shadow-2xl transition-all duration-500 group">
             <CardContent className="p-0 flex flex-col md:flex-row">
-              <div className="relative w-full md:w-1/2 h-64 md:h-80 bg-gradient-to-br from-emerald-500 to-teal-500 overflow-hidden flex items-center justify-center p-4">
+              <div className="relative w-full md:w-1/2 h-64 md:h-80 bg-gradient-to-br from-emerald-500 to-teal-500 overflow-hidden">
                 <img
                   src="https://lh3.googleusercontent.com/d/16_3UTSlqrB1VHVIVM4cMMea0n96vm7Is"
                   alt="Noticias K-POP"
-                  className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-700"
+                  className="w-full h-full object-cover object-center group-hover:scale-110 transition-transform duration-700"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
               </div>
@@ -345,11 +345,11 @@ export default function LandingHome() {
         >
           <Card className="glass-effect overflow-hidden hover:shadow-2xl transition-all duration-500 group">
             <CardContent className="p-0 flex flex-col md:flex-row">
-              <div className="relative w-full md:w-1/2 h-64 md:h-80 bg-gradient-to-br from-blue-500 to-indigo-500 overflow-hidden flex items-center justify-center p-4">
+              <div className="relative w-full md:w-1/2 h-64 md:h-80 bg-gradient-to-br from-blue-500 to-indigo-500 overflow-hidden">
                 <img
                   src="/assets/imagentienda.png"
                   alt="Tienda K-POP"
-                  className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-700"
+                  className="w-full h-full object-cover object-top group-hover:scale-110 transition-transform duration-700"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
               </div>
@@ -474,11 +474,11 @@ export default function LandingHome() {
             >
               <Card className="glass-effect overflow-hidden h-full hover:shadow-2xl transition-all duration-500 group">
                 <CardContent className="p-0 flex flex-col h-full">
-                  <div className={`relative h-48 bg-gradient-to-br ${section.color} overflow-hidden flex items-center justify-center p-4`}>
+                  <div className={`relative h-48 bg-gradient-to-br ${section.color} overflow-hidden`}>
                     <img
                       src={section.image}
                       alt={section.title}
-                      className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-700"
+                      className="w-full h-full object-cover object-top group-hover:scale-110 transition-transform duration-700"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
                   </div>
