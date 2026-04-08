@@ -650,7 +650,9 @@ export default function LandingHome() {
         </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {sections.map((section, index) => (
+          {sections.map((section, index) => {
+            const isCalendarBTS = section.path === "/calendario-bts";
+            return (
             <motion.div
               key={section.path}
               initial={{ opacity: 0, y: 20 }}
@@ -658,9 +660,41 @@ export default function LandingHome() {
               transition={{ duration: 0.5, delay: index * 0.1 }}
               viewport={{ once: true }}
               whileHover={{ y: -8 }}
+              className={isCalendarBTS ? "lg:col-span-2" : ""}
             >
               <Card className="glass-effect overflow-hidden h-full hover:shadow-2xl transition-all duration-500 group">
-                <CardContent className="p-0 flex flex-col h-full">
+                {isCalendarBTS ? (
+                  <CardContent className="p-0 flex flex-col md:flex-row h-full">
+                    <div className="relative w-full md:w-1/2 h-64 md:h-auto bg-gradient-to-br from-purple-600 to-pink-600 overflow-hidden">
+                      <img
+                        src={section.image}
+                        alt={section.title}
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+                    </div>
+                    <div className="p-8 md:p-10 flex flex-col justify-center w-full md:w-1/2">
+                      <div className="flex items-center gap-3 mb-4">
+                        <div className="p-3 rounded-lg bg-gradient-to-br from-purple-600 to-pink-600 bg-opacity-20">
+                          <section.icon className="size-6 text-purple-400" />
+                        </div>
+                        <h3 className="text-2xl md:text-3xl font-black text-white">{section.title}</h3>
+                      </div>
+                      <p className="text-purple-100 text-base mb-8 leading-relaxed">
+                        {section.description}
+                      </p>
+                      <Button
+                        onClick={() => handleNavigate(section.path)}
+                        className="w-full md:w-auto gap-2 font-bold px-8 h-12 rounded-xl transition-all bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:shadow-lg text-base"
+                      >
+                        <section.icon className="size-5" />
+                        Ir a Descargar
+                        <ArrowRight className="size-5" />
+                      </Button>
+                    </div>
+                  </CardContent>
+                ) : (
+                  <CardContent className="p-0 flex flex-col h-full">
                   <div className={`relative h-48 bg-gradient-to-br ${section.color} overflow-hidden`}>
                     <img
                       src={section.image}
@@ -689,6 +723,7 @@ export default function LandingHome() {
                     </Button>
                   </div>
                 </CardContent>
+                )}
               </Card>
             </motion.div>
           ))}
