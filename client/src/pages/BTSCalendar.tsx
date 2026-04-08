@@ -106,20 +106,11 @@ export default function BTSCalendar() {
 
                 {/* Columna Derecha: Acciones */}
                 <div className="flex flex-col gap-4">
-                  {/* Vista Previa - Imagen 1 */}
+                  {/* Vista Previa */}
                   <div className="relative aspect-square bg-gradient-to-br from-purple-400/20 to-pink-400/20 rounded-2xl border-2 border-purple-400/50 overflow-hidden group">
                     <img
-                      src="https://drive.google.com/uc?export=view&id=1cRi-VQbBssz-ceArnwZKlqGkXp-cZEki"
+                      src="/assets/bts_preview1.png"
                       alt="Vista previa calendario BTS"
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
-                  </div>
-                  {/* Vista Previa - Imagen 2 */}
-                  <div className="relative aspect-square bg-gradient-to-br from-purple-400/20 to-pink-400/20 rounded-2xl border-2 border-purple-400/50 overflow-hidden group">
-                    <img
-                      src="https://drive.google.com/uc?export=view&id=1O2SluXy7adjIg-JMpaNnYAkbkKsVHUyE"
-                      alt="Vista previa calendario BTS 2"
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />

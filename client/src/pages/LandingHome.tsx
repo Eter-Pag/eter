@@ -177,7 +177,7 @@ export default function LandingHome() {
       description: "Calendario físico premium listo para imprimir con fotos exclusivas de BTS. Perfecto para decorar tu espacio.",
       path: "/calendario-bts",
       color: "from-purple-600 to-pink-600",
-      image: "https://drive.google.com/uc?export=view&id=1jegq_JYLffva3dNsAqdW-YibWIogFOZz",
+      image: "/assets/bts_card.png",
     },
   ];
 
