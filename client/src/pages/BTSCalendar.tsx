@@ -15,7 +15,7 @@ import { useLocation } from "wouter";
 
 export default function BTSCalendar() {
   const [, navigate] = useLocation();
-  const [downloadLink] = useState("https://drive.google.com/file/d/1af4r1FSJU4rvo4n0Wau4GxlCZuqOzWdR/view?usp=sharing");
+  const [downloadLink] = useState("https://drive.google.com/file/d/1Zhuc3a9Pc2kAy6o9dR1fwtXsWKd8NbJ_/view?usp=sharing");
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 pb-20">
