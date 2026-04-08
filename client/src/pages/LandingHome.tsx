@@ -174,7 +174,7 @@ export default function LandingHome() {
     {
       icon: Download,
       title: "¡Descarga tu Calendario BTS 2026 Gratis!",
-      description: "Calendario físico premium listo para imprimir con fotos exclusivas de BTS. Perfecto para decorar tu espacio.",
+      description: "Crea tu propio calendario físico premium con fotos exclusivas de BTS. Diseño profesional listo para imprimir en casa con medidas de 11x15.5 cm. Perfecto para decorar tu escritorio o regalar a otros ARMY. ¡Descárgalo ahora y arma tu calendario especial!",
       path: "/calendario-bts",
       color: "from-purple-600 to-pink-600",
       image: "/assets/bts_card.png",
@@ -660,31 +660,27 @@ export default function LandingHome() {
               transition={{ duration: 0.5, delay: index * 0.1 }}
               viewport={{ once: true }}
               whileHover={{ y: -8 }}
-              className={isCalendarBTS ? "lg:col-span-2" : ""}
+              className={isCalendarBTS ? "lg:col-span-3" : ""}
             >
               <Card className="glass-effect overflow-hidden h-full hover:shadow-2xl transition-all duration-500 group">
                 {isCalendarBTS ? (
-                  <CardContent className="p-0 flex flex-row h-auto">
-                    <div className="relative w-1/2 h-56 bg-white overflow-hidden flex items-center justify-center">
-                      <img
-                        src={section.image}
-                        alt={section.title}
-                        className="w-full h-full object-contain p-1"
-                      />
+                  <CardContent className="p-8 md:p-10 flex flex-col items-center justify-center text-center h-auto">
+                    <div className="flex items-center justify-center mb-3">
+                      <div className="p-3 rounded-lg bg-gradient-to-br from-purple-600 to-pink-600 bg-opacity-20">
+                        <Download className="size-6 text-purple-600" />
+                      </div>
                     </div>
-                    <div className="p-4 md:p-6 flex flex-col justify-center w-1/2">
-                      <h3 className="text-base md:text-lg font-black text-slate-900 mb-2">{section.title}</h3>
-                      <p className="text-slate-700 text-xs md:text-sm mb-3 leading-relaxed line-clamp-2">
-                        {section.description}
-                      </p>
-                      <Button
-                        onClick={() => handleNavigate(section.path)}
-                        className="w-full gap-2 font-bold px-6 h-9 rounded-lg transition-all bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:shadow-lg text-xs md:text-sm"
-                      >
-                        <Download className="size-4" />
-                        Ir a Descargar
-                      </Button>
-                    </div>
+                    <h3 className="text-xl md:text-2xl font-black text-slate-900 mb-3">{section.title}</h3>
+                    <p className="text-slate-700 text-sm md:text-base mb-6 leading-relaxed max-w-2xl">
+                      {section.description}
+                    </p>
+                    <Button
+                      onClick={() => handleNavigate(section.path)}
+                      className="gap-2 font-bold px-8 h-11 rounded-lg transition-all bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:shadow-lg text-sm md:text-base"
+                    >
+                      <Download className="size-5" />
+                      Descargar Calendario
+                    </Button>
                   </CardContent>
                 ) : (
                   <CardContent className="p-0 flex flex-col h-full">
