@@ -29,7 +29,8 @@ import {
   Maximize2,
   ExternalLink,
   ShoppingCart,
-  Calendar
+  Calendar,
+  Download
 } from "lucide-react";
 import { STORE_CONFIG } from "@shared/const";
 import { motion } from "framer-motion";
@@ -169,6 +170,14 @@ export default function LandingHome() {
       path: "/calendario",
       color: "from-amber-500 to-orange-500",
       image: "https://images.unsplash.com/photo-1506157786151-b8491531f063?w=800&h=600&fit=crop",
+    },
+    {
+      icon: Download,
+      title: "¡Descarga tu Calendario BTS 2026 Gratis!",
+      description: "Calendario físico premium listo para imprimir con fotos exclusivas de BTS. Perfecto para decorar tu espacio.",
+      path: "/calendario-bts",
+      color: "from-purple-600 to-pink-600",
+      image: "https://files.manuscdn.com/user_upload_by_module/session_file/310519663470405189/imagentienda.png",
     },
   ];
 
