@@ -665,21 +665,21 @@ export default function LandingHome() {
               <Card className="glass-effect overflow-hidden h-full hover:shadow-2xl transition-all duration-500 group">
                 {isCalendarBTS ? (
                   <CardContent className="p-0 flex flex-row h-auto">
-                    <div className="relative w-2/5 h-48 bg-white overflow-hidden flex items-center justify-center">
+                    <div className="relative w-1/2 h-56 bg-white overflow-hidden flex items-center justify-center">
                       <img
                         src={section.image}
                         alt={section.title}
-                        className="w-full h-full object-contain p-2"
+                        className="w-full h-full object-contain p-1"
                       />
                     </div>
-                    <div className="p-6 md:p-8 flex flex-col justify-center w-3/5">
-                      <h3 className="text-lg md:text-xl font-black text-slate-900 mb-2">{section.title}</h3>
-                      <p className="text-slate-700 text-xs md:text-sm mb-4 leading-relaxed line-clamp-2">
+                    <div className="p-4 md:p-6 flex flex-col justify-center w-1/2">
+                      <h3 className="text-base md:text-lg font-black text-slate-900 mb-2">{section.title}</h3>
+                      <p className="text-slate-700 text-xs md:text-sm mb-3 leading-relaxed line-clamp-2">
                         {section.description}
                       </p>
                       <Button
                         onClick={() => handleNavigate(section.path)}
-                        className="w-full gap-2 font-bold px-6 h-10 rounded-lg transition-all bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:shadow-lg text-sm"
+                        className="w-full gap-2 font-bold px-6 h-9 rounded-lg transition-all bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:shadow-lg text-xs md:text-sm"
                       >
                         <Download className="size-4" />
                         Ir a Descargar
