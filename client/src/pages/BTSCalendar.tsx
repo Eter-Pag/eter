@@ -177,21 +177,21 @@ export default function BTSCalendar() {
             <CardContent>
               <div className="grid md:grid-cols-3 gap-6">
                 <div className="space-y-2">
-                  <h4 className="font-bold text-white">Papel Recomendado</h4>
+                  <h4 className="font-bold text-white">📏 Tamaño Final</h4>
                   <p className="text-purple-100 text-sm">
-                    Papel fotográfico de 200-250 gsm para mejor calidad y durabilidad.
+                    <span className="font-semibold">11 x 15.5 cm</span> - Tamaño perfecto para escritorio. Imprime a escala 100% sin ajustar a página.
                   </p>
                 </div>
                 <div className="space-y-2">
-                  <h4 className="font-bold text-white">Configuración</h4>
+                  <h4 className="font-bold text-white">📄 Papel Recomendado</h4>
                   <p className="text-purple-100 text-sm">
-                    Imprime a tamaño real sin ajustar a página. Márgenes: 0.5 cm.
+                    Papel fotográfico de 200-250 gsm para mejor calidad y durabilidad. ¡Las fotos de BTS se verán increíbles!
                   </p>
                 </div>
                 <div className="space-y-2">
-                  <h4 className="font-bold text-white">Acabado</h4>
+                  <h4 className="font-bold text-white">✂️ Acabado</h4>
                   <p className="text-purple-100 text-sm">
-                    Considera plastificar o encuadernar para mayor durabilidad.
+                    Recorta por los bordes y considera plastificar para mayor durabilidad. ¡Tu calendario quedará como nuevo!
                   </p>
                 </div>
               </div>
