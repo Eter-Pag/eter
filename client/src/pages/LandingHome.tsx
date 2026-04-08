@@ -664,32 +664,25 @@ export default function LandingHome() {
             >
               <Card className="glass-effect overflow-hidden h-full hover:shadow-2xl transition-all duration-500 group">
                 {isCalendarBTS ? (
-                  <CardContent className="p-0 flex flex-col md:flex-row h-full">
-                    <div className="relative w-full md:w-1/2 h-64 md:h-auto bg-gradient-to-br from-purple-600 to-pink-600 overflow-hidden">
+                  <CardContent className="p-0 flex flex-row h-auto">
+                    <div className="relative w-2/5 h-48 bg-white overflow-hidden flex items-center justify-center">
                       <img
                         src={section.image}
                         alt={section.title}
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                        className="w-full h-full object-contain p-2"
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
                     </div>
-                    <div className="p-8 md:p-10 flex flex-col justify-center w-full md:w-1/2">
-                      <div className="flex items-center gap-3 mb-4">
-                        <div className="p-3 rounded-lg bg-gradient-to-br from-purple-600 to-pink-600 bg-opacity-20">
-                          <section.icon className="size-6 text-purple-400" />
-                        </div>
-                        <h3 className="text-2xl md:text-3xl font-black text-white">{section.title}</h3>
-                      </div>
-                      <p className="text-purple-100 text-base mb-8 leading-relaxed">
+                    <div className="p-6 md:p-8 flex flex-col justify-center w-3/5">
+                      <h3 className="text-lg md:text-xl font-black text-slate-900 mb-2">{section.title}</h3>
+                      <p className="text-slate-700 text-xs md:text-sm mb-4 leading-relaxed line-clamp-2">
                         {section.description}
                       </p>
                       <Button
                         onClick={() => handleNavigate(section.path)}
-                        className="w-full md:w-auto gap-2 font-bold px-8 h-12 rounded-xl transition-all bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:shadow-lg text-base"
+                        className="w-full gap-2 font-bold px-6 h-10 rounded-lg transition-all bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:shadow-lg text-sm"
                       >
-                        <section.icon className="size-5" />
+                        <Download className="size-4" />
                         Ir a Descargar
-                        <ArrowRight className="size-5" />
                       </Button>
                     </div>
                   </CardContent>
