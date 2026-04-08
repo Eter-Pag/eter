@@ -548,7 +548,7 @@ export default function LandingHome() {
                               </div>
                               <CardContent className="p-5 flex flex-col flex-grow">
                                 <h3 className="font-black text-slate-900 text-sm md:text-base mb-2 line-clamp-2 leading-tight uppercase tracking-tight">
-                                  {product.name || "Producto sin nombre"}
+                                  {product.title || "Producto sin nombre"}
                                 </h3>
                                 <div className="mt-auto pt-4 flex flex-col gap-3">
                                   <div className="flex items-center justify-between">
