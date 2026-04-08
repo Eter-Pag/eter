@@ -726,7 +726,8 @@ export default function LandingHome() {
                 )}
               </Card>
             </motion.div>
-          ))}
+            );
+          })}
         </div>
       </section>
 
