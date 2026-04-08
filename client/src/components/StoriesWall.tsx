@@ -10,7 +10,13 @@ export function StoriesWall() {
   const { data: stories, isLoading } = trpc.stories.list.useQuery();
 
   // Mostrar solo las 3 más recientes para la página principal
-  const recentStories = stories?.slice(0, 3) || [];
+  const recentStories = stories
+    ?.sort((a: any, b: any) => {
+      const dateA = new Date(a.createdAt || a.created_at || 0).getTime();
+      const dateB = new Date(b.createdAt || b.created_at || 0).getTime();
+      return dateB - dateA; // Ordenar de más nueva a más vieja
+    })
+    .slice(0, 3) || [];
 
   if (isLoading) {
     return (
