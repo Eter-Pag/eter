@@ -4,6 +4,7 @@
  * Extrae imágenes reales de los artículos originales usando Open Graph y selectores específicos.
  * Limpia etiquetas HTML para que el texto sea puro y profesional.
  * Solo procesa UNA noticia por ejecución, buscando siempre una que no haya sido publicada antes.
+ * NOTA: Todas las noticias se mantienen permanentemente (sin borrado automático después de 5 días).
  */
 
 import * as db from "./db";
@@ -212,18 +213,12 @@ function selectBackupImage(title: string, content: string): string {
 }
 
 /**
- * Clean up old news (older than 5 days)
+ * Clean up old news (DISABLED - News are now permanent)
+ * All news articles are kept indefinitely for historical archive and SEO value
  */
 async function cleanupOldNews(): Promise<void> {
-  try {
-    console.log("[News] Cleaning up news older than 5 days...");
-    const deletedCount = await db.deleteOldNews(5);
-    if (deletedCount > 0) {
-      console.log(`[News] Cleaned up ${deletedCount} old news articles.`);
-    }
-  } catch (error) {
-    console.error("[News] Error during cleanup:", error);
-  }
+  // Cleanup is disabled - all news are now permanent
+  console.log("[News] News cleanup is disabled - all articles are kept permanently.");
 }
 
 /**
@@ -301,7 +296,8 @@ async function automateNews(): Promise<void> {
     await db.createNews(newsRecord);
     console.log(`[News] Published Smart Item: "${translatedTitle}"`);
 
-    await cleanupOldNews();
+    // Cleanup is now disabled - all news are permanent
+    // await cleanupOldNews();
   } catch (error) {
     console.error("[News] Automation error:", error);
   }
