@@ -523,51 +523,28 @@ export default function LandingHome() {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
           viewport={{ once: true }}
+          className="w-full"
         >
+          {/* Título y Descripción */}
+          <div className="mb-8 text-center">
+            <div className="flex items-center justify-center gap-2 mb-3">
+              <div className="w-1 h-6 bg-gradient-to-b from-blue-500 to-indigo-500 rounded-full" />
+              <h2 className="text-2xl md:text-3xl font-black">Tienda K-POP</h2>
+              <div className="w-1 h-6 bg-gradient-to-b from-blue-500 to-indigo-500 rounded-full" />
+            </div>
+            <p className="text-slate-600 text-sm md:text-base max-w-2xl mx-auto leading-relaxed">
+              Explora nuestra colección exclusiva de álbumes, mercancía oficial y productos premium.
+            </p>
+          </div>
+
+          {/* Carrusel de Productos - Fila Completa */}
           <Card className="glass-effect overflow-hidden hover:shadow-2xl transition-all duration-500 group">
-            <CardContent className="p-0 flex flex-col md:flex-row">
-              {/* Columna Izquierda: Imagen, Texto y Botón */}
-              <div className="w-full md:w-1/3 flex flex-col">
-                {/* Imagen */}
-                <div className="relative h-48 md:h-80 bg-gradient-to-br from-blue-500 to-indigo-500 overflow-hidden">
-                  <img
-                    src="/assets/imagentienda.png"
-                    alt="Tienda K-POP"
-                    className="w-full h-full object-cover object-top"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
-                </div>
-
-                {/* Texto y Botón */}
-                <div className="p-4 md:p-6 flex flex-col justify-between flex-grow">
-                  <div>
-                    <div className="flex items-center gap-2 mb-2">
-                      <div className="w-1 h-6 bg-gradient-to-b from-blue-500 to-indigo-500 rounded-full" />
-                      <h2 className="text-lg md:text-2xl font-black">Tienda K-POP</h2>
-                    </div>
-                    <p className="text-slate-600 text-xs md:text-sm mb-4 leading-relaxed">
-                      Explora nuestra colección exclusiva de álbumes, mercancía oficial y productos premium.
-                    </p>
-                  </div>
-
-                  <Button
-                    onClick={() => navigate("/tienda")}
-                    className="w-full gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold px-6 h-10 rounded-lg text-sm"
-                  >
-                    <Store className="size-4" />
-                    Ver tienda
-                    <ArrowRight className="size-4" />
-                  </Button>
-                </div>
-              </div>
-
-              {/* Columna Derecha: Carrusel de Productos */}
-              <div className="w-full md:w-2/3 p-4 md:p-6 flex flex-col justify-between">
-                {products.length > 0 ? (
-                  <>
-                    {/* Grid de Productos - Idéntico a Store.tsx */}
-                    <div className="flex-grow flex items-center">
-                      <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
+            <CardContent className="p-6 md:p-8 flex flex-col">
+              {products.length > 0 ? (
+                <>
+                  {/* Grid de Productos - Fila Completa */}
+                  <div className="flex-grow flex items-center mb-6">
+                    <div className="w-full grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-6">
                         {visibleProducts.map((product) => (
                           <motion.div
                             key={product.id}
@@ -627,11 +604,11 @@ export default function LandingHome() {
                             </Card>
                           </motion.div>
                         ))}
-                      </div>
                     </div>
+                  </div>
 
-                    {/* Controles del Carrusel */}
-                    <div className="flex items-center justify-center gap-4 mt-4">
+                  {/* Controles del Carrusel */}
+                  <div className="flex items-center justify-center gap-4">
                       <Button
                         onClick={handlePrevProduct}
                         variant="outline"
@@ -660,16 +637,27 @@ export default function LandingHome() {
                       >
                         <ChevronRight className="size-5" />
                       </Button>
-                    </div>
-                  </>
-                ) : (
-                  <div className="text-center py-12">
-                    <p className="text-slate-500 text-sm">Cargando productos...</p>
                   </div>
-                )}
-              </div>
+                </>
+              ) : (
+                <div className="text-center py-12">
+                  <p className="text-slate-500 text-sm">Cargando productos...</p>
+                </div>
+              )}
             </CardContent>
           </Card>
+
+          {/* Botón Ver Tienda - Centrado Debajo */}
+          <div className="flex justify-center mt-8">
+            <Button
+              onClick={() => navigate("/tienda")}
+              className="gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold px-8 h-11 rounded-lg text-base"
+            >
+              <Store className="size-5" />
+              Ver Tienda Completa
+              <ArrowRight className="size-5" />
+            </Button>
+          </div>
         </motion.div>
       </section>
 
