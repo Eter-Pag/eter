@@ -581,7 +581,10 @@ export default function LandingHome() {
                                     </div>
                                   </div>
                                   <div className="flex flex-col gap-2">
-                                    <Button className="w-full rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-[10px] uppercase tracking-widest h-9 transition-all">
+                                    <Button 
+                                      onClick={() => navigate(`/tienda#producto-${product.id}`)}
+                                      className="w-full rounded-2xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-[10px] uppercase tracking-widest h-9 transition-all"
+                                    >
                                       Ver Detalles
                                     </Button>
                                     <a

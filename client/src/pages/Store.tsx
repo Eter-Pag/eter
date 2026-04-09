@@ -68,7 +68,7 @@ export default function Store() {
     if (open) {
       window.location.hash = `producto-${id}`;
     } else {
-      window.history.pushState(null, "", window.location.pathname);
+      window.location.hash = ""; // Usar hash vacío en lugar de pushState
       setOpenProductId(null);
     }
   };
@@ -124,7 +124,16 @@ export default function Store() {
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => window.history.back()}
+            onClick={() => {
+              if (openProductId) {
+                // Si hay un producto abierto, ciérralo
+                window.location.hash = "";
+                setOpenProductId(null);
+              } else {
+                // Si no hay producto abierto, vuelve a la página anterior
+                window.history.back();
+              }
+            }}
             className="gap-2 font-bold text-slate-600 hover:bg-slate-100 rounded-full"
           >
             <ArrowLeft className="size-4" />
