@@ -105,11 +105,14 @@ export default function LandingHome() {
   };
 
   const handlePrevNews = () => {
-    setNewsCarouselIndex((prev) => (prev === 0 ? Math.max(0, recentNews.length - 1) : prev - 1));
+    setNewsCarouselIndex((prev) => (prev === 0 ? Math.max(0, recentNews.length - itemsPerPageDesktop) : prev - 1));
   };
 
   const handleNextNews = () => {
-    setNewsCarouselIndex((prev) => (prev === Math.max(0, recentNews.length - 1) ? 0 : prev + 1));
+    setNewsCarouselIndex((prev) => {
+      const maxIndex = Math.max(0, recentNews.length - itemsPerPageDesktop);
+      return prev >= maxIndex ? 0 : prev + 1;
+    });
   };
 
   const menuItems = [
@@ -197,17 +200,6 @@ export default function LandingHome() {
   };
 
   const visibleProducts = products.slice(productCarouselIndex, productCarouselIndex + itemsPerPageDesktop);
-
-  const handlePrevNews = () => {
-    setNewsCarouselIndex((prev) => (prev === 0 ? Math.max(0, recentNews.length - itemsPerPageDesktop) : prev - 1));
-  };
-
-  const handleNextNews = () => {
-    setNewsCarouselIndex((prev) => {
-      const maxIndex = Math.max(0, recentNews.length - itemsPerPageDesktop);
-      return prev >= maxIndex ? 0 : prev + 1;
-    });
-  };
 
   const visibleNews = recentNews.slice(newsCarouselIndex, newsCarouselIndex + itemsPerPageDesktop);
 
