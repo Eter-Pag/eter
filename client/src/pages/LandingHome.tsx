@@ -55,7 +55,7 @@ export default function LandingHome() {
   
   // Fetch news
   const { data: allNews = [] } = trpc.news.getAll.useQuery();
-  const recentNews = allNews.slice(0, 3);
+  const recentNews = allNews.slice(0, 6);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -197,6 +197,19 @@ export default function LandingHome() {
   };
 
   const visibleProducts = products.slice(productCarouselIndex, productCarouselIndex + itemsPerPageDesktop);
+
+  const handlePrevNews = () => {
+    setNewsCarouselIndex((prev) => (prev === 0 ? Math.max(0, recentNews.length - itemsPerPageDesktop) : prev - 1));
+  };
+
+  const handleNextNews = () => {
+    setNewsCarouselIndex((prev) => {
+      const maxIndex = Math.max(0, recentNews.length - itemsPerPageDesktop);
+      return prev >= maxIndex ? 0 : prev + 1;
+    });
+  };
+
+  const visibleNews = recentNews.slice(newsCarouselIndex, newsCarouselIndex + itemsPerPageDesktop);
 
   return (
     <div className="min-h-screen bg-background">
@@ -398,14 +411,14 @@ export default function LandingHome() {
                 </div>
               </div>
 
-              {/* Columna Derecha: Grid de Noticias */}
+              {/* Columna Derecha: Carrusel de Noticias */}
               <div className="w-full md:w-2/3 p-4 md:p-6 flex flex-col justify-between">
                 {recentNews.length > 0 ? (
                   <>
-                    {/* Grid de Noticias */}
+                    {/* Grid de Noticias (Carrusel) */}
                     <div className="flex-grow flex items-center">
                       <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-4">
-                        {recentNews.map((article: any) => (
+                        {visibleNews.map((article: any) => (
                           <motion.div
                             key={article.id}
                             whileHover={{ y: -4 }}
@@ -448,14 +461,14 @@ export default function LandingHome() {
                                       target="_blank"
                                       rel="noopener noreferrer"
                                       onClick={(e) => e.stopPropagation()}
-                                      className="flex-1"
+                                      className="flex-shrink-0"
                                     >
                                       <Button
                                         variant="outline"
-                                        className="w-full rounded-lg border-slate-200 hover:bg-slate-50 text-slate-600 font-bold text-[10px] uppercase tracking-widest h-8 transition-all gap-1"
+                                        size="icon"
+                                        className="rounded-lg border-slate-200 hover:bg-slate-50 text-slate-600 h-8 w-8 transition-all"
                                       >
                                         <ExternalLink className="size-3" />
-                                        Fuente
                                       </Button>
                                     </a>
                                   )}
@@ -465,6 +478,38 @@ export default function LandingHome() {
                           </motion.div>
                         ))}
                       </div>
+                    </div>
+
+                    {/* Controles del Carrusel de Noticias */}
+                    <div className="flex items-center justify-center gap-4 mt-4">
+                      <Button
+                        onClick={handlePrevNews}
+                        variant="outline"
+                        size="icon"
+                        className="rounded-full hover:bg-emerald-50 hover:text-emerald-600"
+                      >
+                        <ChevronLeft className="size-5" />
+                      </Button>
+                      <div className="flex gap-1">
+                        {Array.from({ length: Math.ceil(recentNews.length / itemsPerPageDesktop) }).map((_, i) => (
+                          <div
+                            key={i}
+                            className={`h-2 rounded-full transition-all ${
+                              i === Math.floor(newsCarouselIndex / itemsPerPageDesktop)
+                                ? "w-6 bg-emerald-600"
+                                : "w-2 bg-slate-300"
+                            }`}
+                          />
+                        ))}
+                      </div>
+                      <Button
+                        onClick={handleNextNews}
+                        variant="outline"
+                        size="icon"
+                        className="rounded-full hover:bg-emerald-50 hover:text-emerald-600"
+                      >
+                        <ChevronRight className="size-5" />
+                      </Button>
                     </div>
                   </>
                 ) : (
