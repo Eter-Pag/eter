@@ -185,8 +185,8 @@ export default function LandingHome() {
   ];
 
   // Carousel logic
-  const itemsPerPageDesktop = 3;
-  const itemsPerPageMobile = 1;
+  const itemsPerPageDesktop = 5; // 5 productos en desktop para llenar todo el ancho
+  const itemsPerPageMobile = 2; // 2-3 productos en móvil
 
   const handlePrevProduct = () => {
     setProductCarouselIndex((prev) => (prev === 0 ? Math.max(0, products.length - itemsPerPageDesktop) : prev - 1));
@@ -544,7 +544,7 @@ export default function LandingHome() {
                 <>
                   {/* Grid de Productos - Fila Completa */}
                   <div className="flex-grow flex items-center mb-6">
-                    <div className="w-full grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4 md:gap-6">
+                    <div className="w-full grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-6">
                         {visibleProducts.map((product) => (
                           <motion.div
                             key={product.id}
@@ -618,7 +618,7 @@ export default function LandingHome() {
                         <ChevronLeft className="size-5" />
                       </Button>
                       <div className="flex gap-1">
-                        {Array.from({ length: Math.ceil(products.length / itemsPerPageDesktop) }).map((_, i) => (
+                        {Array.from({ length: Math.max(1, Math.ceil(products.length / itemsPerPageDesktop)) }).map((_, i) => (
                           <div
                             key={i}
                             className={`h-2 rounded-full transition-all ${
