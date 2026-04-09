@@ -74,6 +74,41 @@ async function extractImageFromUrl(url: string): Promise<string | null> {
 }
 
 /**
+ * Extract full content from a news URL
+ */
+async function extractFullContent(url: string, source: "soompi" | "allkpop"): Promise<string | null> {
+  try {
+    const response = await fetch(url);
+    const html = await response.text();
+    const $ = load(html);
+    let content = "";
+
+    if (source === "soompi") {
+      // Soompi content is usually inside .article-content
+      $(".article-content p").each((_, el) => {
+        const text = $(el).text().trim();
+        if (text && !text.toLowerCase().includes("how does this article make you feel")) {
+          content += text + "\n\n";
+        }
+      });
+    } else if (source === "allkpop") {
+      // Allkpop content is usually inside .entry-content or .article-content
+      $(".entry-content p, .article-content p").each((_, el) => {
+        const text = $(el).text().trim();
+        if (text) {
+          content += text + "\n\n";
+        }
+      });
+    }
+
+    return content.trim() || null;
+  } catch (error) {
+    console.error(`[News] Error extracting full content from ${url}:`, error);
+    return null;
+  }
+}
+
+/**
  * Fetch news from Soompi RSS feed
  */
 async function fetchSoompiNews(): Promise<RawNewsItem[]> {
@@ -83,7 +118,7 @@ async function fetchSoompiNews(): Promise<RawNewsItem[]> {
       title: item.title || "",
       link: item.link || "",
       pubDate: item.pubDate,
-      content: item.content || item.contentSnippet || "",
+      content: item.contentSnippet || item.content || "",
       source: "soompi" as const,
     }));
   } catch (error) {
@@ -146,7 +181,8 @@ async function translateNews(
     }
 
     try {
-      const translatedContent = await translate(cleanContent.substring(0, 2000), { to: "es" });
+      // Aumentamos el límite a 5000 caracteres para noticias completas
+      const translatedContent = await translate(cleanContent.substring(0, 5000), { to: "es" });
       translatedContentText = translatedContent.text;
     } catch (e) {
       console.error("[News] Content translation failed, using original:", e);
@@ -231,13 +267,14 @@ async function automateNews(): Promise<void> {
 
     console.log(`[News] Found new unique item: "${itemToProcess.title}"`);
 
-    // 1. Extract real image from the article URL
+    // 1. Extract real image and FULL content from the article URL
     let imageUrl = await extractImageFromUrl(itemToProcess.link);
+    const fullContent = await extractFullContent(itemToProcess.link, itemToProcess.source);
     
-    // 2. Translate content
+    // 2. Translate content (using full content if available)
     const { title: translatedTitle, content: translatedContent } = await translateNews(
       itemToProcess.title,
-      itemToProcess.content || ""
+      fullContent || itemToProcess.content || ""
     );
 
     // 3. If no real image found, use backup

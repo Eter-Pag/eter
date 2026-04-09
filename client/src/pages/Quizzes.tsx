@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from "react";
-import html2canvas from "html2canvas";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,9 +12,9 @@ import {
   ArrowRight, 
   CheckCircle2, 
   XCircle,
-  Share2,
   Play,
-  History
+  History,
+  ChevronRight
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLocation } from "wouter";
@@ -49,7 +48,46 @@ interface Score {
   date: string;
 }
 
-// --- Datos de Ejemplo ---
+// --- Datos de los Artistas ---
+const PERSONALITY_RESULTS: Record<string, { name: string; description: string; image: string }> = {
+  rm: {
+    name: "RM (Kim Namjoon)",
+    description: "Eres el líder sabio y reflexivo. Te gusta aprender, la naturaleza y tienes una visión profunda de la vida.",
+    image: "https://m.media-amazon.com/images/M/MV5BNmUzYjVlYTUtNWEyMC00NjBlLTk0Y2UtZjhkY2EwMmY0ZjExXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg"
+  },
+  jin: {
+    name: "Jin (Kim Seokjin)",
+    description: "Eres divertido, seguro de ti mismo y cuidas de los demás a través del humor y la comida. ¡Worldwide Handsome!",
+    image: "https://i.pinimg.com/originals/90/7e/7c/907e7c150d4b655517b81841296b40ae.jpg"
+  },
+  suga: {
+    name: "Suga (Min Yoongi)",
+    description: "Eres honesto, trabajador y valoras tu espacio. Detrás de tu apariencia tranquila, hay una gran pasión y sabiduría.",
+    image: "https://i.pinimg.com/originals/a0/84/b7/a084b7f4da8c3e0bfc46922f2de11ab0.jpg"
+  },
+  jhope: {
+    name: "J-Hope (Jung Hoseok)",
+    description: "Eres la esperanza del grupo. Tu energía positiva y talento iluminan cualquier lugar. Eres disciplinado y alegre.",
+    image: "https://static.wikia.nocookie.net/the_kpop_house/images/9/9c/J_hope.jpg/revision/latest?cb=20200330154441"
+  },
+  jimin: {
+    name: "Jimin (Park Jimin)",
+    description: "Eres cariñoso, perfeccionista y muy atento con tus amigos. Tienes un encanto natural y un gran corazón.",
+    image: "https://i0.wp.com/zaloramalaysiablog.wpcomstaging.com/wp-content/uploads/2025/10/JIMIN-FEATURE.jpeg?resize=736%2C768&ssl=1"
+  },
+  v: {
+    name: "V (Kim Taehyung)",
+    description: "Eres único, artístico y ves el mundo de una manera especial. Amas el arte, la fotografía y eres muy leal.",
+    image: "https://cokodive.com/cdn/shop/articles/19090942-bts-v-cartier-brand-ambassador-kpop-star-kim-taehyung-jewellery-luxury_cover_1280x1599_0d187aae-7e3b-4f67-9664-1f2b056a64b7_1280x.webp?v=1693273305"
+  },
+  jk: {
+    name: "Jungkook (Jeon Jungkook)",
+    description: "Eres el 'Golden Maknae'. Tienes talento para todo lo que te propones, eres competitivo y muy valiente.",
+    image: "https://i.pinimg.com/originals/90/7e/7c/907e7c150d4b655517b81841296b40ae.jpg"
+  }
+};
+
+// --- Datos de los Quizzes ---
 const QUIZZES: Quiz[] = [
   {
     id: "bts-trivia",
@@ -58,171 +96,21 @@ const QUIZZES: Quiz[] = [
     type: "trivia",
     image: "https://i.ytimg.com/vi/N6fNBneJ_fg/hq720.jpg?sqp=-oaymwEhCK4FEIIDSFryq4qpAxMIARUAAAAAGAElAADIQj0AgKJD&rs=AOn4CLCKL_lHBLJ2SL4sQXNyRjEbxuRlGg",
     questions: [
-      {
-        id: 1,
-        text: "¿En qué año debutó oficialmente BTS?",
-        options: [
-          { id: "a", text: "2010" },
-          { id: "b", text: "2012" },
-          { id: "c", text: "2013" },
-          { id: "d", text: "2014" },
-        ],
-        correctAnswer: "c",
-      },
-      {
-        id: 2,
-        text: "¿Cuál fue la primera canción principal (title track) de BTS?",
-        options: [
-          { id: "a", text: "Boy In Luv" },
-          { id: "b", text: "Danger" },
-          { id: "c", text: "No More Dream" },
-          { id: "d", text: "N.O" },
-        ],
-        correctAnswer: "c",
-      },
-      {
-        id: 3,
-        text: "¿Quién es el líder de BTS?",
-        options: [
-          { id: "a", text: "Jin" },
-          { id: "b", text: "Suga" },
-          { id: "c", text: "J-Hope" },
-          { id: "d", text: "RM" },
-        ],
-        correctAnswer: "d",
-      },
-      {
-        id: 4,
-        text: "¿Cuál de estas canciones fue completamente en inglés?",
-        options: [
-          { id: "a", text: "Idol" },
-          { id: "b", text: "Fake Love" },
-          { id: "c", text: "Dynamite" },
-          { id: "d", text: "DNA" },
-        ],
-        correctAnswer: "c",
-      },
-      {
-        id: 5,
-        text: "¿Qué miembro es conocido como 'Worldwide Handsome'?",
-        options: [
-          { id: "a", text: "Jin" },
-          { id: "b", text: "Jimin" },
-          { id: "c", text: "V" },
-          { id: "d", text: "Jungkook" },
-        ],
-        correctAnswer: "a",
-      },
-      {
-        id: 6,
-        text: "¿Cuál es el nombre del universo ficticio creado por BTS para sus videos musicales?",
-        options: [
-          { id: "a", text: "SM Universe" },
-          { id: "b", text: "BTS Universe (BU)" },
-          { id: "c", text: "TXT Universe" },
-          { id: "d", text: "ATEEZ World" },
-        ],
-        correctAnswer: "b",
-      },
-      {
-        id: 7,
-        text: "¿Cuál fue el primer álbum de BTS en alcanzar el número 1 en el Billboard 200?",
-        options: [
-          { id: "a", text: "Love Yourself: Her" },
-          { id: "b", text: "Love Yourself: Tear" },
-          { id: "c", text: "Map of the Soul: Persona" },
-          { id: "d", text: "BE" },
-        ],
-        correctAnswer: "b",
-      },
-      {
-        id: 8,
-        text: "¿Qué canción de BTS tiene el récord de ser el MV más rápido en alcanzar 100M de vistas?",
-        options: [
-          { id: "a", text: "DNA" },
-          { id: "b", text: "Fake Love" },
-          { id: "c", text: "Idol" },
-          { id: "d", text: "Dynamite" },
-        ],
-        correctAnswer: "d",
-      },
-      {
-        id: 9,
-        text: "¿Cuál es el nombre del personaje de BT21 creado por Jungkook?",
-        options: [
-          { id: "a", text: "Tata" },
-          { id: "b", text: "Chimmy" },
-          { id: "c", text: "Cooky" },
-          { id: "d", text: "Koya" },
-        ],
-        correctAnswer: "c",
-      },
-      {
-        id: 10,
-        text: "¿En qué ciudad de Corea del Sur nació Jimin?",
-        options: [
-          { id: "a", text: "Seúl" },
-          { id: "b", text: "Busan" },
-          { id: "c", text: "Daegu" },
-          { id: "d", text: "Gwangju" },
-        ],
-        correctAnswer: "b",
-      },
-      {
-        id: 11,
-        text: "¿Cuál es el nombre artístico de Min Yoongi?",
-        options: [
-          { id: "a", text: "Suga" },
-          { id: "b", text: "Agust D" },
-          { id: "c", text: "Ambos" },
-          { id: "d", text: "Ninguno" },
-        ],
-        correctAnswer: "c",
-      },
-      {
-        id: 12,
-        text: "¿Qué instrumento toca V (Taehyung)?",
-        options: [
-          { id: "a", text: "Piano" },
-          { id: "b", text: "Saxofón" },
-          { id: "c", text: "Violín" },
-          { id: "d", text: "Guitarra" },
-        ],
-        correctAnswer: "b",
-      },
-      {
-        id: 13,
-        text: "¿Cuál es el lema de BTS que significa 'A prueba de balas'?",
-        options: [
-          { id: "a", text: "Bangtan Sonyeondan" },
-          { id: "b", text: "Beyond The Scene" },
-          { id: "c", text: "Bulletproof Boys" },
-          { id: "d", text: "Todas las anteriores" },
-        ],
-        correctAnswer: "d",
-      },
-      {
-        id: 14,
-        text: "¿Qué miembro de BTS lanzó el álbum en solitario 'Jack In The Box'?",
-        options: [
-          { id: "a", text: "RM" },
-          { id: "b", text: "J-Hope" },
-          { id: "c", text: "Suga" },
-          { id: "d", text: "Jungkook" },
-        ],
-        correctAnswer: "b",
-      },
-      {
-        id: 15,
-        text: "¿Cuál es el color oficial que representa el amor entre BTS y ARMY?",
-        options: [
-          { id: "a", text: "Azul" },
-          { id: "b", text: "Rosa" },
-          { id: "c", text: "Morado (Purple)" },
-          { id: "d", text: "Dorado" },
-        ],
-        correctAnswer: "c",
-      }
+      { id: 1, text: "¿En qué año debutó oficialmente BTS?", options: [{ id: "a", text: "2010" }, { id: "b", text: "2012" }, { id: "c", text: "2013" }, { id: "d", text: "2014" }], correctAnswer: "c" },
+      { id: 2, text: "¿Cuál fue la primera canción principal (title track) de BTS?", options: [{ id: "a", text: "Boy In Luv" }, { id: "b", text: "Danger" }, { id: "c", text: "No More Dream" }, { id: "d", text: "N.O" }], correctAnswer: "c" },
+      { id: 3, text: "¿Quién es el líder de BTS?", options: [{ id: "a", text: "Jin" }, { id: "b", text: "Suga" }, { id: "c", text: "J-Hope" }, { id: "d", text: "RM" }], correctAnswer: "d" },
+      { id: 4, text: "¿Cuál de estas canciones fue completamente en inglés?", options: [{ id: "a", text: "Idol" }, { id: "b", text: "Fake Love" }, { id: "c", text: "Dynamite" }, { id: "d", text: "DNA" }], correctAnswer: "c" },
+      { id: 5, text: "¿Qué miembro es conocido como 'Worldwide Handsome'?", options: [{ id: "a", text: "Jin" }, { id: "b", text: "Jimin" }, { id: "c", text: "V" }, { id: "d", text: "Jungkook" }], correctAnswer: "a" },
+      { id: 6, text: "¿Cuál es el nombre del universo ficticio creado por BTS para sus videos musicales?", options: [{ id: "a", text: "SM Universe" }, { id: "b", text: "BTS Universe (BU)" }, { id: "c", text: "TXT Universe" }, { id: "d", text: "ATEEZ World" }], correctAnswer: "b" },
+      { id: 7, text: "¿Cuál fue el primer álbum de BTS en alcanzar el número 1 en el Billboard 200?", options: [{ id: "a", text: "Love Yourself: Her" }, { id: "b", text: "Love Yourself: Tear" }, { id: "c", text: "Map of the Soul: Persona" }, { id: "d", text: "BE" }], correctAnswer: "b" },
+      { id: 8, text: "¿Qué canción de BTS tiene el récord de ser el MV más rápido en alcanzar 100M de vistas?", options: [{ id: "a", text: "DNA" }, { id: "b", text: "Fake Love" }, { id: "c", text: "Idol" }, { id: "d", text: "Dynamite" }], correctAnswer: "d" },
+      { id: 9, text: "¿Cuál es el nombre del personaje de BT21 creado por Jungkook?", options: [{ id: "a", text: "Tata" }, { id: "b", text: "Chimmy" }, { id: "c", text: "Cooky" }, { id: "d", text: "Koya" }], correctAnswer: "c" },
+      { id: 10, text: "¿En qué ciudad de Corea del Sur nació Jimin?", options: [{ id: "a", text: "Seúl" }, { id: "b", text: "Busan" }, { id: "c", text: "Daegu" }, { id: "d", text: "Gwangju" }], correctAnswer: "b" },
+      { id: 11, text: "¿Cuál es el nombre artístico de Min Yoongi?", options: [{ id: "a", text: "Suga" }, { id: "b", text: "Agust D" }, { id: "c", text: "Ambos" }, { id: "d", text: "Ninguno" }], correctAnswer: "c" },
+      { id: 12, text: "¿Qué instrumento toca V (Taehyung)?", options: [{ id: "a", text: "Piano" }, { id: "b", text: "Saxofón" }, { id: "c", text: "Violín" }, { id: "d", text: "Guitarra" }], correctAnswer: "b" },
+      { id: 13, text: "¿Cuál es el lema de BTS que significa 'A prueba de balas'?", options: [{ id: "a", text: "Bangtan Sonyeondan" }, { id: "b", text: "Beyond The Scene" }, { id: "c", text: "Bulletproof Boys" }, { id: "d", text: "Todas las anteriores" }], correctAnswer: "d" },
+      { id: 14, text: "¿Qué miembro de BTS lanzó el álbum en solitario 'Jack In The Box'?", options: [{ id: "a", text: "RM" }, { id: "b", text: "J-Hope" }, { id: "c", text: "Suga" }, { id: "d", text: "Jungkook" }], correctAnswer: "b" },
+      { id: 15, text: "¿Cuál es el color oficial que representa el amor entre BTS y ARMY?", options: [{ id: "a", text: "Azul" }, { id: "b", text: "Rosa" }, { id: "c", text: "Morado (Purple)" }, { id: "d", text: "Dorado" }], correctAnswer: "c" }
     ],
   },
   {
@@ -232,193 +120,32 @@ const QUIZZES: Quiz[] = [
     type: "personality",
     image: "https://img.buzzfeed.com/buzzfeed-static/static/2024-12/17/16/enhanced/7893ea4e24d2/original-515-1734451882-11.jpg?fill=1200:675",
     questions: [
-      {
-        id: 1,
-        text: "¿Cómo prefieres pasar un día libre?",
-        options: [
-          { id: "rm", text: "Leyendo un libro o en la naturaleza" },
-          { id: "jin", text: "Cocinando o contando chistes" },
-          { id: "suga", text: "Durmiendo o produciendo música" },
-          { id: "jhope", text: "Bailando o saliendo con amigos" },
-          { id: "jimin", text: "Cuidando de los demás" },
-          { id: "v", text: "Visitando una galería de arte" },
-          { id: "jk", text: "Haciendo ejercicio o jugando" },
-        ],
-      },
-      {
-        id: 2,
-        text: "¿Cuál es tu estilo de moda?",
-        options: [
-          { id: "rm", text: "Bohemio y cómodo" },
-          { id: "jin", text: "Clásico y elegante" },
-          { id: "suga", text: "Todo negro y minimalista" },
-          { id: "jhope", text: "Colorido y atrevido" },
-          { id: "jimin", text: "Sofisticado y chic" },
-          { id: "v", text: "Vintage y artístico" },
-          { id: "jk", text: "Deportivo y oversized" },
-        ],
-      },
-      {
-        id: 3,
-        text: "¿Qué valoras más en una amistad?",
-        options: [
-          { id: "rm", text: "La sabiduría y el apoyo intelectual" },
-          { id: "jin", text: "La risa y el buen humor" },
-          { id: "suga", text: "La lealtad y el silencio compartido" },
-          { id: "jhope", text: "La energía positiva y el optimismo" },
-          { id: "jimin", text: "La empatía y el cuidado mutuo" },
-          { id: "v", text: "La creatividad y la originalidad" },
-          { id: "jk", text: "La aventura y la competitividad sana" },
-        ],
-      },
-      {
-        id: 4,
-        text: "¿Cuál es tu comida favorita?",
-        options: [
-          { id: "rm", text: "Algo saludable y equilibrado" },
-          { id: "jin", text: "Langosta o platos gourmet" },
-          { id: "suga", text: "Carne (especialmente barbacoa)" },
-          { id: "jhope", text: "Comida tradicional coreana" },
-          { id: "jimin", text: "Cualquier cosa con carne o fruta" },
-          { id: "v", text: "Japchae o cualquier plato con carne" },
-          { id: "jk", text: "Pizza, pan o cualquier cosa con harina" },
-        ],
-      },
-      {
-        id: 5,
-        text: "¿Cómo reaccionas ante un desafío?",
-        options: [
-          { id: "rm", text: "Analizo la situación y busco una solución lógica" },
-          { id: "jin", text: "Mantengo la calma y trato de aligerar el ambiente" },
-          { id: "suga", text: "Me enfoco y trabajo duro hasta superarlo" },
-          { id: "jhope", text: "Mantengo una actitud positiva y motivo a los demás" },
-          { id: "jimin", text: "Me esfuerzo al máximo, a veces siendo perfeccionista" },
-          { id: "v", text: "Busco una forma creativa y única de resolverlo" },
-          { id: "jk", text: "Lo tomo como una competencia y doy mi 100%" },
-        ],
-      },
-      {
-        id: 6,
-        text: "¿Qué tipo de música prefieres escuchar?",
-        options: [
-          { id: "rm", text: "Hip-hop con letras profundas" },
-          { id: "jin", text: "Baladas emocionales" },
-          { id: "suga", text: "Rap crudo y honesto" },
-          { id: "jhope", text: "Música animada y bailable" },
-          { id: "jimin", text: "Pop contemporáneo y suave" },
-          { id: "v", text: "Jazz o música clásica" },
-          { id: "jk", text: "Pop moderno y R&B" },
-        ],
-      },
-      {
-        id: 7,
-        text: "¿Cuál es tu estación del año favorita?",
-        options: [
-          { id: "rm", text: "Otoño (para reflexionar)" },
-          { id: "jin", text: "Invierno (para estar cómodo y abrigado)" },
-          { id: "suga", text: "Invierno (prefiero el frío)" },
-          { id: "jhope", text: "Primavera (por el renacimiento y la energía)" },
-          { id: "jimin", text: "Invierno (me gusta la nieve)" },
-          { id: "v", text: "Otoño (es muy artístico)" },
-          { id: "jk", text: "Verano (para estar activo)" },
-        ],
-      },
-      {
-        id: 8,
-        text: "¿Qué superpoder te gustaría tener?",
-        options: [
-          { id: "rm", text: "Telepatía (para entender a todos)" },
-          { id: "jin", text: "Inmortalidad (para disfrutar siempre)" },
-          { id: "suga", text: "Teletransportación (para evitar viajes largos)" },
-          { id: "jhope", text: "Poder volar (sentir la libertad)" },
-          { id: "jimin", text: "Hablar con los animales" },
-          { id: "v", text: "Viajar en el tiempo" },
-          { id: "jk", text: "Súper fuerza o velocidad" },
-        ],
-      },
-      {
-        id: 9,
-        text: "¿Cuál es tu pasatiempo creativo?",
-        options: [
-          { id: "rm", text: "Escribir poesía o diarios" },
-          { id: "jin", text: "Cocinar para otros" },
-          { id: "suga", text: "Tocar un instrumento o producir" },
-          { id: "jhope", text: "Crear coreografías" },
-          { id: "jimin", text: "Dibujar o pintar" },
-          { id: "v", text: "Fotografía" },
-          { id: "jk", text: "Editar videos o dibujar" },
-        ],
-      },
-      {
-        id: 10,
-        text: "¿Cómo te describirían tus amigos?",
-        options: [
-          { id: "rm", text: "Inteligente y responsable" },
-          { id: "jin", text: "Divertido y protector" },
-          { id: "suga", text: "Tranquilo pero apasionado" },
-          { id: "jhope", text: "Alegre y trabajador" },
-          { id: "jimin", text: "Dulce y dedicado" },
-          { id: "v", text: "Único y soñador" },
-          { id: "jk", text: "Talentoso y valiente" },
-        ],
-      },
+      { id: 1, text: "¿Cómo prefieres pasar un día libre?", options: [{ id: "rm", text: "Leyendo un libro o en la naturaleza" }, { id: "jin", text: "Cocinando o contando chistes" }, { id: "suga", text: "Durmiendo o produciendo música" }, { id: "jhope", text: "Bailando o saliendo con amigos" }, { id: "jimin", text: "Cuidando de los demás" }, { id: "v", text: "Visitando una galería de arte" }, { id: "jk", text: "Haciendo ejercicio o jugando" }] },
+      { id: 2, text: "¿Cuál es tu estilo de moda?", options: [{ id: "rm", text: "Bohemio y cómodo" }, { id: "jin", text: "Clásico y elegante" }, { id: "suga", text: "Todo negro y minimalista" }, { id: "jhope", text: "Colorido y atrevido" }, { id: "jimin", text: "Sofisticado y chic" }, { id: "v", text: "Vintage y artístico" }, { id: "jk", text: "Deportivo y oversized" }] },
+      { id: 3, text: "¿Qué valoras más en una amistad?", options: [{ id: "rm", text: "La sabiduría y el apoyo intelectual" }, { id: "jin", text: "La risa y el buen humor" }, { id: "suga", text: "La lealtad y el silencio compartido" }, { id: "jhope", text: "La energía positiva y el optimismo" }, { id: "jimin", text: "La empatía y el cuidado mutuo" }, { id: "v", text: "La creatividad y la originalidad" }, { id: "jk", text: "La aventura y la competitividad sana" }] },
+      { id: 4, text: "¿Cuál es tu comida favorita?", options: [{ id: "rm", text: "Algo saludable y equilibrado" }, { id: "jin", text: "Langosta o platos gourmet" }, { id: "suga", text: "Carne (especialmente barbacoa)" }, { id: "jhope", text: "Comida tradicional coreana" }, { id: "jimin", text: "Cualquier cosa con carne o fruta" }, { id: "v", text: "Japchae o cualquier plato con carne" }, { id: "jk", text: "Pizza, pan o cualquier cosa con harina" }] },
+      { id: 5, text: "¿Cómo reaccionas ante un desafío?", options: [{ id: "rm", text: "Analizo la situación y busco una solución lógica" }, { id: "jin", text: "Mantengo la calma y trato de aligerar el ambiente" }, { id: "suga", text: "Me enfoco y trabajo duro hasta superarlo" }, { id: "jhope", text: "Mantengo una actitud positiva y motivo a los demás" }, { id: "jimin", text: "Me esfuerzo al máximo, a veces siendo perfeccionista" }, { id: "v", text: "Busco una forma creativa y única de resolverlo" }, { id: "jk", text: "Lo tomo como una competencia y doy mi 100%" }] },
+      { id: 6, text: "¿Qué tipo de música prefieres escuchar?", options: [{ id: "rm", text: "Hip-hop con letras profundas" }, { id: "jin", text: "Baladas emocionales" }, { id: "suga", text: "Rap crudo y honesto" }, { id: "jhope", text: "Música animada y bailable" }, { id: "jimin", text: "Pop contemporáneo y R&B" }, { id: "v", text: "Jazz, soul o música clásica" }, { id: "jk", text: "Pop moderno y EDM" }] },
+      { id: 7, text: "¿Cuál es tu pasatiempo favorito?", options: [{ id: "rm", text: "Bonsái o coleccionar figuras" }, { id: "jin", text: "Jugar videojuegos o pescar" }, { id: "suga", text: "Ver películas o leer" }, { id: "jhope", text: "Comprar ropa o bailar" }, { id: "jimin", text: "Hacer ejercicio o relajarse" }, { id: "v", text: "Fotografía o pintura" }, { id: "jk", text: "Dibujar o editar videos" }] }
     ],
   }
 ];
 
-const PERSONALITY_RESULTS: Record<string, { name: string; description: string; image: string }> = {
-  rm: {
-    name: "RM",
-    description: "¡Felicidades, eres RM! Eres un líder innato, con una mente profunda y una sed insaciable de conocimiento. Tu capacidad para la reflexión y tu amor por la naturaleza te conectan con el mundo de una manera única. Eres el pilar de tu grupo, siempre buscando la verdad y la autenticidad, y no temes guiar a los demás con tu sabiduría y tu ejemplo. Tu inteligencia y tu responsabilidad son tus mayores fortalezas, y siempre estás en constante crecimiento personal.",
-    image: "https://m.media-amazon.com/images/M/MV5BNmUzYjVlYTUtNWEyMC00NjBlLTk0Y2UtZjhkY2EwMmY0ZjExXkEyXkFqcGc@._V1_FMjpg_UX1000_.jpg"
-  },
-  jin: {
-    name: "Jin",
-    description: "¡Eres Jin, el 'Worldwide Handsome'! Posees un carisma natural y una confianza inquebrantable que ilumina cualquier habitación. Te encanta hacer reír a los demás y eres el alma de la fiesta, pero detrás de esa fachada divertida se esconde una persona trabajadora y profundamente preocupada por sus seres queridos. Tu humor y tu capacidad para mantener la calma en cualquier situación son admirables, y siempre buscas la felicidad, tanto la tuya como la de quienes te rodean.",
-    image: "https://i.pinimg.com/originals/90/7e/7c/907e7c150d4b655517b81841296b40ae.jpg"
-  },
-  suga: {
-    name: "Suga",
-    description: "¡Tu espíritu es el de Suga! Eres una persona con una mente brillante y un talento innato para la creatividad, especialmente en el ámbito musical. Aunque a veces puedes parecer tranquilo o reservado, por dentro arde una pasión inmensa por lo que haces. Eres honesto, directo y valoras la autenticidad por encima de todo. Tus amigos saben que pueden contar contigo para un consejo sincero y una lealtad inquebrantable, y tu capacidad para transformar tus pensamientos en arte es verdaderamente inspiradora.",
-    image: "https://i.pinimg.com/originals/a0/84/b7/a084b7f4da8c3e0bfc46922f2de11ab0.jpg"
-  },
-  jhope: {
-    name: "J-Hope",
-    description: "¡Eres J-Hope, la personificación de la esperanza! Tu energía es contagiosa y tu optimismo es una fuente de luz para todos. Siempre buscas el lado positivo de las cosas y tu espíritu trabajador te impulsa a mejorar constantemente. Eres un gran motivador, siempre apoyando a tus amigos y levantando el ánimo con tu alegría. Tu pasión por el baile y la música se refleja en tu personalidad vibrante y tu deseo de ser una fuente de esperanza para el mundo.",
-    image: "https://static.wikia.nocookie.net/the_kpop_house/images/9/9c/J_hope.jpg/revision/latest?cb=20200330154441"
-  },
-  jimin: {
-    name: "Jimin",
-    description: "¡Te identificas con Jimin! Eres una persona con una gran sensibilidad y empatía, siempre atento a las necesidades de los demás. Te esfuerzas por la perfección en todo lo que haces y tienes un gran sentido de la responsabilidad. Eres amable, cariñoso y tus amigos te valoran por tu apoyo incondicional y tu capacidad para escuchar. Tu dedicación y tu deseo de ser la mejor versión de ti mismo te hacen una persona admirable y querida por todos.",
-    image: "https://i0.wp.com/zaloramalaysiablog.wpcomstaging.com/wp-content/uploads/2025/10/JIMIN-FEATURE.jpeg?resize=736%2C768&ssl=1"
-  },
-  v: {
-    name: "V",
-    description: "¡Eres V, el alma artística y única! Posees una personalidad distintiva y un espíritu libre que te permite ver el mundo de una manera muy particular. Eres creativo, artístico y no tienes miedo de mostrar tu individualidad. Te encanta la belleza en todas sus formas, desde la música clásica hasta la fotografía, y tu capacidad para soñar y vivir una vida llena de arte y amor es inspiradora. Tus amigos te ven como alguien fascinante y con un encanto especial que te hace inolvidable.",
-    image: "https://cokodive.com/cdn/shop/articles/19090942-bts-v-cartier-brand-ambassador-kpop-star-kim-taehyung-jewellery-luxury_cover_1280x1599_0d187aae-7e3b-4f67-9664-1f2b056a64b7_1280x.webp?v=1693273305"
-  },
-  jk: {
-    name: "Jungkook",
-    description: "¡Eres el 'Golden Maknae', Jungkook! Eres una persona con múltiples talentos y una sed insaciable de nuevas experiencias. Siempre estás dispuesto a enfrentar desafíos y a aprender cosas nuevas, destacando en todo lo que te propones. Eres competitivo, trabajador y te esfuerzas por ser el mejor en cada área. Tus amigos admiran tu determinación, tu espíritu aventurero y tu capacidad para dominar cualquier habilidad, lo que te convierte en una persona verdaderamente excepcional.",
-    image: "https://i.pinimg.com/originals/90/7e/7c/907e7c150d4b655517b81841296b40ae.jpg"
-  },
-};
-
 export default function Quizzes() {
-  const [, navigate] = useLocation();
+  const [, setLocation] = useLocation();
+  const utils = trpc.useUtils();
+  
+  const [view, setView] = useState<ViewType>("list");
   const [activeQuiz, setActiveQuiz] = useState<Quiz | null>(null);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<number, string>>({});
   const [showResults, setShowResults] = useState(false);
   const [userName, setUserName] = useState("");
   const [tempUserName, setTempUserName] = useState("");
-  const [view, setView] = useState<ViewType>("list");
-  const resultCardRef = useRef<HTMLDivElement>(null);
 
-  const utils = trpc.useUtils();
-  const { data: leaderboard = [] } = trpc.quizzes.getLeaderboard.useQuery(
-    { quizId: activeQuiz?.id },
-    { enabled: view === "leaderboard" || view === "list" }
+  const { data: leaderboard } = trpc.quizzes.getLeaderboard.useQuery(
+    { quizId: activeQuiz?.id || "" },
+    { enabled: view === "leaderboard" || view === "results" }
   );
 
   const saveScoreMutation = trpc.quizzes.saveScore.useMutation({
@@ -446,14 +173,12 @@ export default function Quizzes() {
       return;
     }
     setUserName(tempUserName);
-    setCurrentQuestionIndex(0);
-    setAnswers({});
-    setShowResults(false);
     setView("quiz");
   };
 
   const handleAnswer = (optionId: string) => {
-    setAnswers({ ...answers, [currentQuestionIndex]: optionId });
+    const newAnswers = { ...answers, [currentQuestionIndex]: optionId };
+    setAnswers(newAnswers);
     
     if (currentQuestionIndex < (activeQuiz?.questions.length || 0) - 1) {
       setCurrentQuestionIndex(currentQuestionIndex + 1);
@@ -461,16 +186,15 @@ export default function Quizzes() {
       setShowResults(true);
       setView("results");
       
-      // Auto-save para trivia (sin redirigir)
       if (activeQuiz?.type === "trivia") {
-        const score = calculateScore();
+        const score = calculateScore(newAnswers);
         const total = activeQuiz.questions.length;
         setTimeout(() => {
           saveScoreMutation.mutate({
-            name: userName,
+            name: tempUserName,
             score,
             total,
-            quizId: activeQuiz.id || "unknown",
+            quizId: activeQuiz.id,
             date: new Date().toLocaleDateString(),
           });
         }, 300);
@@ -478,123 +202,116 @@ export default function Quizzes() {
     }
   };
 
-  const calculateScore = () => {
-    if (!activeQuiz || activeQuiz.type !== "trivia") return 0;
+  const calculateScore = (currentAnswers = answers) => {
+    if (!activeQuiz) return 0;
     let score = 0;
-    activeQuiz.questions.forEach((q, idx) => {
-      if (answers[idx] === q.correctAnswer) score++;
+    activeQuiz.questions.forEach((q, index) => {
+      if (currentAnswers[index] === q.correctAnswer) {
+        score++;
+      }
     });
     return score;
   };
 
   const getPersonalityResult = () => {
-    if (!activeQuiz || activeQuiz.type !== "personality") return null;
     const counts: Record<string, number> = {};
     Object.values(answers).forEach(val => {
       counts[val] = (counts[val] || 0) + 1;
     });
-    const winner = Object.keys(counts).reduce((a, b) => counts[a] > counts[b] ? a : b);
-    return PERSONALITY_RESULTS[winner];
+    let maxCount = 0;
+    let result = "rm";
+    for (const [key, count] of Object.entries(counts)) {
+      if (count > maxCount) {
+        maxCount = count;
+        result = key;
+      }
+    }
+    return PERSONALITY_RESULTS[result] || PERSONALITY_RESULTS.rm;
+  };
+
+  const getRankColor = (index: number) => {
+    if (index === 0) return "bg-yellow-400 text-yellow-900 shadow-yellow-200"; // Oro
+    if (index === 1) return "bg-slate-300 text-slate-700 shadow-slate-100"; // Plata
+    if (index === 2) return "bg-amber-600 text-amber-50 shadow-amber-200"; // Bronce
+    if (index < 15) return "bg-purple-500 text-white shadow-purple-100"; // Morado
+    if (index < 50) return "bg-blue-500 text-white shadow-blue-100"; // Azul
+    return "bg-slate-400 text-white shadow-slate-100"; // Gris
   };
 
   return (
-    <div className="min-h-screen bg-background pb-20">
-      {/* Header */}
-      <header className="sticky top-0 z-50 bg-white/70 backdrop-blur-xl border-b border-border/50 p-4">
-        <div className="container flex items-center justify-between">
-          <Button variant="ghost" size="sm" onClick={() => {
-            if (view === "list") navigate("/");
-            else setView("list");
-          }}>
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Volver
-          </Button>
-          <h1 className="font-bold text-lg">ETER Challenge</h1>
+    <div className="min-h-screen bg-slate-50 py-8 px-4">
+      <div className="max-w-4xl mx-auto">
+        
+        {/* Header de Navegación */}
+        <div className="flex items-center justify-between mb-8">
           <Button 
-            variant="outline" 
-            size="sm" 
-            onClick={() => setView("leaderboard")}
-            className="border-yellow-200 bg-yellow-50/50 hover:bg-yellow-100 hover:border-yellow-400 transition-all shadow-sm"
+            variant="ghost" 
+            onClick={() => view === "list" ? setLocation("/") : setView("list")}
+            className="gap-2 hover:bg-white"
           >
-            <Trophy className="h-5 w-5 text-yellow-600 mr-1.5" />
-            <span className="font-bold text-yellow-700 text-xs hidden sm:inline">Ranking</span>
+            <ArrowLeft className="size-4" />
+            {view === "list" ? "Volver al Inicio" : "Volver a la Lista"}
           </Button>
+          <Badge variant="outline" className="bg-white/50 backdrop-blur-sm border-slate-200 px-4 py-1">
+            ETER Quizzes
+          </Badge>
         </div>
-      </header>
 
-      <main className="container py-6 px-4">
         <AnimatePresence mode="wait">
           {/* VISTA: LISTA DE QUIZZES */}
           {view === "list" && (
             <motion.div 
+              key="list"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
-              className="space-y-8"
+              className="grid grid-cols-1 md:grid-cols-2 gap-6"
             >
-              <div className="text-center mb-4">
-                <Badge variant="outline" className="mb-2">NUEVO</Badge>
-                <h2 className="text-2xl font-bold">Pon a prueba tu pasión</h2>
-                <p className="text-muted-foreground">Elige un quiz y demuestra cuánto sabes.</p>
-              </div>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {QUIZZES.map((quiz) => (
-                  <Card key={quiz.id} className="overflow-hidden hover:shadow-md transition-shadow cursor-pointer flex flex-col h-full" onClick={() => startQuiz(quiz)}>
-                    <div className="h-48 bg-cover bg-center shrink-0" style={{ backgroundImage: `url(${quiz.image})` }} />
-                    <CardHeader className="p-4 flex-grow">
-                      <div className="flex justify-between items-start gap-2 mb-2">
-                        <CardTitle className="text-lg leading-tight">{quiz.title}</CardTitle>
-                        <Badge className="shrink-0">{quiz.type === "trivia" ? "Trivia" : "Personalidad"}</Badge>
-                      </div>
-                      <CardDescription className="line-clamp-2">{quiz.description}</CardDescription>
-                    </CardHeader>
-                    <CardContent className="p-4 pt-0 mt-auto">
-                      <Button className="w-full gap-2">
-                        <Play className="h-4 w-4" /> Comenzar
-                      </Button>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
+              {QUIZZES.map((quiz) => (
+                <Card key={quiz.id} className="overflow-hidden border-none shadow-xl hover:shadow-2xl transition-all group cursor-pointer" onClick={() => startQuiz(quiz)}>
+                  <div className="relative h-48 overflow-hidden">
+                    <img src={quiz.image} alt={quiz.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                    <Badge className="absolute top-4 right-4 bg-white/90 text-slate-900 border-none">
+                      {quiz.type === "trivia" ? "Trivia" : "Personalidad"}
+                    </Badge>
+                  </div>
+                  <CardContent className="p-6">
+                    <h3 className="text-xl font-bold mb-2 group-hover:text-purple-600 transition-colors">{quiz.title}</h3>
+                    <p className="text-slate-500 text-sm mb-4">{quiz.description}</p>
+                    <Button className="w-full bg-purple-600 hover:bg-purple-700 gap-2">
+                      <Play className="size-4" /> Comenzar Test
+                    </Button>
+                  </CardContent>
+                </Card>
+              ))}
             </motion.div>
           )}
 
           {/* VISTA: INGRESO DE NOMBRE */}
-          {view === "name-input" && activeQuiz && (
+          {view === "name-input" && (
             <motion.div 
+              key="name"
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               className="max-w-md mx-auto"
             >
-              <Card className="border-2">
-                <CardHeader className="bg-gradient-to-br from-purple-600 to-fuchsia-500 text-white">
-                  <CardTitle className="text-2xl">¡Bienvenido!</CardTitle>
-                  <CardDescription className="text-purple-100">
-                    Antes de comenzar, cuéntanos tu nombre o apodo
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="p-6 space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium mb-2">Tu nombre o apodo:</label>
-                    <Input
-                      placeholder="Ej: ARMY123, Mi Nombre..."
-                      value={tempUserName}
-                      onChange={(e) => setTempUserName(e.target.value)}
-                      onKeyPress={(e) => e.key === "Enter" && handleNameSubmit()}
-                      autoFocus
-                    />
-                  </div>
-                  <p className="text-xs text-muted-foreground">
-                    Este nombre se mostrará en tus resultados y en el ranking.
-                  </p>
-                  <Button 
-                    className="w-full" 
-                    onClick={handleNameSubmit}
-                  >
-                    Comenzar Quiz
-                  </Button>
-                </CardContent>
+              <Card className="border-none shadow-2xl p-8 text-center">
+                <div className="bg-purple-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <User className="size-8 text-purple-600" />
+                </div>
+                <h2 className="text-2xl font-bold mb-2">¡Hola, ARMY!</h2>
+                <p className="text-slate-500 mb-6">Dinos tu nombre o apodo para personalizar tu resultado.</p>
+                <Input 
+                  placeholder="Tu nombre aquí..." 
+                  value={tempUserName}
+                  onChange={(e) => setTempUserName(e.target.value)}
+                  className="mb-4 text-center text-lg h-12 rounded-xl border-slate-200 focus:ring-purple-500"
+                  onKeyDown={(e) => e.key === "Enter" && handleNameSubmit()}
+                />
+                <Button onClick={handleNameSubmit} className="w-full h-12 bg-purple-600 hover:bg-purple-700 rounded-xl text-lg font-bold">
+                  Empezar Test <ChevronRight className="ml-2" />
+                </Button>
               </Card>
             </motion.div>
           )}
@@ -602,32 +319,34 @@ export default function Quizzes() {
           {/* VISTA: QUIZ EN CURSO */}
           {view === "quiz" && activeQuiz && (
             <motion.div 
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="max-w-md mx-auto"
+              key="quiz"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="max-w-2xl mx-auto"
             >
               <div className="mb-6">
-                <div className="flex justify-between text-sm mb-2">
-                  <span>Pregunta {currentQuestionIndex + 1} de {activeQuiz.questions.length}</span>
-                  <span>{Math.round(((currentQuestionIndex + 1) / activeQuiz.questions.length) * 100)}%</span>
+                <div className="flex justify-between items-end mb-2">
+                  <span className="text-sm font-bold text-purple-600 uppercase tracking-wider">Pregunta {currentQuestionIndex + 1} de {activeQuiz.questions.length}</span>
+                  <span className="text-xs text-slate-400">{Math.round(((currentQuestionIndex + 1) / activeQuiz.questions.length) * 100)}% completado</span>
                 </div>
-                <Progress value={((currentQuestionIndex + 1) / activeQuiz.questions.length) * 100} className="h-2" />
+                <Progress value={((currentQuestionIndex + 1) / activeQuiz.questions.length) * 100} className="h-2 bg-slate-200" />
               </div>
 
-              <Card className="border-2">
-                <CardHeader>
-                  <CardTitle className="text-xl leading-tight">
-                    {activeQuiz.questions[currentQuestionIndex].text}
-                  </CardTitle>
+              <Card className="border-none shadow-2xl overflow-hidden">
+                <CardHeader className="bg-slate-900 text-white p-8">
+                  <CardTitle className="text-2xl leading-tight">{activeQuiz.questions[currentQuestionIndex].text}</CardTitle>
                 </CardHeader>
-                <CardContent className="grid gap-3">
+                <CardContent className="p-8 space-y-4">
                   {activeQuiz.questions[currentQuestionIndex].options.map((option) => (
-                    <Button 
-                      key={option.id} 
-                      variant="outline" 
-                      className="h-auto py-4 px-6 justify-start text-left whitespace-normal hover:bg-purple-50 hover:border-purple-200 transition-all"
+                    <Button
+                      key={option.id}
+                      variant="outline"
+                      className="w-full h-auto py-4 px-6 text-left justify-start text-lg border-2 border-slate-100 hover:border-purple-500 hover:bg-purple-50 transition-all rounded-2xl whitespace-normal"
                       onClick={() => handleAnswer(option.id)}
                     >
+                      <div className="bg-slate-100 w-8 h-8 rounded-lg flex items-center justify-center mr-4 text-sm font-bold text-slate-500 group-hover:bg-purple-200 group-hover:text-purple-600">
+                        {option.id.toUpperCase()}
+                      </div>
                       {option.text}
                     </Button>
                   ))}
@@ -639,63 +358,51 @@ export default function Quizzes() {
           {/* VISTA: RESULTADOS */}
           {view === "results" && activeQuiz && (
             <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="text-center max-w-md mx-auto"
+              key="results"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="max-w-2xl mx-auto text-center"
             >
-              <Card ref={resultCardRef} className="overflow-hidden border-none shadow-2xl">
-                <div className="bg-gradient-to-br from-purple-600 to-fuchsia-500 p-8 text-white">
-                  <Trophy className="h-16 w-16 mx-auto mb-4 animate-bounce" />
-                  <h2 className="text-3xl font-bold mb-2">
-                    {activeQuiz.type === "personality" ? "¡Tu destino ha sido revelado!" : "¡Excelente desempeño!"}
-                  </h2>
-                  <p className="text-purple-100 mb-4">Hola, {userName}</p>
-                  
-                  {activeQuiz.type === "trivia" ? (
-                    <div>
-                      <p className="text-5xl font-black mb-2">{calculateScore()}/{activeQuiz.questions.length}</p>
-                      <p className="opacity-90">¡Increíble esfuerzo!</p>
-                    </div>
-                  ) : (
-                    <div>
-                      <p className="text-xl font-medium opacity-80">Tu resultado es:</p>
-                      <p className="text-4xl font-black mt-2">{getPersonalityResult()?.name}</p>
-                    </div>
-                  )}
+              <Card className="border-none shadow-2xl overflow-hidden mb-8">
+                <div className="bg-gradient-to-r from-purple-600 to-indigo-600 py-12 px-8 text-white">
+                  <Trophy className="size-16 mx-auto mb-4 animate-bounce" />
+                  <h2 className="text-3xl font-black mb-2">¡Tu destino ha sido revelado!</h2>
+                  <p className="text-purple-100 text-lg">Hola, <span className="font-bold text-white">{userName}</span>. Aquí tienes tu resultado:</p>
                 </div>
                 
-                <CardContent className="p-6 bg-white">
-                  {activeQuiz.type === "personality" && (
-                    <div className="space-y-4">
-                      {getPersonalityResult()?.image && (
-                        <div className="flex justify-center">
-                          <img 
-                            src={getPersonalityResult()?.image} 
-                            alt={getPersonalityResult()?.name}
-                            className="max-w-full h-auto rounded-lg shadow-md"
-                          />
-                        </div>
-                      )}
-                      <p className="text-muted-foreground mb-6 italic">
-                        "{getPersonalityResult()?.description}"
+                <CardContent className="p-8">
+                  {activeQuiz.type === "trivia" ? (
+                    <div className="space-y-6">
+                      <div className="text-6xl font-black text-slate-900">
+                        {calculateScore()} / {activeQuiz.questions.length}
+                      </div>
+                      <p className="text-xl text-slate-600 font-medium">
+                        {calculateScore() === activeQuiz.questions.length ? "¡Increíble! Eres un ARMY de élite. 💜" : 
+                         calculateScore() > activeQuiz.questions.length / 2 ? "¡Muy bien! Conoces mucho sobre BTS. ✨" : 
+                         "¡Sigue aprendiendo! Todo ARMY empezó así. 😊"}
                       </p>
+                    </div>
+                  ) : (
+                    <div className="space-y-6">
+                      <div className="relative w-full max-w-xs mx-auto rounded-3xl overflow-hidden shadow-2xl border-4 border-purple-100">
+                        <img 
+                          src={getPersonalityResult().image} 
+                          alt={getPersonalityResult().name} 
+                          className="w-full h-auto object-top"
+                        />
+                      </div>
+                      <h3 className="text-3xl font-black text-purple-600">{getPersonalityResult().name}</h3>
+                      <p className="text-lg text-slate-600 leading-relaxed italic">"{getPersonalityResult().description}"</p>
                     </div>
                   )}
 
-                  <div className="space-y-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-12">
+                    <Button onClick={() => setView("list")} variant="outline" className="h-14 rounded-2xl text-lg font-bold border-2">
+                      <History className="mr-2" /> Otros Quizzes
+                    </Button>
                     {activeQuiz.type === "trivia" && (
-                      <>
-                        <Button className="w-full gap-2" onClick={() => setView("leaderboard")}>
-                          <Trophy className="h-4 w-4" /> Ver Ranking
-                        </Button>
-                        <Button variant="outline" className="w-full gap-2" onClick={() => setView("list")}>
-                          <History className="h-4 w-4" /> Otros Quizzes
-                        </Button>
-                      </>
-                    )}
-                    {activeQuiz.type === "personality" && (
-                      <Button variant="outline" className="w-full gap-2" onClick={() => setView("list")}>
-                        <History className="h-4 w-4" /> Otros Quizzes
+                      <Button onClick={() => setView("leaderboard")} className="h-14 bg-purple-600 hover:bg-purple-700 rounded-2xl text-lg font-bold">
+                        <Trophy className="mr-2" /> Ver Ranking
                       </Button>
                     )}
                   </div>
@@ -707,86 +414,51 @@ export default function Quizzes() {
           {/* VISTA: LEADERBOARD */}
           {view === "leaderboard" && (
             <motion.div 
+              key="leaderboard"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="max-w-md mx-auto"
+              className="max-w-2xl mx-auto"
             >
-              <div className="text-center mb-6">
-                <Trophy className="h-12 w-12 text-yellow-500 mx-auto mb-2" />
-                <h2 className="text-2xl font-bold">ETER Top Scores</h2>
-                <p className="text-muted-foreground">Los mejores puntajes de la comunidad</p>
-              </div>
-
-              <Card>
+              <Card className="border-none shadow-2xl overflow-hidden">
+                <CardHeader className="bg-slate-900 text-white p-8 text-center">
+                  <Trophy className="size-12 text-yellow-400 mx-auto mb-4" />
+                  <CardTitle className="text-3xl font-black">Ranking Global ARMY</CardTitle>
+                  <CardDescription className="text-slate-400 text-lg">Los mejores puntajes de {activeQuiz?.title}</CardDescription>
+                </CardHeader>
                 <CardContent className="p-0">
-                  <div className="divide-y">
-                    {leaderboard.length > 0 ? leaderboard.map((s, i) => {
-                      let medalColor = "text-white";
-                      let medalBgColor = "";
-                      let positionLabel = "";
-                      
-                      if (i === 0) {
-                        medalColor = "text-yellow-600";
-                        medalBgColor = "bg-yellow-100";
-                        positionLabel = "🥇";
-                      } else if (i === 1) {
-                        medalColor = "text-gray-500";
-                        medalBgColor = "bg-gray-100";
-                        positionLabel = "🥈";
-                      } else if (i === 2) {
-                        medalColor = "text-amber-700";
-                        medalBgColor = "bg-amber-100";
-                        positionLabel = "🥉";
-                      } else if (i < 15) {
-                        medalColor = "text-purple-600";
-                        medalBgColor = "bg-purple-100";
-                        positionLabel = `${i + 1}`;
-                      } else if (i < 50) {
-                        medalColor = "text-blue-600";
-                        medalBgColor = "bg-blue-100";
-                        positionLabel = `${i + 1}`;
-                      } else if (i < 100) {
-                        medalColor = "text-gray-600";
-                        medalBgColor = "bg-gray-100";
-                        positionLabel = `${i + 1}`;
-                      } else {
-                        medalColor = "text-gray-500";
-                        medalBgColor = "bg-gray-50";
-                        positionLabel = `${i + 1}`;
-                      }
-                      
-                      return (
-                      <div key={i} className="flex items-center justify-between p-4 hover:bg-purple-50 transition-colors">
-                        <div className="flex items-center gap-4">
-                          <div className={`flex items-center justify-center w-10 h-10 rounded-full font-bold text-sm ${medalBgColor} ${medalColor}`}>
-                            {positionLabel}
-                          </div>
-                          <div>
-                            <p className="font-bold">{s.name}</p>
-                            <p className="text-xs text-muted-foreground">{s.date}</p>
-                          </div>
+                  <div className="divide-y divide-slate-100">
+                    {leaderboard?.map((score, index) => (
+                      <div key={index} className="flex items-center p-6 hover:bg-slate-50 transition-colors group">
+                        <div className={`w-10 h-10 rounded-full flex items-center justify-center font-black text-sm mr-6 shadow-sm ${getRankColor(index)}`}>
+                          {index + 1}
                         </div>
-                        <Badge variant="secondary" className="text-lg">
-                          {s.score}/{s.total}
-                        </Badge>
+                        <div className="flex-grow">
+                          <div className="font-bold text-lg text-slate-900">{score.name}</div>
+                          <div className="text-xs text-slate-400 font-medium uppercase tracking-widest">{score.date}</div>
+                        </div>
+                        <div className="text-right">
+                          <div className="text-2xl font-black text-purple-600">{score.score}</div>
+                          <div className="text-[10px] font-bold text-slate-300 uppercase tracking-tighter">Puntos</div>
+                        </div>
                       </div>
-                    );
-                    }) : (
-                      <div className="p-8 text-center text-muted-foreground">
-                        Aún no hay puntajes. ¡Sé el primero!
+                    ))}
+                    {(!leaderboard || leaderboard.length === 0) && (
+                      <div className="p-12 text-center text-slate-400">
+                        Aún no hay puntajes registrados. ¡Sé el primero!
                       </div>
                     )}
                   </div>
+                  <div className="p-8 bg-slate-50 border-t border-slate-100">
+                    <Button onClick={() => setView("list")} className="w-full h-12 bg-slate-900 hover:bg-slate-800 rounded-xl font-bold">
+                      Volver a los Quizzes
+                    </Button>
+                  </div>
                 </CardContent>
               </Card>
-              
-              <Button className="w-full mt-6" variant="outline" onClick={() => setView("list")}>
-                Volver a los Quizzes
-              </Button>
             </motion.div>
           )}
         </AnimatePresence>
-      </main>
+      </div>
     </div>
   );
 }
