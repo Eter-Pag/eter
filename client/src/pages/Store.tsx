@@ -130,8 +130,8 @@ export default function Store() {
                 window.location.hash = "";
                 setOpenProductId(null);
               } else {
-                // Si no hay producto abierto, vuelve a la página anterior
-                window.history.back();
+                // Si no hay producto abierto, navega a Home
+                navigate("/");
               }
             }}
             className="gap-2 font-bold text-slate-600 hover:bg-slate-100 rounded-full"
