@@ -3,7 +3,8 @@ import { useLocation } from "wouter";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "../components/ui/badge";
-import { ExternalLink, ShoppingBag, Lock, ArrowLeft, Star, Maximize2, ShoppingCart, CheckCircle2 } from "lucide-react";
+import { ExternalLink, ShoppingBag, Lock, ArrowLeft, Star, Maximize2, ShoppingCart, CheckCircle2, Search } from "lucide-react";
+import { Input } from "@/components/ui/input";
 import { trpc } from "@/lib/trpc";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { motion } from "framer-motion";
@@ -26,6 +27,8 @@ export default function Store() {
   const [showAdminPrompt, setShowAdminPrompt] = useState(false);
   const [adminPassword, setAdminPassword] = useState("");
   const [openProductId, setOpenProductId] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const { data: dbProducts, isLoading } = trpc.products.list.useQuery();
 
   useEffect(() => {
@@ -44,8 +47,17 @@ export default function Store() {
           badge: p.badge || undefined,
         }));
       setProducts(formattedProducts);
+      setFilteredProducts(formattedProducts);
     }
   }, [dbProducts]);
+
+  useEffect(() => {
+    const filtered = products.filter(product =>
+      product.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      product.description.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    setFilteredProducts(filtered);
+  }, [searchTerm, products]);
 
   useEffect(() => {
     const handleHashChange = () => {
@@ -173,23 +185,34 @@ export default function Store() {
 
       {/* Products Grid */}
       <section className="container py-12 px-4 max-w-7xl mx-auto">
+        <div className="relative mb-8">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-5 text-slate-400" />
+          <Input
+            type="text"
+            placeholder="Buscar productos..."
+            className="w-full pl-10 pr-4 py-2 rounded-full border border-slate-200 focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all shadow-sm"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
+
         {isLoading ? (
           <div className="flex justify-center py-20">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
           </div>
-        ) : products.length === 0 ? (
+        ) : filteredProducts.length === 0 ? (
           <div className="text-center py-20 bg-white rounded-[2.5rem] shadow-sm border border-slate-100">
             <ShoppingBag className="size-16 text-slate-200 mx-auto mb-4" />
             <p className="text-slate-400 font-bold text-lg mb-6">
-              No hay productos disponibles en este momento
+              No se encontraron productos que coincidan con tu búsqueda.
             </p>
-            <Button onClick={() => navigate("/")} variant="outline" className="rounded-full px-8">
-              Volver al inicio
+            <Button onClick={() => setSearchTerm("")} variant="outline" className="rounded-full px-8">
+              Limpiar búsqueda
             </Button>
           </div>
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-8">
-            {products.map((product) => (
+            {filteredProducts.map((product) => (
               <Dialog 
                 key={product.id} 
                 open={openProductId === product.id} 
