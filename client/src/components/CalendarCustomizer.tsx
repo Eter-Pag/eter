@@ -251,12 +251,12 @@ export default function CalendarCustomizer() {
   return (
     <div className="space-y-10 p-4 md:p-8">
       {/* Contenedor principal para el diseño de tres columnas en PC */}
-      <div className="md:grid md:grid-cols-3 md:gap-10">
+      <div className="md:grid md:grid-cols-3 md:gap-6 lg:gap-10 xl:gap-16">
         {/* Columna 1: Subir y Editar Imagen */}
         <div className="md:col-span-1 space-y-6">
           {/* Sección de Personalización */}
           <div className="flex flex-col items-center mb-8">
-            <div className="flex items-center gap-4 w-full my-6">
+            <div className="flex items-center gap-4 w-full my-6 md:max-w-none">
               <div className="h-px flex-1 bg-white/10" />
               <span className="text-[10px] font-black text-white/20 uppercase tracking-[0.2em]">Personaliza el tuyo</span>
               <div className="h-px flex-1 bg-white/10" />
@@ -401,7 +401,7 @@ export default function CalendarCustomizer() {
                     </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl mx-auto">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <Button
                         onClick={() => generateDownload("png")}
                         disabled={isProcessing}
@@ -435,12 +435,12 @@ export default function CalendarCustomizer() {
         {/* Columna 3: Versión Original */}
         <div className="md:col-span-1 space-y-8 mt-10 md:mt-0">
           <div className="flex flex-col items-center">
-            <div className="flex items-center gap-4 w-full my-6">
+            <div className="flex items-center gap-4 w-full my-6 md:max-w-none">
               <div className="h-px flex-1 bg-white/10" />
               <span className="text-[10px] font-black text-white/20 uppercase tracking-[0.2em]">O Descarga la versión original</span>
               <div className="h-px flex-1 bg-white/10" />
             </div>
-            <Card className="w-full max-w-md bg-white/5 border-white/10 backdrop-blur-xl overflow-hidden rounded-3xl">
+            <Card className="w-full bg-white/5 border-white/10 backdrop-blur-xl overflow-hidden rounded-3xl">
               <CardContent className="p-6 flex flex-col items-center gap-4">
                 <div className="flex items-center gap-3">
                   <div className="size-10 bg-purple-500/20 rounded-xl flex items-center justify-center text-purple-400">
