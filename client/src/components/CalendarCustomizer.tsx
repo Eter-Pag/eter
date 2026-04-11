@@ -83,7 +83,10 @@ export default function CalendarCustomizer() {
   }, []);
 
   const generateDownload = async (format: "png" | "pdf") => {
-    if (!calendarRef.current) return;
+    if (!calendarRef.current) {
+      console.error("calendarRef.current is null or undefined");
+      return;
+    }
     setIsProcessing(true);
     const toastId = toast.loading(`Generando ${format.toUpperCase()} de alta calidad...`);
 
@@ -109,7 +112,9 @@ export default function CalendarCustomizer() {
       if (format === "png") {
         const link = document.createElement("a");
         link.download = `Calendario_Eter_Abril_Personalizado.png`;
-        link.href = canvas.toDataURL("image/png");
+        console.log("Canvas object:", canvas);
+        const dataUrl = canvas.toDataURL("image/png");
+        link.href = dataUrl;
         link.click();
       } else {
         const imgData = canvas.toDataURL("image/png");
@@ -271,48 +276,6 @@ export default function CalendarCustomizer() {
                 </div>
             </div>
 
-            {/* El Calendario Renderizado */}
-            <div className="flex justify-center">
-                <div 
-                    ref={calendarRef}
-                    className="relative w-full max-w-[500px] aspect-[1/1.414] bg-white shadow-2xl overflow-hidden"
-                    style={{ borderRadius: '0px' }}
-                >
-                    {/* El diseño base del calendario - CAPA MEDIA (z-10) */}
-                    {/* Usamos la versión Base64 si está disponible para evitar errores de CORS */}
-                    <img 
-                        src={base64Calendar || "/assets/calendario_base_abril.png"} 
-                        className="absolute inset-0 w-full h-full object-cover z-10 pointer-events-none"
-                        alt="Calendario Base"
-                        crossOrigin="anonymous"
-                    />
-
-                    {/* FOTO DEL USUARIO: AL FRENTE (z-20) */}
-                    <div 
-                        className="absolute bottom-[4.5%] left-[4.5%] w-[35.5%] h-[23.5%] z-20 bg-white rounded-2xl overflow-hidden shadow-lg"
-                    >
-                        {image && croppedAreaPixels && (
-                            <div className="relative w-full h-full">
-                                <img
-                                    src={image}
-                                    alt="User Content"
-                                    className="absolute"
-                                    style={{
-                                        width: `${100 * (100 / (croppedAreaPixels.width / 100))}%`,
-                                        height: 'auto',
-                                        left: `${-croppedAreaPixels.x * (100 / croppedAreaPixels.width)}%`,
-                                        top: `${-croppedAreaPixels.y * (100 / croppedAreaPixels.width)}%`,
-                                        transform: `scale(${zoom})`,
-                                        transformOrigin: 'top left'
-                                    }}
-                                    crossOrigin="anonymous"
-                                />
-                            </div>
-                        )}
-                    </div>
-                </div>
-            </div>
-
             {/* Botones de Descarga */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl mx-auto">
                 <Button
@@ -343,6 +306,57 @@ export default function CalendarCustomizer() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* El Calendario Renderizado (siempre presente pero oculto si no se usa) */}
+      <div 
+          ref={calendarRef}
+          className="absolute top-0 left-0 -z-50"
+          style={{ 
+            width: '500px', 
+            height: '707px', 
+            pointerEvents: 'none', 
+            opacity: image && !showEditor ? '1' : '0', // Controlar la opacidad para html2canvas
+            visibility: image && !showEditor ? 'visible' : 'hidden' // Controlar la visibilidad para html2canvas
+          }}
+      >
+          <div 
+              className="relative w-full h-full bg-white shadow-2xl overflow-hidden"
+              style={{ borderRadius: '0px' }}
+          >
+              {/* El diseño base del calendario - CAPA MEDIA (z-10) */}
+              {/* Usamos la versión Base64 si está disponible para evitar errores de CORS */}
+              <img 
+                  src={base64Calendar || "/assets/calendario_base_abril.png"} 
+                  className="absolute inset-0 w-full h-full object-cover z-10 pointer-events-none"
+                  alt="Calendario Base"
+                  crossOrigin="anonymous"
+              />
+
+              {/* FOTO DEL USUARIO: AL FRENTE (z-20) */}
+              <div 
+                  className="absolute bottom-[4.5%] left-[4.5%] w-[35.5%] h-[23.5%] z-20 bg-white rounded-2xl overflow-hidden shadow-lg"
+              >
+                  {image && croppedAreaPixels && (
+                      <div className="relative w-full h-full">
+                          <img
+                              src={image}
+                              alt="User Content"
+                              className="absolute"
+                              style={{
+                                  width: `${100 * (100 / (croppedAreaPixels.width / 100))}%`,
+                                  height: 'auto',
+                                  left: `${-croppedAreaPixels.x * (100 / croppedAreaPixels.width)}%`,
+                                  top: `${-croppedAreaPixels.y * (100 / croppedAreaPixels.width)}%`,
+                                  transform: `scale(${zoom})`,
+                                  transformOrigin: 'top left'
+                              }}
+                              crossOrigin="anonymous"
+                          />
+                      </div>
+                  )}
+              </div>
+          </div>
+      </div>
     </div>
   );
 }
