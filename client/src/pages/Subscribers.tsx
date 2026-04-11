@@ -153,53 +153,6 @@ export default function Subscribers() {
           </motion.div>
         ) : (
           <div className="space-y-12">
-            {/* Latest Photocards Section */}
-            {photocards.length > 0 && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="space-y-6"
-              >
-                <div className="space-y-2">
-                  <h2 className="text-3xl font-black uppercase tracking-tighter flex items-center gap-3">
-                    <Sparkles className="size-8 text-purple-600" />
-                    Últimas Photocards (Top 7)
-                  </h2>
-                  <p className="text-slate-600 font-medium">Las 7 photocards más recientes de nuestra colección exclusiva.</p>
-                </div>
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
-                  {photocards.slice(0, 7).map((pc) => (
-                    <motion.div
-                      key={pc.id}
-                      initial={{ opacity: 0, scale: 0.9 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      whileHover={{ scale: 1.05 }}
-                      style={{ aspectRatio: '2/3' }}
-                      onClick={() => {
-                        setSelectedPhotocard(pc);
-                        setIsModalOpen(true);
-                      }}
-                      className="cursor-pointer"
-                    >
-                      <div className="h-full rounded-2xl overflow-hidden shadow-lg border-2 border-slate-200 hover:border-purple-400 transition-all duration-300 hover:shadow-xl">
-                        <InteractivePhotocard
-                          imageUrl={pc.imageUrl}
-                          characterName={pc.characterName}
-                          shineType={pc.shineType}
-                          showName={false}
-                          opacity={pc.opacity ?? 0.5}
-                        />
-                      </div>
-                      <div className="mt-3 space-y-1">
-                        <p className="text-xs font-bold text-slate-900 truncate">{pc.folio}</p>
-                        <p className="text-xs text-slate-500 truncate">{pc.characterName}</p>
-                      </div>
-                    </motion.div>
-                  ))}
-                </div>
-              </motion.div>
-            )}
-
             {/* Search Section */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -246,14 +199,16 @@ export default function Subscribers() {
                       initial={{ opacity: 0, scale: 0.9 }}
                       animate={{ opacity: 1, scale: 1 }}
                       whileHover={{ scale: 1.05 }}
-                      style={{ aspectRatio: '2/3' }}
-                      onClick={() => {
-                        setSelectedPhotocard(pc);
-                        setIsModalOpen(true);
-                      }}
-                      className="cursor-pointer"
+                      className="flex flex-col gap-2"
                     >
-                      <div className="h-full rounded-2xl overflow-hidden shadow-lg border-2 border-slate-200 hover:border-purple-400 transition-all duration-300 hover:shadow-xl">
+                      <div 
+                        className="relative rounded-2xl overflow-hidden shadow-lg border-2 border-slate-200 hover:border-purple-400 transition-all duration-300 hover:shadow-xl cursor-pointer group"
+                        style={{ aspectRatio: '2/3' }}
+                        onClick={() => {
+                          setSelectedPhotocard(pc);
+                          setIsModalOpen(true);
+                        }}
+                      >
                         <InteractivePhotocard
                           imageUrl={pc.imageUrl}
                           characterName={pc.characterName}
@@ -261,10 +216,30 @@ export default function Subscribers() {
                           showName={false}
                           opacity={pc.opacity ?? 0.5}
                         />
+                        
+                        {/* Expand Icon Overlay */}
+                        <div className="absolute inset-0 flex items-center justify-center bg-black/0 group-hover:bg-black/30 transition-all duration-300 rounded-2xl">
+                          <div className="opacity-0 group-hover:opacity-100 transition-all duration-300 transform scale-75 group-hover:scale-100">
+                            <Sparkles className="size-8 text-white drop-shadow-lg" />
+                          </div>
+                        </div>
                       </div>
-                      <div className="mt-3 space-y-1">
-                        <p className="text-xs font-bold text-slate-900 truncate">{pc.folio}</p>
-                        <p className="text-xs text-slate-500 truncate">{pc.characterName}</p>
+                      
+                      {/* Info and Button */}
+                      <div className="space-y-2">
+                        <div className="space-y-1">
+                          <p className="text-xs font-bold text-slate-900 truncate">{pc.folio}</p>
+                          <p className="text-xs text-slate-500 truncate">{pc.characterName}</p>
+                        </div>
+                        <button
+                          onClick={() => {
+                            setSelectedPhotocard(pc);
+                            setIsModalOpen(true);
+                          }}
+                          className="w-full px-3 py-2 bg-gradient-to-r from-purple-500 to-indigo-500 hover:from-purple-600 hover:to-indigo-600 text-white text-xs font-bold rounded-lg transition-all duration-300 shadow-md hover:shadow-lg"
+                        >
+                          Ver Completa ✨
+                        </button>
                       </div>
                     </motion.div>
                   ))}
