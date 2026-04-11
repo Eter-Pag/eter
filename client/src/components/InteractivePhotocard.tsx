@@ -162,21 +162,7 @@ export const InteractivePhotocard: React.FC<InteractivePhotocardProps> = ({
             }}
           />
 
-          {/* Character Name Badge */}
-          {showName && (
-            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4">
-              <p className="text-white font-black text-center uppercase tracking-widest text-sm">
-                {characterName}
-              </p>
-            </div>
-          )}
-
-          {/* Folio Badge (always visible) */}
-          {folio && (
-            <div className="absolute top-4 right-4 bg-black/60 backdrop-blur-sm px-3 py-1 rounded-full">
-              <p className="text-white font-bold text-xs tracking-widest">{folio}</p>
-            </div>
-          )}
+          {/* No text overlays - pure visual card */}
 
           {/* Border Glow */}
           <div

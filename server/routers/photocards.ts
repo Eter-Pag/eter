@@ -1,6 +1,6 @@
 import { router, publicProcedure } from "../_core/trpc";
 import { z } from "zod";
-import { getAllPhotocards, createPhotocard, deletePhotocard, Photocard } from "../db";
+import { getAllPhotocards, createPhotocard, deletePhotocard } from "../db";
 
 export const photocardsRouter = router({
   list: publicProcedure.query(async () => {
@@ -13,7 +13,6 @@ export const photocardsRouter = router({
         characterName: z.string().min(1),
         imageUrl: z.string().url(),
         shineType: z.enum(['stars', 'hearts', 'rainbow', 'holographic', 'diamond', 'crystal']),
-        folio: z.string().min(1),
         showName: z.boolean().optional(),
       })
     )
@@ -22,7 +21,6 @@ export const photocardsRouter = router({
         characterName: input.characterName,
         imageUrl: input.imageUrl,
         shineType: input.shineType,
-        folio: input.folio,
         showName: input.showName !== false,
       });
       return { id, success: true };

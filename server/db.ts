@@ -96,7 +96,8 @@ export interface Photocard {
   characterName: string;
   imageUrl: string;
   shineType: 'stars' | 'hearts' | 'rainbow' | 'holographic' | 'diamond' | 'crystal';
-  folio: string;
+  folio?: string;
+  folioNumber?: number;
   showName?: boolean;
   createdAt?: string;
   updatedAt?: string;
@@ -189,7 +190,7 @@ function getHeadersForSheet(sheetName: string): string[] {
     galleries: ['id', 'group', 'url', 'createdAt', 'updatedAt'],
     quiz_scores: ['id', 'name', 'score', 'total', 'quizId', 'date', 'createdAt', 'updatedAt'],
     subscriber_settings: ['id', 'password', 'updatedAt'],
-    photocards: ['id', 'characterName', 'imageUrl', 'shineType', 'folio', 'showName', 'createdAt', 'updatedAt'],
+    photocards: ['id', 'characterName', 'imageUrl', 'shineType', 'folio', 'folioNumber', 'showName', 'createdAt', 'updatedAt'],
   };
   return headers[sheetName] || [];
 }
@@ -761,14 +762,17 @@ export async function getAllPhotocards(): Promise<Photocard[]> {
   return rows.map(r => rowToObject(r, getHeadersForSheet('photocards')));
 }
 
-export async function createPhotocard(data: Omit<Photocard, 'id' | 'createdAt' | 'updatedAt'>): Promise<string> {
+export async function createPhotocard(data: Omit<Photocard, 'id' | 'createdAt' | 'updatedAt' | 'folio' | 'folioNumber'>): Promise<string> {
   const doc = await getDoc();
   if (!doc) throw new Error('DB not available');
   const sheet = doc.sheetsByTitle['photocards'];
   if (!sheet) throw new Error('Photocards sheet not found');
+  const rows = await sheet.getRows();
+  const folioNumber = rows.length + 1;
+  const folio = `CARD-ETER-${String(folioNumber).padStart(3, '0')}`;
   const id = Date.now().toString();
   const now = new Date().toISOString();
-  await sheet.addRow({ ...data, id, createdAt: now, updatedAt: now });
+  await sheet.addRow({ ...data, id, folio, folioNumber, createdAt: now, updatedAt: now });
   return id;
 }
 

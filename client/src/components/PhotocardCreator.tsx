@@ -12,8 +12,7 @@ export const PhotocardCreator: React.FC = () => {
   const [characterName, setCharacterName] = useState('');
   const [imageUrl, setImageUrl] = useState('');
   const [shineType, setShineType] = useState<'stars' | 'hearts' | 'rainbow' | 'holographic' | 'diamond' | 'crystal'>('holographic');
-  const [folio, setFolio] = useState('');
-  const [showName, setShowName] = useState(true);
+  const [showName, setShowName] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
 
   const { data: photocards = [], refetch } = trpc.photocards.list.useQuery();
@@ -22,7 +21,7 @@ export const PhotocardCreator: React.FC = () => {
 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!characterName || !imageUrl || !folio) {
+    if (!characterName || !imageUrl) {
       toast.error('Por favor completa todos los campos');
       return;
     }
@@ -33,13 +32,11 @@ export const PhotocardCreator: React.FC = () => {
         characterName,
         imageUrl,
         shineType,
-        folio,
         showName,
       });
       toast.success('Photocard creada exitosamente');
       setCharacterName('');
       setImageUrl('');
-      setFolio('');
       setShineType('holographic');
       refetch();
     } catch (error) {
@@ -76,32 +73,20 @@ export const PhotocardCreator: React.FC = () => {
         </CardHeader>
         <CardContent className="p-8">
           <form onSubmit={handleCreate} className="space-y-6">
-            <div className="grid md:grid-cols-2 gap-6">
-              {/* Character Name */}
-              <div className="space-y-2">
-                <label className="text-xs font-black uppercase text-slate-600 tracking-widest">
-                  Nombre del Personaje
-                </label>
-                <Input
-                  placeholder="Ej: Jungkook"
-                  value={characterName}
-                  onChange={(e) => setCharacterName(e.target.value)}
-                  className="rounded-xl bg-slate-50 h-12"
-                />
-              </div>
-
-              {/* Folio */}
-              <div className="space-y-2">
-                <label className="text-xs font-black uppercase text-slate-600 tracking-widest">
-                  Número de Folio
-                </label>
-                <Input
-                  placeholder="Ej: BTS-PC-001"
-                  value={folio}
-                  onChange={(e) => setFolio(e.target.value)}
-                  className="rounded-xl bg-slate-50 h-12"
-                />
-              </div>
+            {/* Character Name */}
+            <div className="space-y-2">
+              <label className="text-xs font-black uppercase text-slate-600 tracking-widest">
+                Nombre del Personaje
+              </label>
+              <Input
+                placeholder="Ej: Jungkook"
+                value={characterName}
+                onChange={(e) => setCharacterName(e.target.value)}
+                className="rounded-xl bg-slate-50 h-12"
+              />
+              <p className="text-xs text-slate-400">
+                💡 El folio se generará automáticamente como CARD-ETER-XXX
+              </p>
             </div>
 
             {/* Image URL */}
@@ -119,31 +104,6 @@ export const PhotocardCreator: React.FC = () => {
               <p className="text-xs text-slate-400">
                 💡 Sube tu imagen a un servicio como Imgur o Cloudinary y pega el enlace aquí
               </p>
-            </div>
-
-            {/* Show Name Toggle */}
-            <div className="space-y-2">
-              <label className="text-xs font-black uppercase text-slate-600 tracking-widest">
-                Mostrar Nombre
-              </label>
-              <div className="flex items-center gap-4">
-                <button
-                  type="button"
-                  onClick={() => setShowName(!showName)}
-                  className={`relative inline-flex h-8 w-14 items-center rounded-full transition-colors ${
-                    showName ? 'bg-purple-600' : 'bg-slate-300'
-                  }`}
-                >
-                  <span
-                    className={`inline-block h-6 w-6 transform rounded-full bg-white transition-transform ${
-                      showName ? 'translate-x-7' : 'translate-x-1'
-                    }`}
-                  />
-                </button>
-                <span className="text-sm font-medium text-slate-600">
-                  {showName ? 'Mostrar nombre del integrante' : 'Ocultar nombre (Misterio)'}
-                </span>
-              </div>
             </div>
 
             {/* Shine Type */}
@@ -186,8 +146,7 @@ export const PhotocardCreator: React.FC = () => {
                       imageUrl={imageUrl}
                       characterName={characterName}
                       shineType={shineType}
-                      showName={showName}
-                      folio={folio}
+                      showName={false}
                     />
                   </div>
                 </div>
@@ -237,17 +196,16 @@ export const PhotocardCreator: React.FC = () => {
                       imageUrl={pc.imageUrl}
                       characterName={pc.characterName}
                       shineType={pc.shineType}
-                      showName={pc.showName !== false}
-                      folio={pc.folio}
+                      showName={false}
                     />
                   </div>
                   <div className="space-y-2">
                     <p className="text-sm font-bold text-slate-900">
-                      {pc.characterName} - {pc.folio}
+                      {pc.folio}
                     </p>
-                      <p className="text-xs text-slate-500">
-                        Tipo: {pc.shineType === 'holographic' ? '✨ Holográfico' : pc.shineType === 'diamond' ? '💎 Diamante' : pc.shineType === 'crystal' ? '❄️ Cristal' : pc.shineType}
-                      </p>
+                    <p className="text-xs text-slate-500">
+                      {pc.characterName} • {pc.shineType === 'holographic' ? '✨ Holográfico' : pc.shineType === 'diamond' ? '💎 Diamante' : pc.shineType === 'crystal' ? '❄️ Cristal' : pc.shineType}
+                    </p>
                     <Button
                       onClick={() => pc.id && handleDelete(pc.id)}
                       variant="destructive"
