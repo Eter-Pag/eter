@@ -123,10 +123,11 @@ export default function Subscribers() {
     {
       id: 2,
       title: "Calendario Premium",
-      description: "Versión extendida con fechas importantes del fandom.",
+      description: "Personaliza tu calendario de Abril con tu propia foto favorita.",
       icon: Calendar,
       status: "Disponible",
       color: "from-pink-500 to-rose-500",
+      path: "/suscriptores/calendario-personalizado"
     },
   ];
 
@@ -361,6 +362,11 @@ export default function Subscribers() {
                                 : "secondary"
                             }
                             disabled={benefit.status !== "Disponible"}
+                            onClick={() => {
+                                if (benefit.path) {
+                                    navigate(benefit.path);
+                                }
+                            }}
                             className={`w-full rounded-xl font-bold uppercase tracking-widest gap-2 ${
                               benefit.status === "Disponible"
                                 ? `bg-gradient-to-r ${benefit.color} hover:opacity-90 text-white border-none shadow-lg`
@@ -369,7 +375,8 @@ export default function Subscribers() {
                           >
                             {benefit.status === "Disponible" ? (
                               <>
-                                <Download className="size-4" /> Descargar
+                                {benefit.path ? <Sparkles className="size-4" /> : <Download className="size-4" />} 
+                                {benefit.path ? "Personalizar" : "Descargar"}
                               </>
                             ) : (
                               "Muy pronto"
