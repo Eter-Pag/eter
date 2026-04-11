@@ -40,9 +40,15 @@ export const photocardsRouter = router({
     }))
     .mutation(async ({ input }) => {
       try {
-        const response = await fetch(input.imageUrl);
+        const response = await fetch(input.imageUrl, {
+          headers: {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            'Referer': new URL(input.imageUrl).origin,
+            'Accept': 'image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8',
+          }
+        });
         if (!response.ok) {
-          throw new Error(`Failed to fetch image: ${response.statusText}`);
+          throw new Error(`Failed to fetch image: ${response.status} ${response.statusText}`);
         }
         const buffer = await response.arrayBuffer();
         const base64 = Buffer.from(buffer).toString('base64');

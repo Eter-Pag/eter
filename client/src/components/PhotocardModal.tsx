@@ -31,30 +31,74 @@ export const PhotocardModal: React.FC<PhotocardModalProps> = ({
 
     try {
       setIsDownloading(true);
-      const result = await trpc.photocards.download.mutate({
-        imageUrl: photocard.imageUrl,
-        folio: photocard.folio,
-      });
+      
+      // Intentar primero con el proxy del servidor
+      try {
+        const result = await trpc.photocards.download.mutate({
+          imageUrl: photocard.imageUrl,
+          folio: photocard.folio,
+        });
 
-      if (result.success && result.data) {
-        const binaryString = atob(result.data);
-        const bytes = new Uint8Array(binaryString.length);
-        for (let i = 0; i < binaryString.length; i++) {
-          bytes[i] = binaryString.charCodeAt(i);
+        if (result.success && result.data) {
+          const binaryString = atob(result.data);
+          const bytes = new Uint8Array(binaryString.length);
+          for (let i = 0; i < binaryString.length; i++) {
+            bytes[i] = binaryString.charCodeAt(i);
+          }
+          const blob = new Blob([bytes], { type: result.mimeType });
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = result.filename;
+          document.body.appendChild(a);
+          a.click();
+          window.URL.revokeObjectURL(url);
+          document.body.removeChild(a);
+          toast.success('¡Photocard descargada!');
+          return;
         }
-        const blob = new Blob([bytes], { type: result.mimeType });
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = result.filename;
-        document.body.appendChild(a);
-        a.click();
-        window.URL.revokeObjectURL(url);
-        document.body.removeChild(a);
-        toast.success('¡Photocard descargada!');
+      } catch (proxyError) {
+        console.warn('Proxy download failed, trying fallback method:', proxyError);
       }
+
+      // MÉTODO DE RESPALDO: Usar Canvas para "dibujar" la imagen (útil si el proxy falla)
+      const img = new Image();
+      img.crossOrigin = "anonymous"; // Intentar saltar CORS
+      img.src = photocard.imageUrl;
+      
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = img.width;
+        canvas.height = img.height;
+        const ctx = canvas.getContext('2d');
+        if (ctx) {
+          ctx.drawImage(img, 0, 0);
+          canvas.toBlob((blob) => {
+            if (blob) {
+              const url = window.URL.createObjectURL(blob);
+              const a = document.createElement('a');
+              a.href = url;
+              a.download = `${photocard.folio}.png`;
+              document.body.appendChild(a);
+              a.click();
+              window.URL.revokeObjectURL(url);
+              document.body.removeChild(a);
+              toast.success('¡Photocard descargada (vía canvas)!');
+            } else {
+              toast.error('Error al generar la imagen');
+            }
+          }, 'image/png');
+        }
+      };
+
+      img.onerror = () => {
+        // Si todo falla, intentar abrir en pestaña nueva como último recurso
+        window.open(photocard.imageUrl, '_blank');
+        toast.info('La descarga automática falló, abriendo imagen en pestaña nueva.');
+      };
+
     } catch (error) {
-      console.error('Download error:', error);
+      console.error('Final download error:', error);
       toast.error('Error al descargar la photocard');
     } finally {
       setIsDownloading(false);
