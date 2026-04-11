@@ -182,6 +182,15 @@ export default function LandingHome() {
       color: "from-purple-600 to-pink-600",
       image: "/assets/bts_card.png",
     },
+    {
+      icon: Sparkles,
+      title: "Zona VIP",
+      description: "Contenido exclusivo, folios personalizados y descargas especiales para suscriptores de Facebook.",
+      path: "/suscriptores",
+      color: "from-purple-900 to-indigo-900",
+      image: "https://images.unsplash.com/photo-1614850523296-d8c1af93d400?w=800&h=600&fit=crop",
+      badge: "EXCLUSIVO"
+    },
   ];
 
   // Carousel logic
@@ -240,8 +249,16 @@ export default function LandingHome() {
             ))}
           </div>
 
-          {/* Right Section */}
+            {/* Right Section */}
           <div className="flex items-center gap-3">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => handleNavigate("/suscriptores")}
+              className="text-xs font-black uppercase tracking-widest text-purple-600 hover:bg-purple-50 transition-all flex items-center gap-1"
+            >
+              <Sparkles className="size-3" /> Zona VIP
+            </Button>
             <Badge variant="secondary" className="text-xs font-medium gap-1 hidden md:flex bg-gradient-to-r from-purple-100 to-pink-100 text-purple-700">
               <ShieldCheck className="size-3" />
               Sitio Oficial

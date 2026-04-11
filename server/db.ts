@@ -120,6 +120,12 @@ export interface QuizScore {
   updatedAt?: string;
 }
 
+export interface SubscriberPassword {
+  id: string;
+  password?: string | null;
+  updatedAt?: string;
+}
+
 let _doc: GoogleSpreadsheet | null = null;
 
 async function getDoc() {
@@ -151,7 +157,7 @@ async function getDoc() {
 async function ensureSheets() {
   const doc = _doc;
   if (!doc) return;
-  const requiredSheets = ['users', 'tickets', 'orders', 'raffles', 'purchases', 'products', 'news', 'stories', 'galleries', 'quiz_scores'];
+  const requiredSheets = ['users', 'tickets', 'orders', 'raffles', 'purchases', 'products', 'news', 'stories', 'galleries', 'quiz_scores', 'subscriber_settings'];
   for (const sheetName of requiredSheets) {
     if (!doc.sheetsByTitle[sheetName]) {
       await doc.addSheet({ title: sheetName, headerValues: getHeadersForSheet(sheetName) });
@@ -171,6 +177,7 @@ function getHeadersForSheet(sheetName: string): string[] {
     stories: ['id', 'nombre', 'historia_es', 'historia_ko', 'fecha', 'createdAt', 'updatedAt'],
     galleries: ['id', 'group', 'url', 'createdAt', 'updatedAt'],
     quiz_scores: ['id', 'name', 'score', 'total', 'quizId', 'date', 'createdAt', 'updatedAt'],
+    subscriber_settings: ['id', 'password', 'updatedAt'],
   };
   return headers[sheetName] || [];
 }
@@ -547,8 +554,35 @@ export async function createNews(data: any): Promise<string> {
   return id;
 }
 
-// ============ STORIES QUERIES ============
-export async function getAllStories(): Promise<Story[]> {
+// ============ SUBSCRIBER SETTINGS QUERIES ============
+export async function getSubscriberPassword(): Promise<string | null> {
+  const doc = await getDoc();
+  if (!doc) return null;
+  const sheet = doc.sheetsByTitle['subscriber_settings'];
+  if (!sheet) return null;
+  const rows = await sheet.getRows();
+  const row = rows.find(r => r.get('id') === 'main_password');
+  return row ? row.get('password') : null;
+}
+
+export async function updateSubscriberPassword(password: string): Promise<void> {
+  const doc = await getDoc();
+  if (!doc) throw new Error('DB not available');
+  const sheet = doc.sheetsByTitle['subscriber_settings'];
+  if (!sheet) throw new Error('Subscriber settings sheet not found');
+  const rows = await sheet.getRows();
+  const row = rows.find(r => r.get('id') === 'main_password');
+  const now = new Date().toISOString();
+  if (row) {
+    row.set('password', password);
+    row.set('updatedAt', now);
+    await row.save();
+  } else {
+    await sheet.addRow({ id: 'main_password', password, updatedAt: now });
+  }
+}
+
+// ============ QUIZ SCORES QUERIES ============ort async function getAllStories(): Promise<Story[]> {
   const doc = await getDoc();
   if (!doc) return [];
   const sheet = doc.sheetsByTitle['stories'];

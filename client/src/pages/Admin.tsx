@@ -10,7 +10,7 @@ import {
   Loader2, Plus, Trash2, Edit2, Package, ShoppingCart, 
   MessageCircle, Newspaper, Image as ImageIcon, Search, RefreshCw,
   DollarSign, Calendar, Images, User, Phone, CheckCircle2, XCircle,
-  X
+  X, Lock, ShieldCheck
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -38,6 +38,7 @@ export default function Admin() {
               <TabsTrigger value="stories" className="rounded-xl gap-2 px-4"><MessageCircle className="size-4" /> Historias</TabsTrigger>
               <TabsTrigger value="news" className="rounded-xl gap-2 px-4"><Newspaper className="size-4" /> Noticias</TabsTrigger>
               <TabsTrigger value="galleries" className="rounded-xl gap-2 px-4"><Images className="size-4" /> Galería</TabsTrigger>
+              <TabsTrigger value="subscribers" className="rounded-xl gap-2 px-4"><ShieldCheck className="size-4" /> Suscriptores</TabsTrigger>
             </TabsList>
           </div>
 
@@ -60,9 +61,85 @@ export default function Admin() {
           <TabsContent value="galleries" className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
             <GalleryManager />
           </TabsContent>
+
+          <TabsContent value="subscribers" className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
+            <SubscriberManager />
+          </TabsContent>
         </Tabs>
       </main>
     </div>
+  );
+}
+
+// --- SUBSCRIBER MANAGER ---
+function SubscriberManager() {
+  const { data: currentPassword, refetch } = trpc.subscribers.getPassword.useQuery();
+  const updateMutation = trpc.subscribers.updatePassword.useMutation();
+  const [newPassword, setNewPassword] = useState("");
+  const [isUpdating, setIsUpdating] = useState(false);
+
+  const handleUpdate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newPassword) return;
+    
+    setIsUpdating(true);
+    try {
+      await updateMutation.mutateAsync({ password: newPassword });
+      toast.success("Contraseña de suscriptores actualizada");
+      setNewPassword("");
+      refetch();
+    } catch (error) {
+      toast.error("Error al actualizar la contraseña");
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
+  return (
+    <Card className="border-slate-200 shadow-xl rounded-[2rem] bg-white overflow-hidden max-w-2xl mx-auto">
+      <CardHeader className="bg-slate-50 border-b border-slate-100 p-8">
+        <div className="size-16 bg-purple-100 rounded-2xl flex items-center justify-center mb-4">
+          <Lock className="size-8 text-purple-600" />
+        </div>
+        <CardTitle className="text-2xl font-black uppercase tracking-tighter">Gestión de Suscriptores</CardTitle>
+        <p className="text-slate-500">Configura la contraseña que protege la Zona VIP de tu sitio web.</p>
+      </CardHeader>
+      <CardContent className="p-8 space-y-8">
+        <div className="p-6 bg-slate-50 rounded-2xl border border-slate-100">
+          <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest block mb-2">Contraseña Actual</label>
+          <div className="text-2xl font-mono font-bold text-slate-900 tracking-wider">
+            {currentPassword || "No configurada"}
+          </div>
+        </div>
+
+        <form onSubmit={handleUpdate} className="space-y-4">
+          <div className="space-y-2">
+            <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Nueva Contraseña</label>
+            <Input 
+              className="rounded-xl bg-slate-50 h-12 text-lg" 
+              value={newPassword} 
+              onChange={e => setNewPassword(e.target.value)}
+              placeholder="Ej: BTS_ARMY_2024"
+            />
+          </div>
+          <Button 
+            type="submit" 
+            disabled={isUpdating || !newPassword}
+            className="w-full h-12 rounded-xl font-black uppercase tracking-widest bg-purple-600 hover:bg-purple-700 text-white"
+          >
+            {isUpdating ? <Loader2 className="animate-spin size-5" /> : "Actualizar Contraseña"}
+          </Button>
+        </form>
+
+        <div className="p-4 bg-blue-50 rounded-xl border border-blue-100 flex gap-3">
+          <ShieldCheck className="size-5 text-blue-600 shrink-0" />
+          <p className="text-xs text-blue-700 leading-relaxed">
+            Recuerda compartir esta contraseña <strong>solo</strong> en tu grupo o página de Facebook para suscriptores. 
+            Si crees que se ha filtrado, cámbiala aquí inmediatamente.
+          </p>
+        </div>
+      </CardContent>
+    </Card>
   );
 }
 

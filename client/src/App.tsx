@@ -30,6 +30,7 @@ import Privacy from "./pages/Privacy";
 import Quizzes from "./pages/Quizzes";
 import Calendar from "./pages/Calendar";
 import BTSCalendar from "./pages/BTSCalendar";
+import Subscribers from "./pages/Subscribers";
 import { MobileBottomNav } from "./components/MobileBottomNav";
 
 
@@ -61,6 +62,7 @@ function Router() {
       <Route path="/quizzes" component={Quizzes} />
       <Route path="/calendario" component={Calendar} />
       <Route path="/calendario-bts" component={BTSCalendar} />
+      <Route path="/suscriptores" component={Subscribers} />
       <Route path="/admin" component={Admin} />
       <Route path="/admin/" component={Admin} />
       <Route path="/404" component={NotFound} />
