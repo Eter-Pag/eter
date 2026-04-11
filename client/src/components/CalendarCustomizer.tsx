@@ -259,7 +259,7 @@ export default function CalendarCustomizer() {
                     {/* FOTO DEL USUARIO: AL FRENTE (z-20) */}
                     {/* Ajustada exactamente a la posición del recuadro izquierdo debajo de Abril 2026 */}
                     <div 
-                        className="absolute bottom-[8.5%] left-[6.5%] w-[35.5%] h-[23.5%] z-20 bg-white rounded-2xl overflow-hidden shadow-lg"
+                        className="absolute bottom-[7.8%] left-[5.5%] w-[35.5%] h-[23.5%] z-20 bg-white rounded-2xl overflow-hidden shadow-lg"
                     >
                         {image && croppedAreaPixels && (
                             <div className="relative w-full h-full">
