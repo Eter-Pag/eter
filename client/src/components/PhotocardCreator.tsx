@@ -20,6 +20,16 @@ export const PhotocardCreator: React.FC = () => {
   const createMutation = trpc.photocards.create.useMutation();
   const deleteMutation = trpc.photocards.delete.useMutation();
 
+  const convertGoogleDriveUrl = (url: string): string => {
+    // Detectar si es un enlace de Google Drive
+    const driveMatch = url.match(/drive\.google\.com\/file\/d\/([a-zA-Z0-9-_]+)/);
+    if (driveMatch && driveMatch[1]) {
+      // Convertir a enlace directo de descarga
+      return `https://drive.google.com/uc?export=view&id=${driveMatch[1]}`;
+    }
+    return url;
+  };
+
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!characterName || !imageUrl) {
@@ -29,9 +39,10 @@ export const PhotocardCreator: React.FC = () => {
 
     setIsCreating(true);
     try {
+      const finalUrl = convertGoogleDriveUrl(imageUrl);
       await createMutation.mutateAsync({
         characterName,
-        imageUrl,
+        imageUrl: finalUrl,
         shineType,
         opacity,
         showName,
