@@ -177,7 +177,7 @@ export const PhotocardCreator: React.FC = () => {
                 <div className="bg-slate-50 p-6 rounded-2xl flex justify-center">
                   <div style={{ width: '200px', height: '300px' }}>
                     <InteractivePhotocard
-                      imageUrl={imageUrl}
+                      imageUrl={convertGoogleDriveUrl(imageUrl)}
                       characterName={characterName}
                       shineType={shineType}
                       showName={false}
