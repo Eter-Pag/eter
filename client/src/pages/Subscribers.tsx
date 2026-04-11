@@ -81,7 +81,7 @@ export default function Subscribers() {
             <Star className="size-4 text-yellow-400 fill-yellow-400" />
             <span className="text-xs font-bold uppercase tracking-widest">Zona VIP Eter</span>
           </motion.div>
-          <h1 className="text-4xl md:text-6xl font-black tracking-tighter mb-6 uppercase italic">
+          <h1 className="text-4xl md:text-6xl font-black tracking-tighter mb-6 uppercase italic px-2">
             Beneficios <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">Exclusivos</span>
           </h1>
           <p className="text-lg text-purple-100 max-w-2xl mx-auto font-medium">
