@@ -12,13 +12,13 @@ import {
   Image as ImageIcon,
   Printer,
   FileDown,
+  Sparkles,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import html2canvas from "html2canvas";
 import { jsPDF } from "jspdf";
 import { toast } from "sonner";
 import { Card, CardContent } from "@/components/ui/card";
-import { Sparkles } from "lucide-react";
 
 interface Point {
   x: number;
@@ -40,6 +40,9 @@ export default function CalendarCustomizer() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [showEditor, setShowEditor] = useState(false);
   const calendarRef = useRef<HTMLDivElement>(null);
+  
+  // Link del calendario original (versión simple)
+  const originalCalendarLink = "https://drive.google.com/file/d/1Zhuc3a9Pc2kAy6o9dR1fwtXsWKd8NbJ_/view?usp=sharing";
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     const file = acceptedFiles[0];
@@ -68,14 +71,14 @@ export default function CalendarCustomizer() {
 
     try {
       const canvas = await html2canvas(calendarRef.current, {
-        scale: 3, // Alta resolución
+        scale: 4, // Ultra alta resolución para impresión
         useCORS: true,
-        backgroundColor: null,
+        backgroundColor: "#ffffff",
       });
 
       if (format === "png") {
         const link = document.createElement("a");
-        link.download = `Calendario_Eter_Personalizado.png`;
+        link.download = `Calendario_Eter_Abril_Personalizado.png`;
         link.href = canvas.toDataURL("image/png");
         link.click();
       } else {
@@ -89,7 +92,7 @@ export default function CalendarCustomizer() {
         const pdfWidth = pdf.internal.pageSize.getWidth();
         const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
         pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight);
-        pdf.save(`Calendario_Eter_Personalizado.pdf`);
+        pdf.save(`Calendario_Eter_Abril_Personalizado.pdf`);
       }
       toast.success("¡Descarga completada!", { id: toastId });
     } catch (error) {
@@ -101,7 +104,42 @@ export default function CalendarCustomizer() {
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-10">
+      {/* Sección de Descarga Versión Simple (Original) */}
+      {!image && !showEditor && (
+        <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="flex flex-col items-center mb-4"
+        >
+            <Card className="w-full max-w-md bg-white/5 border-white/10 backdrop-blur-xl overflow-hidden rounded-3xl">
+                <CardContent className="p-6 flex items-center justify-between gap-4">
+                    <div className="flex items-center gap-3">
+                        <div className="size-10 bg-purple-500/20 rounded-xl flex items-center justify-center text-purple-400">
+                            <FileDown className="size-5" />
+                        </div>
+                        <div>
+                            <h4 className="text-sm font-black text-white uppercase tracking-tight">Versión Original</h4>
+                            <p className="text-white/40 text-[10px] uppercase font-bold tracking-widest">Sin personalizar</p>
+                        </div>
+                    </div>
+                    <Button
+                        variant="outline"
+                        onClick={() => window.open(originalCalendarLink, "_blank")}
+                        className="rounded-xl border-white/20 text-white hover:bg-white/10 h-10 px-4 text-xs font-black uppercase tracking-widest"
+                    >
+                        Descargar PDF
+                    </Button>
+                </CardContent>
+            </Card>
+            <div className="flex items-center gap-4 w-full max-w-md my-6">
+                <div className="h-px flex-1 bg-white/10" />
+                <span className="text-[10px] font-black text-white/20 uppercase tracking-[0.2em]">O Personaliza el tuyo</span>
+                <div className="h-px flex-1 bg-white/10" />
+            </div>
+        </motion.div>
+      )}
+
       {!showEditor ? (
         <div
           {...getRootProps()}
@@ -119,15 +157,11 @@ export default function CalendarCustomizer() {
               <Upload className="size-10 text-white" />
             </div>
             <h3 className="text-2xl font-black text-white uppercase tracking-tighter mb-2">
-              Personaliza tu Calendario
+              Sube tu Foto Favorita
             </h3>
             <p className="text-purple-200/60 font-medium max-w-xs mx-auto">
-              Sube tu foto favorita para que aparezca en el recuadro blanco del calendario.
+              Haz clic o arrastra una imagen para colocarla dentro del calendario de Abril.
             </p>
-            <div className="mt-8 flex items-center justify-center gap-2 text-xs font-black uppercase tracking-widest text-purple-400 bg-purple-400/10 px-4 py-2 rounded-full border border-purple-400/20">
-              <ImageIcon className="size-3" />
-              JPG, PNG aceptados
-            </div>
           </div>
         </div>
       ) : (
@@ -143,14 +177,10 @@ export default function CalendarCustomizer() {
                 image={image}
                 crop={crop}
                 zoom={zoom}
-                aspect={2 / 3} // Ajustado al recuadro del calendario
+                aspect={0.92 / 0.40} // Proporción exacta del recuadro blanco (width/height)
                 onCropChange={setCrop}
                 onCropComplete={onCropComplete}
                 onZoomChange={setZoom}
-                classes={{
-                    containerClassName: "rounded-[2.5rem]",
-                    mediaClassName: "rounded-[2.5rem]"
-                }}
               />
             )}
           </div>
@@ -160,7 +190,7 @@ export default function CalendarCustomizer() {
             <div className="space-y-6">
               <div className="space-y-3">
                 <div className="flex justify-between text-xs font-black uppercase tracking-widest text-white/60">
-                  <span>Zoom de imagen</span>
+                  <span>Ajustar Tamaño</span>
                   <span>{Math.round(zoom * 100)}%</span>
                 </div>
                 <Slider
@@ -186,9 +216,9 @@ export default function CalendarCustomizer() {
                 </Button>
                 <Button
                   onClick={() => setShowEditor(false)}
-                  className="rounded-xl bg-green-500 hover:bg-green-600 text-white uppercase font-black text-xs tracking-widest"
+                  className="rounded-xl bg-green-500 hover:bg-green-600 text-white uppercase font-black text-xs tracking-widest shadow-lg shadow-green-500/20"
                 >
-                  <Check className="size-4 mr-2" /> Confirmar
+                  <Check className="size-4 mr-2" /> ¡Listo!
                 </Button>
               </div>
             </div>
@@ -196,7 +226,7 @@ export default function CalendarCustomizer() {
         </motion.div>
       )}
 
-      {/* Preview Real del Calendario (Oculto o Visible como Preview) */}
+      {/* Preview Real del Calendario */}
       <AnimatePresence>
         {image && !showEditor && (
           <motion.div
@@ -207,7 +237,7 @@ export default function CalendarCustomizer() {
             <div className="flex items-center justify-center">
                 <div className="inline-flex items-center gap-2 bg-green-500/20 text-green-400 px-4 py-2 rounded-full border border-green-500/20 text-xs font-black uppercase tracking-widest">
                     <Sparkles className="size-4" />
-                    ¡Vista Previa Lista!
+                    ¡Tu Calendario está listo!
                 </div>
             </div>
 
@@ -215,20 +245,20 @@ export default function CalendarCustomizer() {
             <div className="flex justify-center">
                 <div 
                     ref={calendarRef}
-                    className="relative w-full max-w-[400px] aspect-[1/1.4] bg-white shadow-2xl overflow-hidden"
-                    style={{ borderRadius: '0px' }} // El diseño original es rectangular para impresión
+                    className="relative w-full max-w-[500px] aspect-[1/1.414] bg-white shadow-2xl overflow-hidden"
+                    style={{ borderRadius: '0px' }}
                 >
-                    {/* Imagen de fondo (El diseño del calendario proporcionado) */}
+                    {/* El diseño base del calendario */}
                     <img 
                         src="/assets/calendario_base_abril.png" 
-                        className="absolute inset-0 w-full h-full object-cover z-10"
+                        className="absolute inset-0 w-full h-full object-cover z-20 pointer-events-none"
                         alt="Calendario Base"
                     />
 
-                    {/* Recuadro Blanco de Personalización (Aproximado según el PDF) */}
-                    {/* El recuadro blanco en el PDF está en la parte inferior izquierda */}
+                    {/* RECUADRO DE PERSONALIZACIÓN: AJUSTADO AL DISEÑO DEL PDF */}
+                    {/* El recuadro blanco está en la parte inferior, ocupando casi todo el ancho */}
                     <div 
-                        className="absolute bottom-[4%] left-[4%] w-[92%] h-[40%] z-0 bg-white rounded-[2rem] overflow-hidden"
+                        className="absolute bottom-[3.5%] left-[3.5%] w-[93%] h-[40.5%] z-10 bg-white rounded-[2.5rem] overflow-hidden"
                     >
                         {image && croppedAreaPixels && (
                             <div className="relative w-full h-full">
@@ -252,30 +282,32 @@ export default function CalendarCustomizer() {
             </div>
 
             {/* Botones de Descarga */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-2xl mx-auto">
                 <Button
                     onClick={() => generateDownload("png")}
                     disabled={isProcessing}
-                    className="h-16 rounded-2xl bg-white text-slate-900 hover:bg-slate-100 font-black uppercase tracking-widest shadow-xl"
+                    className="h-16 rounded-2xl bg-white text-slate-900 hover:bg-slate-100 font-black uppercase tracking-widest shadow-xl transition-all"
                 >
                     <FileDown className="size-5 mr-2" /> Descargar PNG
                 </Button>
                 <Button
                     onClick={() => generateDownload("pdf")}
                     disabled={isProcessing}
-                    className="h-16 rounded-2xl bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:opacity-90 font-black uppercase tracking-widest shadow-xl"
+                    className="h-16 rounded-2xl bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:opacity-90 font-black uppercase tracking-widest shadow-xl transition-all"
                 >
                     <Printer className="size-5 mr-2" /> Descargar PDF
                 </Button>
             </div>
 
-            <Button
-                variant="ghost"
-                onClick={() => setShowEditor(true)}
-                className="w-full text-white/40 hover:text-white uppercase font-black text-xs tracking-widest"
-            >
-                <RotateCcw className="size-4 mr-2" /> Ajustar Imagen de nuevo
-            </Button>
+            <div className="flex justify-center">
+                <Button
+                    variant="ghost"
+                    onClick={() => setShowEditor(true)}
+                    className="text-white/40 hover:text-white uppercase font-black text-[10px] tracking-[0.2em] h-10"
+                >
+                    <RotateCcw className="size-3 mr-2" /> Ajustar de nuevo
+                </Button>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
