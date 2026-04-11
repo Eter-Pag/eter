@@ -20,6 +20,7 @@ import {
   Gift,
   ChevronRight,
   ChevronLeft,
+  ShieldCheck,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
@@ -31,7 +32,7 @@ export default function Subscribers() {
   const [, navigate] = useLocation();
   const [passwordInput, setPasswordInput] = useState("");
   const [isAuthorized, setIsAuthorized] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
+  const [showPersistModal, setShowPersistModal] = useState(false);
   const [selectedPhotocard, setSelectedPhotocard] = useState<any>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [photocardCarouselIndex, setPhotocardCarouselIndex] = useState(0);
@@ -41,10 +42,25 @@ export default function Subscribers() {
   const facebookSubscribeLink = "https://www.facebook.com/61585362107747/subscribe/";
   const adminPassword = "panochonas12";
 
-  // Persistencia de sesión VIP
+  // Verificar autorización persistente (30 días) o de sesión
   useEffect(() => {
-    const auth = sessionStorage.getItem("vip_authorized");
-    if (auth === "true") {
+    // 1. Verificar localStorage (30 días)
+    const localAuth = localStorage.getItem("vip_access_token");
+    if (localAuth) {
+      const authData = JSON.parse(localAuth);
+      const now = new Date().getTime();
+      // Si no ha expirado (30 días = 2592000000 ms)
+      if (now < authData.expiry) {
+        setIsAuthorized(true);
+        return;
+      } else {
+        localStorage.removeItem("vip_access_token");
+      }
+    }
+
+    // 2. Verificar sessionStorage (solo esta pestaña)
+    const sessionAuth = sessionStorage.getItem("vip_authorized");
+    if (sessionAuth === "true") {
       setIsAuthorized(true);
     }
   }, []);
@@ -52,12 +68,26 @@ export default function Subscribers() {
   const handleVerify = (e: React.FormEvent) => {
     e.preventDefault();
     if (passwordInput === correctPassword || passwordInput === adminPassword) {
-      setIsAuthorized(true);
-      sessionStorage.setItem("vip_authorized", "true");
-      toast.success("¡Acceso concedido, ARMY!");
+      setShowPersistModal(true);
     } else {
       toast.error("Contraseña incorrecta. Revisa el grupo de suscriptores.");
       setPasswordInput("");
+    }
+  };
+
+  const grantAccess = (persist: boolean) => {
+    setIsAuthorized(true);
+    setShowPersistModal(false);
+    
+    if (persist) {
+      // Guardar por 30 días
+      const expiry = new Date().getTime() + 30 * 24 * 60 * 60 * 1000;
+      localStorage.setItem("vip_access_token", JSON.stringify({ authorized: true, expiry }));
+      toast.success("¡Acceso recordado por 30 días!");
+    } else {
+      // Guardar solo por la sesión actual
+      sessionStorage.setItem("vip_authorized", "true");
+      toast.success("¡Acceso concedido para esta sesión!");
     }
   };
 
@@ -549,6 +579,58 @@ export default function Subscribers() {
           )}
         </AnimatePresence>
       </main>
+
+      {/* ── MODAL DE PERSISTENCIA DE ACCESO ── */}
+      <AnimatePresence>
+        {showPersistModal && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 bg-slate-950/80 backdrop-blur-sm"
+              onClick={() => grantAccess(false)}
+            />
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.9, opacity: 0, y: 20 }}
+              className="relative w-full max-w-sm"
+            >
+              <div className="absolute -inset-1 bg-gradient-to-r from-purple-600 via-pink-600 to-purple-600 rounded-3xl blur-xl opacity-50" />
+              <Card className="relative bg-slate-900 border-2 border-white/20 shadow-2xl overflow-hidden">
+                <CardContent className="p-8 text-center">
+                  <div className="size-16 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg shadow-yellow-500/30">
+                    <ShieldCheck className="size-8 text-slate-900" />
+                  </div>
+                  <h2 className="text-xl font-black text-white uppercase tracking-tight mb-3">
+                    ¿Recordar acceso?
+                  </h2>
+                  <p className="text-white/60 text-sm mb-8 leading-relaxed">
+                    ¿Quieres que recordemos tu acceso en este dispositivo por los próximos 30 días?
+                  </p>
+                  
+                  <div className="flex flex-col gap-3">
+                    <Button
+                      onClick={() => grantAccess(true)}
+                      className="w-full h-12 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-black uppercase tracking-widest text-xs rounded-xl shadow-lg"
+                    >
+                      Sí, recordar acceso
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      onClick={() => grantAccess(false)}
+                      className="w-full h-12 text-white/40 hover:text-white hover:bg-white/5 font-bold uppercase tracking-widest text-xs rounded-xl"
+                    >
+                      No, solo esta sesión
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
 
       {/* Photocard Modal */}
       <PhotocardModal

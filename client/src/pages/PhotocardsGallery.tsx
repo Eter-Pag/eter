@@ -23,18 +23,31 @@ export default function PhotocardsGallery() {
   const [isAuthorized, setIsAuthorized] = useState(false);
 
   const { data: photocards = [] } = trpc.photocards.list.useQuery();
-  const { data: correctPassword } = trpc.subscribers.getPassword.useQuery();
-  const adminPassword = "panochonas12";
 
-  // Verificar autorización al cargar (basado en sessionStorage para no pedirla siempre en la misma sesión)
+  // Verificar autorización al cargar
   useEffect(() => {
-    const auth = sessionStorage.getItem("vip_authorized");
-    if (auth === "true") {
-      setIsAuthorized(true);
-    } else {
-      // Si no está autorizado, redirigir a suscriptores
-      navigate("/suscriptores");
+    // 1. Verificar localStorage (30 días)
+    const localAuth = localStorage.getItem("vip_access_token");
+    if (localAuth) {
+      const authData = JSON.parse(localAuth);
+      const now = new Date().getTime();
+      if (now < authData.expiry) {
+        setIsAuthorized(true);
+        return;
+      } else {
+        localStorage.removeItem("vip_access_token");
+      }
     }
+
+    // 2. Verificar sessionStorage (solo esta pestaña)
+    const sessionAuth = sessionStorage.getItem("vip_authorized");
+    if (sessionAuth === "true") {
+      setIsAuthorized(true);
+      return;
+    }
+
+    // Si no está autorizado por ninguno de los dos, redirigir
+    navigate("/suscriptores");
   }, [navigate]);
 
   const filteredPhotocards = photocards.filter(
