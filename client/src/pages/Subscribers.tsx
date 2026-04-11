@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
+import { InteractivePhotocard } from "@/components/InteractivePhotocard";
 
 export default function Subscribers() {
   const [passwordInput, setPasswordInput] = useState("");
@@ -25,6 +26,7 @@ export default function Subscribers() {
   const [searchQuery, setSearchQuery] = useState("");
   
   const { data: correctPassword } = trpc.subscribers.getPassword.useQuery();
+  const { data: photocards = [] } = trpc.photocards.list.useQuery();
   const facebookSubscribeLink = "https://www.facebook.com/61585362107747/subscribe/";
 
   const handleVerify = (e: React.FormEvent) => {
@@ -172,6 +174,40 @@ export default function Subscribers() {
                 </div>
               </div>
             </motion.div>
+
+            {/* Photocards Gallery */}
+            {photocards.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="space-y-6"
+              >
+                <div className="space-y-2">
+                  <h2 className="text-3xl font-black uppercase tracking-tighter flex items-center gap-3">
+                    <Sparkles className="size-8 text-purple-600" />
+                    Photocards Holográficas
+                  </h2>
+                  <p className="text-slate-600 font-medium">Colecciona nuestras photocards exclusivas. ¡Mueve el ratón o desliza en móvil para ver el efecto holográfico!</p>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                  {photocards.map((pc) => (
+                    <motion.div
+                      key={pc.id}
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      whileHover={{ scale: 1.02 }}
+                      style={{ aspectRatio: '2/3' }}
+                    >
+                      <InteractivePhotocard
+                        imageUrl={pc.imageUrl}
+                        characterName={pc.characterName}
+                        shineType={pc.shineType}
+                      />
+                    </motion.div>
+                  ))}
+                </div>
+              </motion.div>
+            )}
 
             {/* Benefits Grid */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">

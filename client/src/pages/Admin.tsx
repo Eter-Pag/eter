@@ -10,9 +10,10 @@ import {
   Loader2, Plus, Trash2, Edit2, Package, ShoppingCart, 
   MessageCircle, Newspaper, Image as ImageIcon, Search, RefreshCw,
   DollarSign, Calendar, Images, User, Phone, CheckCircle2, XCircle,
-  X, Lock, ShieldCheck
+  X, Lock, ShieldCheck, Sparkles
 } from "lucide-react";
 import { toast } from "sonner";
+import { PhotocardCreator } from "@/components/PhotocardCreator";
 
 export default function Admin() {
   const [activeTab, setActiveTab] = useState("products");
@@ -39,6 +40,7 @@ export default function Admin() {
               <TabsTrigger value="news" className="rounded-xl gap-2 px-4"><Newspaper className="size-4" /> Noticias</TabsTrigger>
               <TabsTrigger value="galleries" className="rounded-xl gap-2 px-4"><Images className="size-4" /> Galería</TabsTrigger>
               <TabsTrigger value="subscribers" className="rounded-xl gap-2 px-4"><ShieldCheck className="size-4" /> Suscriptores</TabsTrigger>
+              <TabsTrigger value="photocards" className="rounded-xl gap-2 px-4"><Sparkles className="size-4" /> Photocards</TabsTrigger>
             </TabsList>
           </div>
 
@@ -64,6 +66,10 @@ export default function Admin() {
 
           <TabsContent value="subscribers" className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
             <SubscriberManager />
+          </TabsContent>
+
+          <TabsContent value="photocards" className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
+            <PhotocardCreator />
           </TabsContent>
         </Tabs>
       </main>

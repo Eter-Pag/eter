@@ -91,6 +91,16 @@ export interface News {
   updatedAt?: string;
 }
 
+export interface Photocard {
+  id?: string;
+  characterName: string;
+  imageUrl: string;
+  shineType: 'stars' | 'hearts' | 'rainbow' | 'holographic';
+  folio: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
 export interface Story {
   id?: string;
   nombre: string;
@@ -157,7 +167,7 @@ async function getDoc() {
 async function ensureSheets() {
   const doc = _doc;
   if (!doc) return;
-  const requiredSheets = ['users', 'tickets', 'orders', 'raffles', 'purchases', 'products', 'news', 'stories', 'galleries', 'quiz_scores', 'subscriber_settings'];
+  const requiredSheets = ['users', 'tickets', 'orders', 'raffles', 'purchases', 'products', 'news', 'stories', 'galleries', 'quiz_scores', 'subscriber_settings', 'photocards'];
   for (const sheetName of requiredSheets) {
     if (!doc.sheetsByTitle[sheetName]) {
       await doc.addSheet({ title: sheetName, headerValues: getHeadersForSheet(sheetName) });
@@ -178,6 +188,7 @@ function getHeadersForSheet(sheetName: string): string[] {
     galleries: ['id', 'group', 'url', 'createdAt', 'updatedAt'],
     quiz_scores: ['id', 'name', 'score', 'total', 'quizId', 'date', 'createdAt', 'updatedAt'],
     subscriber_settings: ['id', 'password', 'updatedAt'],
+    photocards: ['id', 'characterName', 'imageUrl', 'shineType', 'folio', 'createdAt', 'updatedAt'],
   };
   return headers[sheetName] || [];
 }
@@ -737,4 +748,35 @@ export async function addQuizScore(data: Omit<QuizScore, 'id' | 'createdAt' | 'u
     updatedAt: now 
   });
   return id;
+}
+
+// ============ PHOTOCARDS QUERIES ============
+export async function getAllPhotocards(): Promise<Photocard[]> {
+  const doc = await getDoc();
+  if (!doc) return [];
+  const sheet = doc.sheetsByTitle['photocards'];
+  if (!sheet) return [];
+  const rows = await sheet.getRows();
+  return rows.map(r => rowToObject(r, getHeadersForSheet('photocards')));
+}
+
+export async function createPhotocard(data: Omit<Photocard, 'id' | 'createdAt' | 'updatedAt'>): Promise<string> {
+  const doc = await getDoc();
+  if (!doc) throw new Error('DB not available');
+  const sheet = doc.sheetsByTitle['photocards'];
+  if (!sheet) throw new Error('Photocards sheet not found');
+  const id = Date.now().toString();
+  const now = new Date().toISOString();
+  await sheet.addRow({ ...data, id, createdAt: now, updatedAt: now });
+  return id;
+}
+
+export async function deletePhotocard(id: string): Promise<void> {
+  const doc = await getDoc();
+  if (!doc) return;
+  const sheet = doc.sheetsByTitle['photocards'];
+  if (!sheet) return;
+  const rows = await sheet.getRows();
+  const row = rows.find(r => r.get('id') === id);
+  if (row) await row.delete();
 }
