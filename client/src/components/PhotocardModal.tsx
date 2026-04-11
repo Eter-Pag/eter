@@ -56,25 +56,31 @@ export const PhotocardModal: React.FC<PhotocardModalProps> = ({
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           onClick={onClose}
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md"
         >
           <motion.div
-            initial={{ scale: 0.9, opacity: 0 }}
+            initial={{ scale: 0.85, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0.9, opacity: 0 }}
+            exit={{ scale: 0.85, opacity: 0 }}
+            transition={{ type: 'spring', stiffness: 300, damping: 30 }}
             onClick={(e) => e.stopPropagation()}
-            className="relative w-full max-w-sm md:max-w-md bg-white rounded-3xl shadow-2xl overflow-hidden"
+            className="relative w-full max-w-sm md:max-w-md bg-gradient-to-b from-slate-100 to-slate-50 rounded-3xl shadow-2xl overflow-hidden p-8 flex flex-col items-center"
           >
             {/* Close Button */}
             <button
               onClick={onClose}
-              className="absolute top-4 right-4 z-10 p-2 bg-white/90 hover:bg-white rounded-full shadow-lg transition-all"
+              className="absolute top-4 right-4 z-10 p-2 bg-white/90 hover:bg-white rounded-full shadow-lg transition-all hover:scale-110"
             >
               <X className="size-6 text-slate-900" />
             </button>
 
-            {/* Photocard Container */}
-            <div className="aspect-[2/3] overflow-hidden">
+            {/* Photocard Container - Looks like a real card */}
+            <div 
+              className="w-full max-w-xs aspect-[2/3] rounded-3xl overflow-hidden shadow-2xl border-4 border-white/50 bg-white"
+              style={{
+                boxShadow: '0 20px 60px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.6)',
+              }}
+            >
               <InteractivePhotocard
                 imageUrl={photocard.imageUrl}
                 characterName={photocard.characterName}
@@ -86,23 +92,23 @@ export const PhotocardModal: React.FC<PhotocardModalProps> = ({
             </div>
 
             {/* Info and Download Section */}
-            <div className="p-6 space-y-4 bg-gradient-to-b from-slate-50 to-white">
-              <div className="space-y-2">
-                <p className="text-sm font-bold text-slate-900">{photocard.folio}</p>
-                <p className="text-xs text-slate-500">{photocard.characterName}</p>
+            <div className="w-full mt-8 space-y-4">
+              <div className="space-y-1 text-center">
+                <p className="text-sm font-black text-slate-900 tracking-wider">{photocard.folio}</p>
+                <p className="text-xs text-slate-500 font-medium">{photocard.characterName}</p>
               </div>
 
               <Button
                 onClick={handleDownload}
                 disabled={isDownloading}
-                className="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-xl gap-2 h-12"
+                className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-bold rounded-2xl gap-2 h-12 shadow-lg shadow-purple-200 transition-all"
               >
                 <Download className="size-5" />
-                {isDownloading ? 'Descargando...' : 'Descargar'}
+                {isDownloading ? 'Descargando...' : 'Descargar Photocard'}
               </Button>
 
-              <p className="text-xs text-slate-400 text-center">
-                Mueve el dedo para ver el efecto holográfico completo
+              <p className="text-xs text-slate-400 text-center italic">
+                Mueve el dedo para ver el efecto holográfico completo ✨
               </p>
             </div>
           </motion.div>
