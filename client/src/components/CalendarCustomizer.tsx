@@ -74,6 +74,7 @@ export default function CalendarCustomizer() {
         scale: 4, // Ultra alta resolución para impresión
         useCORS: true,
         backgroundColor: "#ffffff",
+        logging: false,
       });
 
       if (format === "png") {
@@ -177,7 +178,7 @@ export default function CalendarCustomizer() {
                 image={image}
                 crop={crop}
                 zoom={zoom}
-                aspect={1} // Proporción cuadrada para el espacio a la izquierda
+                aspect={1} // Proporción cuadrada perfecta
                 onCropChange={setCrop}
                 onCropComplete={onCropComplete}
                 onZoomChange={setZoom}
@@ -248,18 +249,17 @@ export default function CalendarCustomizer() {
                     className="relative w-full max-w-[500px] aspect-[1/1.414] bg-white shadow-2xl overflow-hidden"
                     style={{ borderRadius: '0px' }}
                 >
-                    {/* El diseño base del calendario - CAPA SUPERIOR (z-20) */}
-                    {/* Nota: Para que la foto se vea "detrás", la imagen base DEBE ser transparente en el área de recorte */}
-                    {/* Como la imagen base es un PNG opaco, usaremos la foto detrás y la base delante con mix-blend-mode o simplemente z-index si la base tuviera transparencia */}
+                    {/* El diseño base del calendario - CAPA MEDIA (z-10) */}
                     <img 
                         src="/assets/calendario_base_abril.png" 
-                        className="absolute inset-0 w-full h-full object-cover z-20 pointer-events-none"
+                        className="absolute inset-0 w-full h-full object-cover z-10 pointer-events-none"
                         alt="Calendario Base"
                     />
 
-                    {/* RECUADRO DE PERSONALIZACIÓN: AJUSTADO A LA IZQUIERDA (Debajo de Abril 2026) - CAPA INFERIOR (z-10) */}
+                    {/* FOTO DEL USUARIO: AL FRENTE (z-20) */}
+                    {/* Ajustada exactamente a la posición del recuadro izquierdo debajo de Abril 2026 */}
                     <div 
-                        className="absolute bottom-[8%] left-[6.5%] w-[36%] h-[24%] z-10 bg-white rounded-3xl overflow-hidden"
+                        className="absolute bottom-[8.5%] left-[6.5%] w-[35.5%] h-[23.5%] z-20 bg-white rounded-2xl overflow-hidden shadow-lg"
                     >
                         {image && croppedAreaPixels && (
                             <div className="relative w-full h-full">
