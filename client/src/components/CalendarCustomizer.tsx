@@ -71,10 +71,11 @@ export default function CalendarCustomizer() {
 
     try {
       const canvas = await html2canvas(calendarRef.current, {
-        scale: 4, // Ultra alta resolución para impresión
+        scale: 3, // Alta resolución (ajustado de 4 a 3 para evitar errores de memoria en algunos navegadores)
         useCORS: true,
+        allowTaint: true,
         backgroundColor: "#ffffff",
-        logging: false,
+        logging: true, // Activamos logging para depurar si falla de nuevo
       });
 
       if (format === "png") {
