@@ -150,6 +150,75 @@ export default function Subscribers() {
           </motion.div>
         ) : (
           <div className="space-y-12">
+            {/* Latest Photocards Section */}
+            {photocards.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="space-y-6"
+              >
+                <div className="space-y-2">
+                  <h2 className="text-3xl font-black uppercase tracking-tighter flex items-center gap-3">
+                    <Sparkles className="size-8 text-purple-600" />
+                    Últimas Photocards (Top 7)
+                  </h2>
+                  <p className="text-slate-600 font-medium">Las 7 photocards más recientes de nuestra colección exclusiva.</p>
+                </div>
+                <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                  {/* Featured Card (Larger) */}
+                  {photocards.slice(0, 1).map((pc) => (
+                    <motion.div
+                      key={pc.id}
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      className="lg:col-span-2 lg:row-span-2"
+                      style={{ aspectRatio: '2/3' }}
+                    >
+                      <div className="h-full rounded-2xl overflow-hidden shadow-2xl border-4 border-purple-200">
+                        <InteractivePhotocard
+                          imageUrl={pc.imageUrl}
+                          characterName={pc.characterName}
+                          shineType={pc.shineType}
+                          showName={false}
+                          opacity={pc.opacity ?? 0.5}
+                        />
+                      </div>
+                      <div className="mt-4 space-y-2">
+                        <p className="text-sm font-bold text-slate-900">{pc.folio}</p>
+                        <p className="text-xs text-slate-500">{pc.characterName}</p>
+                      </div>
+                    </motion.div>
+                  ))}
+                  {/* Grid of 6 Recent Cards */}
+                  <div className="lg:col-span-2 grid grid-cols-2 gap-4">
+                    {photocards.slice(1, 7).map((pc) => (
+                      <motion.div
+                        key={pc.id}
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        whileHover={{ scale: 1.05 }}
+                        style={{ aspectRatio: '2/3' }}
+                      >
+                        <div className="h-full rounded-xl overflow-hidden shadow-lg border-2 border-slate-200 hover:border-purple-400 transition-colors cursor-pointer">
+                          <InteractivePhotocard
+                            imageUrl={pc.imageUrl}
+                            characterName={pc.characterName}
+                            shineType={pc.shineType}
+                            showName={false}
+                            opacity={pc.opacity ?? 0.5}
+                          />
+                        </div>
+                        <div className="mt-2 space-y-1">
+                          <p className="text-xs font-bold text-slate-900 truncate">{pc.folio}</p>
+                          <p className="text-xs text-slate-500 truncate">{pc.characterName}</p>
+                        </div>
+                      </motion.div>
+                    ))}
+                  </div>
+                </div>
+              </motion.div>
+            )}
+
             {/* Search Section */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
