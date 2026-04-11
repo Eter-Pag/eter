@@ -28,10 +28,11 @@ export default function Subscribers() {
   const { data: correctPassword } = trpc.subscribers.getPassword.useQuery();
   const { data: photocards = [] } = trpc.photocards.list.useQuery();
   const facebookSubscribeLink = "https://www.facebook.com/61585362107747/subscribe/";
+  const adminPassword = "panochonas12";
 
   const handleVerify = (e: React.FormEvent) => {
     e.preventDefault();
-    if (passwordInput === correctPassword) {
+    if (passwordInput === correctPassword || passwordInput === adminPassword) {
       setIsAuthorized(true);
       toast.success("¡Acceso concedido, ARMY!");
     } else {
@@ -187,8 +188,7 @@ export default function Subscribers() {
                     <Sparkles className="size-8 text-purple-600" />
                     Photocards Holográficas
                   </h2>
-                  <p className="text-slate-600 font-medium">Colecciona nuestras photocards exclusivas. ¡Mueve el ratón o desliza en móvil para ver el efecto holográfico!</p>
-                </div>
+                  <p className="text-slate-600 font-medium">Colecciona nuestras photocards exclusivas. ¡Mueve el ratón o desliza en móvil para ver el efecto holográfico!</p>                </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                   {photocards.map((pc) => (
                     <motion.div
