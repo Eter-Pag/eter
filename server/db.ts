@@ -582,7 +582,8 @@ export async function updateSubscriberPassword(password: string): Promise<void> 
   }
 }
 
-// ============ QUIZ SCORES QUERIES ============ort async function getAllStories(): Promise<Story[]> {
+// ============ STORY QUERIES ============
+export async function getAllStories(): Promise<Story[]> {
   const doc = await getDoc();
   if (!doc) return [];
   const sheet = doc.sheetsByTitle['stories'];
