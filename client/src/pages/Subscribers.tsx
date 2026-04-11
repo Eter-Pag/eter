@@ -91,7 +91,7 @@ export default function Subscribers() {
         </div>
       </div>
 
-      <div className="container max-w-6xl -mt-10 px-4">
+      <div className="container max-w-6xl -mt-6 px-4">
         {!isAuthorized ? (
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
@@ -151,15 +151,15 @@ export default function Subscribers() {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="bg-white p-6 rounded-[2rem] shadow-xl border border-slate-100"
+              className="bg-white p-8 rounded-[2rem] shadow-xl border border-slate-100"
             >
               <div className="flex flex-col md:flex-row gap-6 items-center justify-between">
-                <div className="space-y-1 text-center md:text-left">
+                <div className="space-y-2 text-center md:text-left">
                   <h2 className="text-2xl font-black uppercase tracking-tighter flex items-center gap-2 justify-center md:justify-start">
                     <Unlock className="size-6 text-green-500" />
                     Buscador de Folios
                   </h2>
-                  <p className="text-slate-500 text-sm">Busca tu nombre para encontrar tu descarga personalizada.</p>
+                  <p className="text-slate-500 text-sm font-medium">Busca tu nombre para encontrar tu descarga personalizada.</p>
                 </div>
                 <div className="relative w-full md:w-96">
                   <Input
