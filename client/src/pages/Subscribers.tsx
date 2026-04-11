@@ -19,6 +19,7 @@ import {
   Crown,
   Gift,
   ChevronRight,
+  ChevronLeft,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
@@ -33,6 +34,7 @@ export default function Subscribers() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedPhotocard, setSelectedPhotocard] = useState<any>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [photocardCarouselIndex, setPhotocardCarouselIndex] = useState(0);
 
   const { data: correctPassword } = trpc.subscribers.getPassword.useQuery();
   const { data: photocards = [] } = trpc.photocards.list.useQuery();
@@ -49,6 +51,33 @@ export default function Subscribers() {
       setPasswordInput("");
     }
   };
+
+  // Carrusel de photocards: 5 items por página
+  const itemsPerPagePhotocard = 5;
+  const visiblePhotocards = photocards.slice(
+    photocardCarouselIndex,
+    photocardCarouselIndex + itemsPerPagePhotocard
+  );
+
+  const handlePrevPhotocard = () => {
+    setPhotocardCarouselIndex((prev) =>
+      prev === 0 ? Math.max(0, photocards.length - itemsPerPagePhotocard) : prev - 1
+    );
+  };
+
+  const handleNextPhotocard = () => {
+    setPhotocardCarouselIndex((prev) => {
+      const maxIndex = Math.max(0, photocards.length - itemsPerPagePhotocard);
+      return prev >= maxIndex ? 0 : prev + 1;
+    });
+  };
+
+  const filteredPhotocards = photocards.filter(
+    (pc) =>
+      searchQuery === "" ||
+      pc.folio?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      pc.characterName?.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   const vipBenefits = [
     {
@@ -67,22 +96,7 @@ export default function Subscribers() {
       status: "Disponible",
       color: "from-pink-500 to-rose-500",
     },
-    {
-      id: 3,
-      title: "Photocards Digitales",
-      description: "Set de 7 photocards exclusivas en alta resolución.",
-      icon: ImageIcon,
-      status: "Próximamente",
-      color: "from-blue-500 to-cyan-500",
-    },
   ];
-
-  const filteredPhotocards = photocards.filter(
-    (pc) =>
-      searchQuery === "" ||
-      pc.folio?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      pc.characterName?.toLowerCase().includes(searchQuery.toLowerCase())
-  );
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 pb-20">
@@ -288,18 +302,259 @@ export default function Subscribers() {
                 </div>
               </motion.div>
 
-              {/* ── SECCIÓN: Photocards Holográficas ── */}
+              {/* ── SECCIÓN: Beneficios VIP (incluyendo Photocards en carrusel) ── */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
+              >
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-1 h-6 bg-gradient-to-b from-pink-400 to-indigo-400 rounded-full" />
+                  <h2 className="text-xl font-black uppercase tracking-tighter text-white flex items-center gap-2">
+                    <Gift className="size-5 text-pink-400" />
+                    Beneficios Exclusivos
+                  </h2>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                  {/* Beneficios normales */}
+                  {vipBenefits.map((benefit, index) => (
+                    <motion.div
+                      key={benefit.id}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.25 + index * 0.08 }}
+                      whileHover={{ y: -5 }}
+                      className="relative group"
+                    >
+                      {/* Glow */}
+                      <div
+                        className={`absolute -inset-0.5 bg-gradient-to-r ${benefit.color} rounded-3xl blur-xl opacity-0 group-hover:opacity-30 transition duration-500`}
+                      />
+
+                      <Card className="relative bg-white/10 border-2 border-white/20 shadow-2xl backdrop-blur-2xl overflow-hidden h-full">
+                        <div
+                          className={`h-1 bg-gradient-to-r ${benefit.color}`}
+                        />
+                        <CardContent className="p-6">
+                          <div
+                            className={`size-12 rounded-2xl bg-gradient-to-br ${benefit.color} flex items-center justify-center mb-4 text-white shadow-lg`}
+                          >
+                            <benefit.icon className="size-6" />
+                          </div>
+
+                          <Badge
+                            className={`mb-3 border-none font-bold uppercase text-[10px] tracking-widest ${
+                              benefit.status === "Disponible"
+                                ? "bg-green-500/20 text-green-300 border border-green-500/30"
+                                : "bg-white/10 text-white/50 border border-white/20"
+                            }`}
+                          >
+                            {benefit.status}
+                          </Badge>
+
+                          <h3 className="text-lg font-black uppercase tracking-tighter mb-2 text-white">
+                            {benefit.title}
+                          </h3>
+                          <p className="text-white/60 text-sm leading-relaxed mb-6">
+                            {benefit.description}
+                          </p>
+
+                          <Button
+                            variant={
+                              benefit.status === "Disponible"
+                                ? "default"
+                                : "secondary"
+                            }
+                            disabled={benefit.status !== "Disponible"}
+                            className={`w-full rounded-xl font-bold uppercase tracking-widest gap-2 ${
+                              benefit.status === "Disponible"
+                                ? `bg-gradient-to-r ${benefit.color} hover:opacity-90 text-white border-none shadow-lg`
+                                : "bg-white/10 text-white/40 border border-white/10"
+                            }`}
+                          >
+                            {benefit.status === "Disponible" ? (
+                              <>
+                                <Download className="size-4" /> Descargar
+                              </>
+                            ) : (
+                              "Muy pronto"
+                            )}
+                          </Button>
+                        </CardContent>
+                      </Card>
+                    </motion.div>
+                  ))}
+
+                  {/* ── PHOTOCARDS DIGITALES CON CARRUSEL ── */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.33 }}
+                    className="relative group md:col-span-2"
+                  >
+                    {/* Glow */}
+                    <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-3xl blur-xl opacity-0 group-hover:opacity-30 transition duration-500" />
+
+                    <Card className="relative bg-white/10 border-2 border-white/20 shadow-2xl backdrop-blur-2xl overflow-hidden">
+                      <div className="h-1 bg-gradient-to-r from-blue-500 to-cyan-500" />
+
+                      <CardContent className="p-6 md:p-8 flex flex-col">
+                        {/* Título y descripción */}
+                        <div className="mb-6">
+                          <div className="flex items-center gap-3 mb-3">
+                            <div className="size-12 rounded-2xl bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center text-white shadow-lg">
+                              <ImageIcon className="size-6" />
+                            </div>
+                            <div>
+                              <h3 className="text-lg font-black uppercase tracking-tighter text-white">
+                                Photocards Digitales
+                              </h3>
+                              <p className="text-white/60 text-xs font-medium">
+                                Set de photocards exclusivas en alta resolución
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+
+                        {photocards.length > 0 ? (
+                          <>
+                            {/* Grid de Photocards - 5 items */}
+                            <div className="flex-grow flex items-center mb-6">
+                              <div className="w-full grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-6">
+                                {visiblePhotocards.map((pc) => (
+                                  <motion.div
+                                    key={pc.id}
+                                    whileHover={{ y: -8 }}
+                                    className="cursor-pointer"
+                                  >
+                                    <Card className="group h-full bg-white/5 border border-white/20 shadow-xl rounded-[2rem] overflow-hidden flex flex-col hover:border-blue-400/70 transition-all hover:shadow-lg hover:shadow-blue-500/30">
+                                      <div
+                                        className="relative overflow-hidden bg-gradient-to-br from-slate-800 to-slate-900"
+                                        style={{ aspectRatio: "2/3" }}
+                                      >
+                                        <InteractivePhotocard
+                                          imageUrl={pc.imageUrl}
+                                          characterName={pc.characterName}
+                                          shineType={pc.shineType}
+                                          showName={false}
+                                          opacity={pc.opacity ?? 0.5}
+                                        />
+                                        {/* Overlay hover */}
+                                        <div className="absolute inset-0 bg-black/0 opacity-0 group-hover:opacity-100 group-hover:bg-black/30 transition-all flex items-center justify-center">
+                                          <div className="opacity-0 group-hover:opacity-100 transition-all transform scale-75 group-hover:scale-100">
+                                            <Sparkles className="size-8 text-white drop-shadow-lg" />
+                                          </div>
+                                        </div>
+                                      </div>
+
+                                      <CardContent className="p-4 flex flex-col flex-grow">
+                                        <h4 className="font-black text-white text-xs mb-1 line-clamp-1 uppercase tracking-tight">
+                                          {pc.folio}
+                                        </h4>
+                                        <p className="text-white/50 text-xs line-clamp-1 mb-3">
+                                          {pc.characterName}
+                                        </p>
+
+                                        <button
+                                          onClick={() => {
+                                            setSelectedPhotocard(pc);
+                                            setIsModalOpen(true);
+                                          }}
+                                          className="w-full px-3 py-2 bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white text-xs font-bold rounded-lg transition-all duration-300 shadow-md hover:shadow-lg hover:shadow-blue-500/40"
+                                        >
+                                          Ver Completa ✨
+                                        </button>
+                                      </CardContent>
+                                    </Card>
+                                  </motion.div>
+                                ))}
+                              </div>
+                            </div>
+
+                            {/* Controles del Carrusel */}
+                            <div className="flex items-center justify-center gap-4">
+                              <Button
+                                onClick={handlePrevPhotocard}
+                                variant="outline"
+                                size="icon"
+                                className="rounded-full hover:bg-blue-500/20 hover:text-blue-300 border-white/20 text-white/60"
+                              >
+                                <ChevronLeft className="size-5" />
+                              </Button>
+                              <div className="flex gap-1">
+                                {Array.from({
+                                  length: Math.max(
+                                    1,
+                                    Math.ceil(photocards.length / itemsPerPagePhotocard)
+                                  ),
+                                }).map((_, i) => (
+                                  <div
+                                    key={i}
+                                    className={`h-2 rounded-full transition-all ${
+                                      i ===
+                                      Math.floor(photocardCarouselIndex / itemsPerPagePhotocard)
+                                        ? "w-6 bg-cyan-500"
+                                        : "w-2 bg-white/20"
+                                    }`}
+                                  />
+                                ))}
+                              </div>
+                              <Button
+                                onClick={handleNextPhotocard}
+                                variant="outline"
+                                size="icon"
+                                className="rounded-full hover:bg-blue-500/20 hover:text-blue-300 border-white/20 text-white/60"
+                              >
+                                <ChevronRight className="size-5" />
+                              </Button>
+                            </div>
+                          </>
+                        ) : (
+                          <div className="text-center py-12">
+                            <p className="text-white/40 text-sm">
+                              No hay photocards disponibles aún.
+                            </p>
+                          </div>
+                        )}
+                      </CardContent>
+                    </Card>
+                  </motion.div>
+                </div>
+
+                {/* Botón Ver Todas las Photocards */}
+                {photocards.length > 0 && (
+                  <div className="flex justify-center mt-8">
+                    <Button
+                      onClick={() => {
+                        // Scroll a la sección de buscador
+                        document
+                          .querySelector("[data-search-section]")
+                          ?.scrollIntoView({ behavior: "smooth" });
+                      }}
+                      className="gap-2 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white font-semibold px-8 h-11 rounded-lg text-base shadow-lg shadow-blue-500/30"
+                    >
+                      <ImageIcon className="size-5" />
+                      Ver Todas las Photocards
+                      <ChevronRight className="size-5" />
+                    </Button>
+                  </div>
+                )}
+              </motion.div>
+
+              {/* ── SECCIÓN: Galería Completa de Photocards (con búsqueda) ── */}
               {photocards.length > 0 && (
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.2 }}
+                  transition={{ delay: 0.4 }}
+                  data-search-section
                 >
                   <div className="flex items-center gap-3 mb-4">
                     <div className="w-1 h-6 bg-gradient-to-b from-yellow-400 to-pink-400 rounded-full" />
                     <h2 className="text-xl font-black uppercase tracking-tighter text-white flex items-center gap-2">
                       <Sparkles className="size-5 text-yellow-400" />
-                      Photocards Holográficas
+                      Galería Completa
                     </h2>
                   </div>
 
@@ -382,91 +637,6 @@ export default function Subscribers() {
                   </div>
                 </motion.div>
               )}
-
-              {/* ── SECCIÓN: Beneficios VIP ── */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3 }}
-              >
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-1 h-6 bg-gradient-to-b from-pink-400 to-indigo-400 rounded-full" />
-                  <h2 className="text-xl font-black uppercase tracking-tighter text-white flex items-center gap-2">
-                    <Gift className="size-5 text-pink-400" />
-                    Beneficios Exclusivos
-                  </h2>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-                  {vipBenefits.map((benefit, index) => (
-                    <motion.div
-                      key={benefit.id}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.35 + index * 0.08 }}
-                      whileHover={{ y: -5 }}
-                      className="relative group"
-                    >
-                      {/* Glow */}
-                      <div
-                        className={`absolute -inset-0.5 bg-gradient-to-r ${benefit.color} rounded-3xl blur-xl opacity-0 group-hover:opacity-30 transition duration-500`}
-                      />
-
-                      <Card className="relative bg-white/10 border-2 border-white/20 shadow-2xl backdrop-blur-2xl overflow-hidden h-full">
-                        <div
-                          className={`h-1 bg-gradient-to-r ${benefit.color}`}
-                        />
-                        <CardContent className="p-6">
-                          <div
-                            className={`size-12 rounded-2xl bg-gradient-to-br ${benefit.color} flex items-center justify-center mb-4 text-white shadow-lg`}
-                          >
-                            <benefit.icon className="size-6" />
-                          </div>
-
-                          <Badge
-                            className={`mb-3 border-none font-bold uppercase text-[10px] tracking-widest ${
-                              benefit.status === "Disponible"
-                                ? "bg-green-500/20 text-green-300 border border-green-500/30"
-                                : "bg-white/10 text-white/50 border border-white/20"
-                            }`}
-                          >
-                            {benefit.status}
-                          </Badge>
-
-                          <h3 className="text-lg font-black uppercase tracking-tighter mb-2 text-white">
-                            {benefit.title}
-                          </h3>
-                          <p className="text-white/60 text-sm leading-relaxed mb-6">
-                            {benefit.description}
-                          </p>
-
-                          <Button
-                            variant={
-                              benefit.status === "Disponible"
-                                ? "default"
-                                : "secondary"
-                            }
-                            disabled={benefit.status !== "Disponible"}
-                            className={`w-full rounded-xl font-bold uppercase tracking-widest gap-2 ${
-                              benefit.status === "Disponible"
-                                ? `bg-gradient-to-r ${benefit.color} hover:opacity-90 text-white border-none shadow-lg`
-                                : "bg-white/10 text-white/40 border border-white/10"
-                            }`}
-                          >
-                            {benefit.status === "Disponible" ? (
-                              <>
-                                <Download className="size-4" /> Descargar
-                              </>
-                            ) : (
-                              "Muy pronto"
-                            )}
-                          </Button>
-                        </CardContent>
-                      </Card>
-                    </motion.div>
-                  ))}
-                </div>
-              </motion.div>
 
               {/* ── SECCIÓN: CTA ── */}
               <motion.div
