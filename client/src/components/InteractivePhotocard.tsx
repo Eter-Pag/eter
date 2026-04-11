@@ -4,14 +4,18 @@ import { motion } from 'framer-motion';
 interface InteractivePhotocardProps {
   imageUrl: string;
   characterName: string;
-  shineType?: 'stars' | 'hearts' | 'rainbow' | 'holographic';
+  shineType?: 'stars' | 'hearts' | 'rainbow' | 'holographic' | 'diamond' | 'crystal';
+  showName?: boolean;
+  folio?: string;
   onTouchMove?: (rotation: { x: number; y: number }) => void;
 }
 
 export const InteractivePhotocard: React.FC<InteractivePhotocardProps> = ({
   imageUrl,
   characterName,
-  shineType = 'holographic',
+  shineType = 'holographic' as 'stars' | 'hearts' | 'rainbow' | 'holographic' | 'diamond' | 'crystal',
+  showName = true,
+  folio = '',
   onTouchMove,
 }) => {
   const [rotation, setRotation] = useState({ x: 0, y: 0 });
@@ -71,17 +75,29 @@ export const InteractivePhotocard: React.FC<InteractivePhotocardProps> = ({
     setShinePosition({ x: 50, y: 50 });
   };
 
+  useEffect(() => {
+    // Ensure shineType is valid
+    const validTypes: string[] = ['stars', 'hearts', 'rainbow', 'holographic', 'diamond', 'crystal'];
+    if (!validTypes.includes(shineType)) {
+      // Type validation
+    }
+  }, [shineType]);
+
   const getShinePattern = () => {
     switch (shineType) {
       case 'stars':
-        return 'radial-gradient(circle at var(--shine-x, 50%) var(--shine-y, 50%), rgba(255, 255, 255, 0.6) 0%, rgba(255, 215, 0, 0.3) 20%, transparent 60%)';
+        return 'radial-gradient(circle at var(--shine-x, 50%) var(--shine-y, 50%), rgba(255, 255, 255, 0.3) 0%, rgba(255, 215, 0, 0.15) 20%, transparent 60%)';
       case 'hearts':
-        return 'radial-gradient(circle at var(--shine-x, 50%) var(--shine-y, 50%), rgba(255, 192, 203, 0.5) 0%, rgba(255, 105, 180, 0.2) 30%, transparent 70%)';
+        return 'radial-gradient(circle at var(--shine-x, 50%) var(--shine-y, 50%), rgba(255, 192, 203, 0.25) 0%, rgba(255, 105, 180, 0.1) 30%, transparent 70%)';
       case 'rainbow':
-        return 'conic-gradient(from 0deg at var(--shine-x, 50%) var(--shine-y, 50%), #ff0000, #ffff00, #00ff00, #00ffff, #0000ff, #ff00ff, #ff0000)';
+        return 'conic-gradient(from 0deg at var(--shine-x, 50%) var(--shine-y, 50%), rgba(255, 100, 100, 0.15), rgba(255, 200, 100, 0.12), rgba(100, 255, 100, 0.12), rgba(100, 200, 255, 0.12), rgba(150, 100, 255, 0.15), rgba(255, 100, 200, 0.15), rgba(255, 100, 100, 0.15))';
+      case 'diamond':
+        return 'radial-gradient(circle at var(--shine-x, 50%) var(--shine-y, 50%), rgba(255, 255, 255, 0.35) 0%, rgba(200, 220, 255, 0.15) 15%, transparent 40%)';
+      case 'crystal':
+        return 'linear-gradient(45deg, transparent 30%, rgba(200, 230, 255, 0.2) 50%, transparent 70%), linear-gradient(-45deg, transparent 30%, rgba(200, 230, 255, 0.15) 50%, transparent 70%)';
       case 'holographic':
       default:
-        return 'linear-gradient(135deg, rgba(255, 255, 255, 0.4) 0%, rgba(147, 112, 219, 0.2) 25%, rgba(0, 255, 255, 0.2) 50%, rgba(255, 192, 203, 0.2) 75%, rgba(255, 255, 255, 0.4) 100%)';
+        return 'linear-gradient(135deg, rgba(255, 255, 255, 0.25) 0%, rgba(147, 112, 219, 0.12) 25%, rgba(0, 255, 255, 0.12) 50%, rgba(255, 192, 203, 0.12) 75%, rgba(255, 255, 255, 0.25) 100%)';
     }
   };
 
@@ -131,7 +147,7 @@ export const InteractivePhotocard: React.FC<InteractivePhotocardProps> = ({
             style={{
               background: getShinePattern(),
               mixBlendMode: 'screen',
-              opacity: 0.7,
+              opacity: 0.5,
             }}
           />
 
@@ -147,11 +163,20 @@ export const InteractivePhotocard: React.FC<InteractivePhotocardProps> = ({
           />
 
           {/* Character Name Badge */}
-          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4">
-            <p className="text-white font-black text-center uppercase tracking-widest text-sm">
-              {characterName}
-            </p>
-          </div>
+          {showName && (
+            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4">
+              <p className="text-white font-black text-center uppercase tracking-widest text-sm">
+                {characterName}
+              </p>
+            </div>
+          )}
+
+          {/* Folio Badge (always visible) */}
+          {folio && (
+            <div className="absolute top-4 right-4 bg-black/60 backdrop-blur-sm px-3 py-1 rounded-full">
+              <p className="text-white font-bold text-xs tracking-widest">{folio}</p>
+            </div>
+          )}
 
           {/* Border Glow */}
           <div

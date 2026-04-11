@@ -11,8 +11,9 @@ import { motion } from 'framer-motion';
 export const PhotocardCreator: React.FC = () => {
   const [characterName, setCharacterName] = useState('');
   const [imageUrl, setImageUrl] = useState('');
-  const [shineType, setShineType] = useState<'stars' | 'hearts' | 'rainbow' | 'holographic'>('holographic');
+  const [shineType, setShineType] = useState<'stars' | 'hearts' | 'rainbow' | 'holographic' | 'diamond' | 'crystal'>('holographic');
   const [folio, setFolio] = useState('');
+  const [showName, setShowName] = useState(true);
   const [isCreating, setIsCreating] = useState(false);
 
   const { data: photocards = [], refetch } = trpc.photocards.list.useQuery();
@@ -33,6 +34,7 @@ export const PhotocardCreator: React.FC = () => {
         imageUrl,
         shineType,
         folio,
+        showName,
       });
       toast.success('Photocard creada exitosamente');
       setCharacterName('');
@@ -119,13 +121,38 @@ export const PhotocardCreator: React.FC = () => {
               </p>
             </div>
 
+            {/* Show Name Toggle */}
+            <div className="space-y-2">
+              <label className="text-xs font-black uppercase text-slate-600 tracking-widest">
+                Mostrar Nombre
+              </label>
+              <div className="flex items-center gap-4">
+                <button
+                  type="button"
+                  onClick={() => setShowName(!showName)}
+                  className={`relative inline-flex h-8 w-14 items-center rounded-full transition-colors ${
+                    showName ? 'bg-purple-600' : 'bg-slate-300'
+                  }`}
+                >
+                  <span
+                    className={`inline-block h-6 w-6 transform rounded-full bg-white transition-transform ${
+                      showName ? 'translate-x-7' : 'translate-x-1'
+                    }`}
+                  />
+                </button>
+                <span className="text-sm font-medium text-slate-600">
+                  {showName ? 'Mostrar nombre del integrante' : 'Ocultar nombre (Misterio)'}
+                </span>
+              </div>
+            </div>
+
             {/* Shine Type */}
             <div className="space-y-2">
               <label className="text-xs font-black uppercase text-slate-600 tracking-widest">
                 Tipo de Brillo
               </label>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                {(['holographic', 'stars', 'hearts', 'rainbow'] as const).map((type) => (
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+                {(['holographic', 'stars', 'hearts', 'rainbow', 'diamond', 'crystal'] as const).map((type) => (
                   <button
                     key={type}
                     type="button"
@@ -140,6 +167,8 @@ export const PhotocardCreator: React.FC = () => {
                     {type === 'stars' && '⭐ Estrellas'}
                     {type === 'hearts' && '💖 Corazones'}
                     {type === 'rainbow' && '🌈 Arcoíris'}
+                    {type === 'diamond' && '💎 Diamante'}
+                    {type === 'crystal' && '❄️ Cristal'}
                   </button>
                 ))}
               </div>
@@ -157,6 +186,8 @@ export const PhotocardCreator: React.FC = () => {
                       imageUrl={imageUrl}
                       characterName={characterName}
                       shineType={shineType}
+                      showName={showName}
+                      folio={folio}
                     />
                   </div>
                 </div>
@@ -206,15 +237,17 @@ export const PhotocardCreator: React.FC = () => {
                       imageUrl={pc.imageUrl}
                       characterName={pc.characterName}
                       shineType={pc.shineType}
+                      showName={pc.showName !== false}
+                      folio={pc.folio}
                     />
                   </div>
                   <div className="space-y-2">
                     <p className="text-sm font-bold text-slate-900">
                       {pc.characterName} - {pc.folio}
                     </p>
-                    <p className="text-xs text-slate-500">
-                      Tipo: {pc.shineType === 'holographic' ? '✨ Holográfico' : pc.shineType}
-                    </p>
+                      <p className="text-xs text-slate-500">
+                        Tipo: {pc.shineType === 'holographic' ? '✨ Holográfico' : pc.shineType === 'diamond' ? '💎 Diamante' : pc.shineType === 'crystal' ? '❄️ Cristal' : pc.shineType}
+                      </p>
                     <Button
                       onClick={() => pc.id && handleDelete(pc.id)}
                       variant="destructive"

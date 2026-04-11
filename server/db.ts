@@ -95,8 +95,9 @@ export interface Photocard {
   id?: string;
   characterName: string;
   imageUrl: string;
-  shineType: 'stars' | 'hearts' | 'rainbow' | 'holographic';
+  shineType: 'stars' | 'hearts' | 'rainbow' | 'holographic' | 'diamond' | 'crystal';
   folio: string;
+  showName?: boolean;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -188,7 +189,7 @@ function getHeadersForSheet(sheetName: string): string[] {
     galleries: ['id', 'group', 'url', 'createdAt', 'updatedAt'],
     quiz_scores: ['id', 'name', 'score', 'total', 'quizId', 'date', 'createdAt', 'updatedAt'],
     subscriber_settings: ['id', 'password', 'updatedAt'],
-    photocards: ['id', 'characterName', 'imageUrl', 'shineType', 'folio', 'createdAt', 'updatedAt'],
+    photocards: ['id', 'characterName', 'imageUrl', 'shineType', 'folio', 'showName', 'createdAt', 'updatedAt'],
   };
   return headers[sheetName] || [];
 }

@@ -202,6 +202,8 @@ export default function Subscribers() {
                         imageUrl={pc.imageUrl}
                         characterName={pc.characterName}
                         shineType={pc.shineType}
+                        showName={pc.showName !== false}
+                        folio={pc.folio}
                       />
                     </motion.div>
                   ))}
