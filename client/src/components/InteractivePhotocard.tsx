@@ -7,6 +7,7 @@ interface InteractivePhotocardProps {
   shineType?: 'stars' | 'hearts' | 'rainbow' | 'holographic' | 'diamond' | 'crystal';
   showName?: boolean;
   folio?: string;
+  opacity?: number;
   onTouchMove?: (rotation: { x: number; y: number }) => void;
 }
 
@@ -16,6 +17,7 @@ export const InteractivePhotocard: React.FC<InteractivePhotocardProps> = ({
   shineType = 'holographic' as 'stars' | 'hearts' | 'rainbow' | 'holographic' | 'diamond' | 'crystal',
   showName = true,
   folio = '',
+  opacity = 0.5,
   onTouchMove,
 }) => {
   const [rotation, setRotation] = useState({ x: 0, y: 0 });
@@ -147,7 +149,7 @@ export const InteractivePhotocard: React.FC<InteractivePhotocardProps> = ({
             style={{
               background: getShinePattern(),
               mixBlendMode: 'screen',
-              opacity: 0.5,
+              opacity: opacity,
             }}
           />
 

@@ -204,6 +204,7 @@ export default function Subscribers() {
                         shineType={pc.shineType}
                         showName={pc.showName !== false}
                         folio={pc.folio}
+                        opacity={pc.opacity ?? 0.5}
                       />
                     </motion.div>
                   ))}

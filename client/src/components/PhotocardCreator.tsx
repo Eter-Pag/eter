@@ -12,6 +12,7 @@ export const PhotocardCreator: React.FC = () => {
   const [characterName, setCharacterName] = useState('');
   const [imageUrl, setImageUrl] = useState('');
   const [shineType, setShineType] = useState<'stars' | 'hearts' | 'rainbow' | 'holographic' | 'diamond' | 'crystal'>('holographic');
+  const [opacity, setOpacity] = useState(0.5);
   const [showName, setShowName] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
 
@@ -32,12 +33,14 @@ export const PhotocardCreator: React.FC = () => {
         characterName,
         imageUrl,
         shineType,
+        opacity,
         showName,
       });
       toast.success('Photocard creada exitosamente');
       setCharacterName('');
       setImageUrl('');
       setShineType('holographic');
+      setOpacity(0.5);
       refetch();
     } catch (error) {
       toast.error('Error al crear la photocard');
@@ -106,6 +109,26 @@ export const PhotocardCreator: React.FC = () => {
               </p>
             </div>
 
+            {/* Opacity Slider */}
+            <div className="space-y-3">
+              <label className="text-xs font-black uppercase text-slate-600 tracking-widest">
+                Intensidad del Brillo: {Math.round(opacity * 100)}%
+              </label>
+              <input
+                type="range"
+                min="0"
+                max="1"
+                step="0.05"
+                value={opacity}
+                onChange={(e) => setOpacity(parseFloat(e.target.value))}
+                className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-purple-600"
+              />
+              <div className="flex justify-between text-xs text-slate-400 font-medium">
+                <span>Muy Sutil</span>
+                <span>Muy Intenso</span>
+              </div>
+            </div>
+
             {/* Shine Type */}
             <div className="space-y-2">
               <label className="text-xs font-black uppercase text-slate-600 tracking-widest">
@@ -147,6 +170,7 @@ export const PhotocardCreator: React.FC = () => {
                       characterName={characterName}
                       shineType={shineType}
                       showName={false}
+                      opacity={opacity}
                     />
                   </div>
                 </div>
@@ -197,6 +221,7 @@ export const PhotocardCreator: React.FC = () => {
                       characterName={pc.characterName}
                       shineType={pc.shineType}
                       showName={false}
+                      opacity={pc.opacity ?? 0.5}
                     />
                   </div>
                   <div className="space-y-2">
@@ -205,6 +230,9 @@ export const PhotocardCreator: React.FC = () => {
                     </p>
                     <p className="text-xs text-slate-500">
                       {pc.characterName} • {pc.shineType === 'holographic' ? '✨ Holográfico' : pc.shineType === 'diamond' ? '💎 Diamante' : pc.shineType === 'crystal' ? '❄️ Cristal' : pc.shineType}
+                    </p>
+                    <p className="text-xs text-slate-400">
+                      Intensidad: {Math.round((pc.opacity ?? 0.5) * 100)}%
                     </p>
                     <Button
                       onClick={() => pc.id && handleDelete(pc.id)}

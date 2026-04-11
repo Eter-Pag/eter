@@ -99,6 +99,7 @@ export interface Photocard {
   folio?: string;
   folioNumber?: number;
   showName?: boolean;
+  opacity?: number;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -190,7 +191,7 @@ function getHeadersForSheet(sheetName: string): string[] {
     galleries: ['id', 'group', 'url', 'createdAt', 'updatedAt'],
     quiz_scores: ['id', 'name', 'score', 'total', 'quizId', 'date', 'createdAt', 'updatedAt'],
     subscriber_settings: ['id', 'password', 'updatedAt'],
-    photocards: ['id', 'characterName', 'imageUrl', 'shineType', 'folio', 'folioNumber', 'showName', 'createdAt', 'updatedAt'],
+    photocards: ['id', 'characterName', 'imageUrl', 'shineType', 'folio', 'folioNumber', 'showName', 'opacity', 'createdAt', 'updatedAt'],
   };
   return headers[sheetName] || [];
 }
@@ -772,7 +773,8 @@ export async function createPhotocard(data: Omit<Photocard, 'id' | 'createdAt' |
   const folio = `CARD-ETER-${String(folioNumber).padStart(3, '0')}`;
   const id = Date.now().toString();
   const now = new Date().toISOString();
-  await sheet.addRow({ ...data, id, folio, folioNumber, createdAt: now, updatedAt: now });
+  const opacity = data.opacity ?? 0.5;
+  await sheet.addRow({ ...data, id, folio, folioNumber, opacity, createdAt: now, updatedAt: now });
   return id;
 }
 
