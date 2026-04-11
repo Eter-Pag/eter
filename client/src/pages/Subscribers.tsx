@@ -94,7 +94,7 @@ export default function Subscribers() {
         </div>
       </div>
 
-      <div className="container max-w-6xl -mt-6 px-4">
+      <div className="container max-w-6xl px-4 pt-8">
         {!isAuthorized ? (
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
@@ -164,17 +164,16 @@ export default function Subscribers() {
                   </h2>
                   <p className="text-slate-600 font-medium">Las 7 photocards más recientes de nuestra colección exclusiva.</p>
                 </div>
-                <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-                  {/* Featured Card (Larger) */}
-                  {photocards.slice(0, 1).map((pc) => (
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+                  {photocards.slice(0, 7).map((pc) => (
                     <motion.div
                       key={pc.id}
                       initial={{ opacity: 0, scale: 0.9 }}
                       animate={{ opacity: 1, scale: 1 }}
-                      className="lg:col-span-2 lg:row-span-2"
+                      whileHover={{ scale: 1.05 }}
                       style={{ aspectRatio: '2/3' }}
                     >
-                      <div className="h-full rounded-2xl overflow-hidden shadow-2xl border-4 border-purple-200">
+                      <div className="h-full rounded-2xl overflow-hidden shadow-lg border-2 border-slate-200 hover:border-purple-400 transition-all duration-300 hover:shadow-xl">
                         <InteractivePhotocard
                           imageUrl={pc.imageUrl}
                           characterName={pc.characterName}
@@ -183,38 +182,12 @@ export default function Subscribers() {
                           opacity={pc.opacity ?? 0.5}
                         />
                       </div>
-                      <div className="mt-4 space-y-2">
-                        <p className="text-sm font-bold text-slate-900">{pc.folio}</p>
-                        <p className="text-xs text-slate-500">{pc.characterName}</p>
+                      <div className="mt-3 space-y-1">
+                        <p className="text-xs font-bold text-slate-900 truncate">{pc.folio}</p>
+                        <p className="text-xs text-slate-500 truncate">{pc.characterName}</p>
                       </div>
                     </motion.div>
                   ))}
-                  {/* Grid of 6 Recent Cards */}
-                  <div className="lg:col-span-2 grid grid-cols-2 gap-4">
-                    {photocards.slice(1, 7).map((pc) => (
-                      <motion.div
-                        key={pc.id}
-                        initial={{ opacity: 0, scale: 0.9 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        whileHover={{ scale: 1.05 }}
-                        style={{ aspectRatio: '2/3' }}
-                      >
-                        <div className="h-full rounded-xl overflow-hidden shadow-lg border-2 border-slate-200 hover:border-purple-400 transition-colors cursor-pointer">
-                          <InteractivePhotocard
-                            imageUrl={pc.imageUrl}
-                            characterName={pc.characterName}
-                            shineType={pc.shineType}
-                            showName={false}
-                            opacity={pc.opacity ?? 0.5}
-                          />
-                        </div>
-                        <div className="mt-2 space-y-1">
-                          <p className="text-xs font-bold text-slate-900 truncate">{pc.folio}</p>
-                          <p className="text-xs text-slate-500 truncate">{pc.characterName}</p>
-                        </div>
-                      </motion.div>
-                    ))}
-                  </div>
                 </div>
               </motion.div>
             )}
@@ -258,23 +231,28 @@ export default function Subscribers() {
                     Photocards Holográficas
                   </h2>
                   <p className="text-slate-600 font-medium">Colecciona nuestras photocards exclusivas. ¡Mueve el ratón o desliza en móvil para ver el efecto holográfico!</p>                </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
                   {photocards.map((pc) => (
                     <motion.div
                       key={pc.id}
                       initial={{ opacity: 0, scale: 0.9 }}
                       animate={{ opacity: 1, scale: 1 }}
-                      whileHover={{ scale: 1.02 }}
+                      whileHover={{ scale: 1.05 }}
                       style={{ aspectRatio: '2/3' }}
                     >
-                      <InteractivePhotocard
-                        imageUrl={pc.imageUrl}
-                        characterName={pc.characterName}
-                        shineType={pc.shineType}
-                        showName={pc.showName !== false}
-                        folio={pc.folio}
-                        opacity={pc.opacity ?? 0.5}
-                      />
+                      <div className="h-full rounded-2xl overflow-hidden shadow-lg border-2 border-slate-200 hover:border-purple-400 transition-all duration-300 hover:shadow-xl">
+                        <InteractivePhotocard
+                          imageUrl={pc.imageUrl}
+                          characterName={pc.characterName}
+                          shineType={pc.shineType}
+                          showName={false}
+                          opacity={pc.opacity ?? 0.5}
+                        />
+                      </div>
+                      <div className="mt-3 space-y-1">
+                        <p className="text-xs font-bold text-slate-900 truncate">{pc.folio}</p>
+                        <p className="text-xs text-slate-500 truncate">{pc.characterName}</p>
+                      </div>
                     </motion.div>
                   ))}
                 </div>
