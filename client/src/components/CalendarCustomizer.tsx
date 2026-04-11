@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import Cropper from "react-easy-crop";
 import { useDropzone } from "react-dropzone";
 import { Button } from "@/components/ui/button";
@@ -9,7 +9,6 @@ import {
   RotateCcw,
   Check,
   X,
-  Image as ImageIcon,
   Printer,
   FileDown,
   Sparkles,
@@ -34,6 +33,7 @@ interface Area {
 
 export default function CalendarCustomizer() {
   const [image, setImage] = useState<string | null>(null);
+  const [base64Calendar, setBase64Calendar] = useState<string | null>(null);
   const [crop, setCrop] = useState<Point>({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
@@ -43,6 +43,24 @@ export default function CalendarCustomizer() {
   
   // Link del calendario original (versión simple)
   const originalCalendarLink = "https://drive.google.com/file/d/1Zhuc3a9Pc2kAy6o9dR1fwtXsWKd8NbJ_/view?usp=sharing";
+
+  // Pre-cargar la imagen base del calendario en Base64 para evitar errores de CORS
+  useEffect(() => {
+    const convertToBase64 = async () => {
+      try {
+        const response = await fetch("/assets/calendario_base_abril.png");
+        const blob = await response.blob();
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          setBase64Calendar(reader.result as string);
+        };
+        reader.readAsDataURL(blob);
+      } catch (error) {
+        console.error("Error cargando imagen base:", error);
+      }
+    };
+    convertToBase64();
+  }, []);
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     const file = acceptedFiles[0];
@@ -70,12 +88,22 @@ export default function CalendarCustomizer() {
     const toastId = toast.loading(`Generando ${format.toUpperCase()} de alta calidad...`);
 
     try {
+      // Esperar un momento para asegurar que el DOM esté listo
+      await new Promise(resolve => setTimeout(resolve, 500));
+
       const canvas = await html2canvas(calendarRef.current, {
-        scale: 3, // Alta resolución (ajustado de 4 a 3 para evitar errores de memoria en algunos navegadores)
+        scale: 3, // Alta resolución (ajustado de 4 a 3 para evitar errores de memoria)
         useCORS: true,
         allowTaint: true,
         backgroundColor: "#ffffff",
-        logging: true, // Activamos logging para depurar si falla de nuevo
+        logging: false,
+        onclone: (clonedDoc) => {
+          // Asegurarse de que las imágenes estén visibles en el clon
+          const imgs = clonedDoc.getElementsByTagName('img');
+          for (let i = 0; i < imgs.length; i++) {
+            imgs[i].style.visibility = 'visible';
+          }
+        }
       });
 
       if (format === "png") {
@@ -98,8 +126,8 @@ export default function CalendarCustomizer() {
       }
       toast.success("¡Descarga completada!", { id: toastId });
     } catch (error) {
-      console.error(error);
-      toast.error("Error al generar el archivo", { id: toastId });
+      console.error("Error al generar descarga:", error);
+      toast.error("Error al generar el archivo. Por favor, intenta de nuevo.", { id: toastId });
     } finally {
       setIsProcessing(false);
     }
@@ -251,14 +279,15 @@ export default function CalendarCustomizer() {
                     style={{ borderRadius: '0px' }}
                 >
                     {/* El diseño base del calendario - CAPA MEDIA (z-10) */}
+                    {/* Usamos la versión Base64 si está disponible para evitar errores de CORS */}
                     <img 
-                        src="/assets/calendario_base_abril.png" 
+                        src={base64Calendar || "/assets/calendario_base_abril.png"} 
                         className="absolute inset-0 w-full h-full object-cover z-10 pointer-events-none"
                         alt="Calendario Base"
+                        crossOrigin="anonymous"
                     />
 
                     {/* FOTO DEL USUARIO: AL FRENTE (z-20) */}
-                    {/* Ajustada exactamente a la posición del recuadro izquierdo debajo de Abril 2026 */}
                     <div 
                         className="absolute bottom-[4.5%] left-[4.5%] w-[35.5%] h-[23.5%] z-20 bg-white rounded-2xl overflow-hidden shadow-lg"
                     >
@@ -276,6 +305,7 @@ export default function CalendarCustomizer() {
                                         transform: `scale(${zoom})`,
                                         transformOrigin: 'top left'
                                     }}
+                                    crossOrigin="anonymous"
                                 />
                             </div>
                         )}
