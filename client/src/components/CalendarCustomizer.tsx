@@ -88,46 +88,74 @@ export default function CalendarCustomizer() {
     setIsProcessing(true);
     const toastId = toast.loading(`Generando ${format.toUpperCase()} de alta calidad...`);
 
-    let tempDiv: HTMLDivElement | null = null;
-
     try {
       const calendarElement = calendarRef.current;
+      const calendarWidth = 500; // Ancho fijo para el calendario
+      const calendarHeight = 707; // Alto fijo para el calendario (aspecto 1/1.414 de 500px)
 
-      // Crear un elemento temporal para html2canvas
-      tempDiv = document.createElement('div');
-      tempDiv.style.position = 'absolute';
-      tempDiv.style.top = '-9999px';
-      tempDiv.style.left = '-9999px';
-      tempDiv.style.width = `${calendarElement.offsetWidth}px`;
-      tempDiv.style.height = `${calendarElement.offsetHeight}px`;
-      // Asegurarse de que el elemento temporal tenga un fondo blanco para html2canvas
-      tempDiv.style.backgroundColor = '#ffffff'; 
-      document.body.appendChild(tempDiv);
+      const canvas = document.createElement('canvas');
+      canvas.width = calendarWidth * 2; // Duplicar para mayor resolución
+      canvas.height = calendarHeight * 2; // Duplicar para mayor resolución
+      const ctx = canvas.getContext('2d');
 
-      // Clonar el contenido del calendarRef.current al tempDiv
-      const clonedContent = calendarElement.cloneNode(true) as HTMLElement;
-      tempDiv.appendChild(clonedContent);
+      if (!ctx) {
+        throw new Error("No se pudo obtener el contexto 2D del canvas.");
+      }
 
-      // Asegurarse de que todas las imágenes estén cargadas en el elemento clonado
-      const images = tempDiv.getElementsByTagName('img');
-      const promises = Array.from(images).map(img => {
-        // Establecer crossOrigin para evitar problemas de CORS con html2canvas
-        img.setAttribute('crossOrigin', 'anonymous');
-        if (img.complete) return Promise.resolve();
-        return new Promise(resolve => { img.onload = img.onerror = resolve; });
+      // Cargar la imagen base del calendario
+      const baseImage = new Image();
+      baseImage.crossOrigin = "anonymous";
+      baseImage.src = base64Calendar || "/assets/calendario_base_abril.png";
+      await new Promise((resolve, reject) => {
+        baseImage.onload = resolve;
+        baseImage.onerror = reject;
       });
 
-      await Promise.all(promises);
-      // Pequeña espera adicional para asegurar que el DOM esté completamente renderizado
-      await new Promise(resolve => setTimeout(resolve, 100));
+      // Dibujar la imagen base en el canvas
+      ctx.drawImage(baseImage, 0, 0, canvas.width, canvas.height);
 
-      const canvas = await html2canvas(tempDiv, {
-        scale: 3, // Alta resolución
-        useCORS: true,
-        allowTaint: true,
-        backgroundColor: "#ffffff",
-        logging: false,
-      });
+      // Si hay una imagen de usuario, cargarla y dibujarla
+      if (image && croppedAreaPixels) {
+        const userImage = new Image();
+        userImage.crossOrigin = "anonymous";
+        userImage.src = image;
+        await new Promise((resolve, reject) => {
+          userImage.onload = resolve;
+          userImage.onerror = reject;
+        });
+
+        // Calcular las dimensiones y posición de la imagen de usuario en el calendario
+        // Estas proporciones deben coincidir con las del CSS de la vista previa
+        const calendarRatio = calendarWidth / calendarHeight;
+        const previewWidth = calendarElement.offsetWidth;
+        const previewHeight = calendarElement.offsetHeight;
+
+        const scaleFactor = canvas.width / previewWidth; // Factor de escala para alta resolución
+
+        const userImageX = (0.045 * previewWidth) * scaleFactor; // 4.5% left
+        const userImageY = (0.045 * previewHeight) * scaleFactor; // 4.5% bottom (desde arriba)
+        const userImageWidth = (0.355 * previewWidth) * scaleFactor; // 35.5% width
+        const userImageHeight = (0.235 * previewHeight) * scaleFactor; // 23.5% height
+
+        // Calcular el área de recorte final para dibujar en el canvas
+        const croppedX = croppedAreaPixels.x;
+        const croppedY = croppedAreaPixels.y;
+        const croppedWidth = croppedAreaPixels.width;
+        const croppedHeight = croppedAreaPixels.height;
+
+        // Dibujar la imagen de usuario recortada en la posición correcta
+        ctx.drawImage(
+          userImage,
+          croppedX,
+          croppedY,
+          croppedWidth,
+          croppedHeight,
+          userImageX,
+          userImageY,
+          userImageWidth,
+          userImageHeight
+        );
+      }
 
       if (format === "png") {
         const link = document.createElement("a");
@@ -152,10 +180,6 @@ export default function CalendarCustomizer() {
       console.error("Error al generar descarga:", error);
       toast.error("Error al generar el archivo. Por favor, intenta de nuevo.", { id: toastId });
     } finally {
-      // Limpiar el elemento temporal
-      if (tempDiv && document.body.contains(tempDiv)) {
-        document.body.removeChild(tempDiv);
-      }
       setIsProcessing(false);
     }
   };
