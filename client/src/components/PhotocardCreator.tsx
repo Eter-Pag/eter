@@ -179,7 +179,7 @@ export const PhotocardCreator: React.FC = () => {
 
             <Button
               type="submit"
-              disabled={isCreating || !characterName || !imageUrl || !folio}
+              disabled={isCreating || !characterName || !imageUrl}
               className="w-full h-12 rounded-xl font-black uppercase tracking-widest bg-purple-600 hover:bg-purple-700 text-white"
             >
               {isCreating ? (
