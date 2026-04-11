@@ -93,10 +93,10 @@ export default function CalendarCustomizer() {
       const calendarWidth = 500; // Ancho fijo para el calendario
       const calendarHeight = 707; // Alto fijo para el calendario (aspecto 1/1.414 de 500px)
 
-      const canvas = document.createElement('canvas');
+      const canvas = document.createElement("canvas");
       canvas.width = calendarWidth * 2; // Duplicar para mayor resolución
       canvas.height = calendarHeight * 2; // Duplicar para mayor resolución
-      const ctx = canvas.getContext('2d');
+      const ctx = canvas.getContext("2d");
 
       if (!ctx) {
         throw new Error("No se pudo obtener el contexto 2D del canvas.");
@@ -126,16 +126,34 @@ export default function CalendarCustomizer() {
 
         // Calcular las dimensiones y posición de la imagen de usuario en el calendario
         // Estas proporciones deben coincidir con las del CSS de la vista previa
-        const calendarRatio = calendarWidth / calendarHeight;
         const previewWidth = calendarElement.offsetWidth;
         const previewHeight = calendarElement.offsetHeight;
 
         const scaleFactor = canvas.width / previewWidth; // Factor de escala para alta resolución
 
-        const userImageX = (0.045 * previewWidth) * scaleFactor; // 4.5% left
-        const userImageY = (0.045 * previewHeight) * scaleFactor; // 4.5% bottom (desde arriba)
-        const userImageWidth = (0.355 * previewWidth) * scaleFactor; // 35.5% width
-        const userImageHeight = (0.235 * previewHeight) * scaleFactor; // 23.5% height
+        // Ajustar las coordenadas y dimensiones para el Canvas
+        const userImageX = (0.045 * calendarWidth) * 2; // 4.5% left del calendario de 500px, escalado
+        const userImageY = (calendarHeight - (0.045 * calendarHeight) - (0.235 * calendarHeight)) * 2; // 4.5% bottom, 23.5% height, escalado
+        const userImageWidth = (0.355 * calendarWidth) * 2; // 35.5% width del calendario de 500px, escalado
+        const userImageHeight = (0.235 * calendarHeight) * 2; // 23.5% height del calendario de 707px, escalado
+
+        // Radio de borde para rounded-2xl (aproximadamente 16px en un tamaño base, escalado)
+        const borderRadius = 16 * 2; 
+
+        // Dibujar la imagen de usuario con bordes redondeados
+        ctx.save();
+        ctx.beginPath();
+        ctx.moveTo(userImageX + borderRadius, userImageY);
+        ctx.lineTo(userImageX + userImageWidth - borderRadius, userImageY);
+        ctx.quadraticCurveTo(userImageX + userImageWidth, userImageY, userImageX + userImageWidth, userImageY + borderRadius);
+        ctx.lineTo(userImageX + userImageWidth, userImageY + userImageHeight - borderRadius);
+        ctx.quadraticCurveTo(userImageX + userImageWidth, userImageY + userImageHeight, userImageX + userImageWidth - borderRadius, userImageY + userImageHeight);
+        ctx.lineTo(userImageX + borderRadius, userImageY + userImageHeight);
+        ctx.quadraticCurveTo(userImageX, userImageY + userImageHeight, userImageX, userImageY + userImageHeight - borderRadius);
+        ctx.lineTo(userImageX, userImageY + borderRadius);
+        ctx.quadraticCurveTo(userImageX, userImageY, userImageX + borderRadius, userImageY);
+        ctx.closePath();
+        ctx.clip();
 
         // Calcular el área de recorte final para dibujar en el canvas
         const croppedX = croppedAreaPixels.x;
@@ -143,7 +161,6 @@ export default function CalendarCustomizer() {
         const croppedWidth = croppedAreaPixels.width;
         const croppedHeight = croppedAreaPixels.height;
 
-        // Dibujar la imagen de usuario recortada en la posición correcta
         ctx.drawImage(
           userImage,
           croppedX,
@@ -155,6 +172,7 @@ export default function CalendarCustomizer() {
           userImageWidth,
           userImageHeight
         );
+        ctx.restore(); // Restaurar el contexto para que los siguientes dibujos no estén recortados
       }
 
       if (format === "png") {
