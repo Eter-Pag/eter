@@ -250,13 +250,13 @@ export default function CalendarCustomizer() {
 
   return (
     <div className="space-y-10 p-4 md:p-8">
-      {/* Contenedor principal para el diseño de dos columnas en PC */}
-      <div className="md:flex md:flex-row md:gap-10">
-        {/* Columna Izquierda: Subir y Editar Imagen */}
-        <div className="md:w-1/2 space-y-6">
+      {/* Contenedor principal para el diseño de tres columnas en PC */}
+      <div className="md:grid md:grid-cols-3 md:gap-10">
+        {/* Columna 1: Subir y Editar Imagen */}
+        <div className="md:col-span-1 space-y-6">
           {/* Sección de Personalización */}
           <div className="flex flex-col items-center mb-8">
-            <div className="flex items-center gap-4 w-full max-w-md my-6">
+            <div className="flex items-center gap-4 w-full my-6">
               <div className="h-px flex-1 bg-white/10" />
               <span className="text-[10px] font-black text-white/20 uppercase tracking-[0.2em]">Personaliza el tuyo</span>
               <div className="h-px flex-1 bg-white/10" />
@@ -347,8 +347,8 @@ export default function CalendarCustomizer() {
           )}
         </div>
 
-        {/* Columna Derecha: Vista Previa y Botones de Descarga (Personalizado) */}
-        <div className="md:w-1/2 space-y-8 mt-10 md:mt-0">
+        {/* Columna 2: Vista Previa y Botones de Descarga (Personalizado) */}
+        <div className="md:col-span-1 space-y-8 mt-10 md:mt-0">
           <AnimatePresence>
             {image && !showEditor && (
               <motion.div
@@ -431,47 +431,47 @@ export default function CalendarCustomizer() {
             )}
           </AnimatePresence>
         </div>
-      </div>
 
-      {/* Separador para la versión original */}
-      <div className="flex items-center gap-4 w-full max-w-md mx-auto my-6">
-        <div className="h-px flex-1 bg-white/10" />
-        <span className="text-[10px] font-black text-white/20 uppercase tracking-[0.2em]">O Descarga la versión original</span>
-        <div className="h-px flex-1 bg-white/10" />
-      </div>
-
-      {/* Sección de Descarga Versión Simple (Original) - Movida debajo */}
-      <div className="flex flex-col items-center">
-        <Card className="w-full max-w-md bg-white/5 border-white/10 backdrop-blur-xl overflow-hidden rounded-3xl">
-          <CardContent className="p-6 flex flex-col items-center gap-4">
-            <div className="flex items-center gap-3">
-              <div className="size-10 bg-purple-500/20 rounded-xl flex items-center justify-center text-purple-400">
-                <FileDown className="size-5" />
-              </div>
-              <div>
-                <h4 className="text-sm font-black text-white uppercase tracking-tight">Versión Original</h4>
-                <p className="text-white/40 text-[10px] uppercase font-bold tracking-widest">Sin personalizar</p>
-              </div>
+        {/* Columna 3: Versión Original */}
+        <div className="md:col-span-1 space-y-8 mt-10 md:mt-0">
+          <div className="flex flex-col items-center">
+            <div className="flex items-center gap-4 w-full my-6">
+              <div className="h-px flex-1 bg-white/10" />
+              <span className="text-[10px] font-black text-white/20 uppercase tracking-[0.2em]">O Descarga la versión original</span>
+              <div className="h-px flex-1 bg-white/10" />
             </div>
-            {/* Vista previa de la imagen base */}
-            <div className="relative w-full max-w-[200px] aspect-[1/1.414] bg-white shadow-lg rounded-lg overflow-hidden">
-              <img 
-                src={base64Calendar || "/assets/calendario_base_abril.png"} 
-                className="absolute inset-0 w-full h-full object-cover"
-                alt="Calendario Base Vista Previa"
-                crossOrigin="anonymous"
-              />
-            </div>
-            <Button
-              variant="outline"
-              onClick={downloadOriginalPdf}
-              disabled={isProcessing}
-              className="rounded-xl border-white/20 text-white hover:bg-white/10 h-10 px-4 text-xs font-black uppercase tracking-widest"
-            >
-              Descargar PDF Original
-            </Button>
-          </CardContent>
-        </Card>
+            <Card className="w-full max-w-md bg-white/5 border-white/10 backdrop-blur-xl overflow-hidden rounded-3xl">
+              <CardContent className="p-6 flex flex-col items-center gap-4">
+                <div className="flex items-center gap-3">
+                  <div className="size-10 bg-purple-500/20 rounded-xl flex items-center justify-center text-purple-400">
+                    <FileDown className="size-5" />
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-black text-white uppercase tracking-tight">Versión Original</h4>
+                    <p className="text-white/40 text-[10px] uppercase font-bold tracking-widest">Sin personalizar</p>
+                  </div>
+                </div>
+                {/* Vista previa de la imagen base */}
+                <div className="relative w-full max-w-[200px] aspect-[1/1.414] bg-white shadow-lg rounded-lg overflow-hidden">
+                  <img 
+                    src={base64Calendar || "/assets/calendario_base_abril.png"} 
+                    className="absolute inset-0 w-full h-full object-cover"
+                    alt="Calendario Base Vista Previa"
+                    crossOrigin="anonymous"
+                  />
+                </div>
+                <Button
+                  variant="outline"
+                  onClick={downloadOriginalPdf}
+                  disabled={isProcessing}
+                  className="rounded-xl border-white/20 text-white hover:bg-white/10 h-10 px-4 text-xs font-black uppercase tracking-widest"
+                >
+                  Descargar PDF Original
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
       </div>
     </div>
   );
