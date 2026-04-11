@@ -54,6 +54,8 @@ Dentro encontrarán:
 ¡Solo para ustedes! 💜
 ```
 
+**Nota:** Los usuarios que no sean suscriptores verán un botón directo para suscribirse desde la página de Zona VIP, así que no necesitan buscar el enlace.
+
 2. Configura el post para que **solo lo vean los suscriptores**
 3. Fija el post en tu página para que siempre sea visible
 
@@ -165,6 +167,11 @@ Dentro encontrarán:
 
 ## 🆘 Solución de Problemas
 
+### "No encuentro dónde suscribirme"
+- En la página `/suscriptores`, si no estás suscrito, verás un botón azul grande que dice **"Suscribirse en Facebook"**
+- Ese botón te llevará directamente a tu página de suscriptores
+- También hay un enlace de texto debajo que dice "Obtén tu contraseña y beneficios exclusivos"
+
 ### "La contraseña no funciona"
 - Verifica que escribiste correctamente en el panel de admin
 - Asegúrate de hacer clic en "Actualizar Contraseña"
@@ -189,6 +196,30 @@ Si tienes preguntas o necesitas ayuda:
 2. Contacta al equipo de soporte
 3. Verifica que todos los archivos estén correctamente nombrados
 
+## 🔗 Enlaces Importantes
+
+**Tu enlace de suscripción de Facebook:**
+```
+https://www.facebook.com/61585362107747/subscribe/
+```
+
+Este enlace aparece automáticamente en:
+- El botón de suscripción en la Zona VIP (para no-suscriptores)
+- El botón "Invitar a una ARMY" (para suscriptores)
+- Puedes compartirlo en tu bio de Facebook, Instagram, etc.
+
 ---
 
 **¡Listo! Tu Zona VIP está lista para hacer felices a tus suscriptores.** 💜✨
+
+---
+
+## 🎯 Resumen Rápido
+
+1. **Panel Admin:** Configura la contraseña en Admin → Suscriptores
+2. **Comparte en Facebook:** Publica la contraseña en un post exclusivo para suscriptores
+3. **Usuarios No-Suscriptores:** Verán el botón "Suscribirse en Facebook" automáticamente
+4. **Usuarios Suscriptores:** Ingresan la contraseña y acceden a todo el contenido
+5. **Cada Mes:** Cambia la contraseña y publica la nueva en Facebook
+
+¡Así de simple! 🚀

@@ -25,6 +25,7 @@ export default function Subscribers() {
   const [searchQuery, setSearchQuery] = useState("");
   
   const { data: correctPassword } = trpc.subscribers.getPassword.useQuery();
+  const facebookSubscribeLink = "https://www.facebook.com/61585362107747/subscribe/";
 
   const handleVerify = (e: React.FormEvent) => {
     e.preventDefault();
@@ -120,15 +121,26 @@ export default function Subscribers() {
                   <Button className="w-full h-14 rounded-2xl bg-purple-600 hover:bg-purple-700 text-white font-bold text-lg shadow-lg shadow-purple-200 transition-all">
                     Desbloquear Acceso
                   </Button>
-                  <a 
-                    href="https://www.facebook.com/profile.php?id=100092285145856" 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="flex items-center justify-center gap-2 text-sm font-bold text-blue-600 hover:text-blue-700 pt-2"
-                  >
-                    <Facebook className="size-4" />
-                    ¿No tienes la contraseña? Suscríbete aquí
-                  </a>
+                  <div className="pt-6 space-y-3 border-t border-slate-100">
+                    <p className="text-xs text-slate-500 text-center font-medium">¿Aún no eres suscriptor?</p>
+                    <a 
+                      href={facebookSubscribeLink}
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="flex items-center justify-center gap-2 w-full h-12 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm transition-all shadow-lg shadow-blue-200"
+                    >
+                      <Facebook className="size-5" />
+                      Suscribirse en Facebook
+                    </a>
+                    <a 
+                      href={facebookSubscribeLink}
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="flex items-center justify-center gap-2 text-xs font-bold text-blue-600 hover:text-blue-700 pt-2"
+                    >
+                      Obtén tu contraseña y beneficios exclusivos →
+                    </a>
+                  </div>
                 </form>
               </CardContent>
             </Card>
@@ -208,9 +220,15 @@ export default function Subscribers() {
               <p className="text-purple-100 mb-8 max-w-xl mx-auto font-medium">
                 Cada mes renovamos los diseños. Si dejas de ser suscriptor, perderás el acceso a las nuevas colecciones. ¡No te quedes fuera!
               </p>
-              <Button className="bg-white text-purple-600 hover:bg-purple-50 rounded-2xl px-10 h-14 font-black uppercase tracking-widest shadow-xl">
-                Invitar a una ARMY
-              </Button>
+              <a 
+                href={facebookSubscribeLink}
+                target="_blank" 
+                rel="noopener noreferrer"
+              >
+                <Button className="bg-white text-purple-600 hover:bg-purple-50 rounded-2xl px-10 h-14 font-black uppercase tracking-widest shadow-xl">
+                  Invitar a una ARMY
+                </Button>
+              </a>
             </div>
           </div>
         )}
