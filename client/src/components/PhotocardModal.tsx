@@ -4,6 +4,7 @@ import { X, Download } from 'lucide-react';
 import { InteractivePhotocard } from './InteractivePhotocard';
 import { Button } from './ui/button';
 import { toast } from 'sonner';
+import { trpc } from '../lib/trpc';
 
 interface PhotocardModalProps {
   isOpen: boolean;
@@ -30,18 +31,30 @@ export const PhotocardModal: React.FC<PhotocardModalProps> = ({
 
     try {
       setIsDownloading(true);
-      const response = await fetch(photocard.imageUrl);
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `${photocard.folio}.png`;
-      document.body.appendChild(a);
-      a.click();
-      window.URL.revokeObjectURL(url);
-      document.body.removeChild(a);
-      toast.success('¡Photocard descargada!');
+      const result = await trpc.photocards.download.mutate({
+        imageUrl: photocard.imageUrl,
+        folio: photocard.folio,
+      });
+
+      if (result.success && result.data) {
+        const binaryString = atob(result.data);
+        const bytes = new Uint8Array(binaryString.length);
+        for (let i = 0; i < binaryString.length; i++) {
+          bytes[i] = binaryString.charCodeAt(i);
+        }
+        const blob = new Blob([bytes], { type: result.mimeType });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = result.filename;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+        toast.success('¡Photocard descargada!');
+      }
     } catch (error) {
+      console.error('Download error:', error);
       toast.error('Error al descargar la photocard');
     } finally {
       setIsDownloading(false);

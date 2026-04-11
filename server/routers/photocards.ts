@@ -32,4 +32,29 @@ export const photocardsRouter = router({
       await deletePhotocard(input.id);
       return { success: true };
     }),
+
+  download: publicProcedure
+    .input(z.object({ 
+      imageUrl: z.string().url(),
+      folio: z.string(),
+    }))
+    .mutation(async ({ input }) => {
+      try {
+        const response = await fetch(input.imageUrl);
+        if (!response.ok) {
+          throw new Error(`Failed to fetch image: ${response.statusText}`);
+        }
+        const buffer = await response.arrayBuffer();
+        const base64 = Buffer.from(buffer).toString('base64');
+        return {
+          success: true,
+          data: base64,
+          filename: `${input.folio}.png`,
+          mimeType: 'image/png',
+        };
+      } catch (error) {
+        console.error('Download error:', error);
+        throw new Error('Failed to download photocard');
+      }
+    }),
 });
