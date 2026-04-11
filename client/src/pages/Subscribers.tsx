@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { trpc } from "@/lib/trpc";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -41,10 +41,19 @@ export default function Subscribers() {
   const facebookSubscribeLink = "https://www.facebook.com/61585362107747/subscribe/";
   const adminPassword = "panochonas12";
 
+  // Persistencia de sesión VIP
+  useEffect(() => {
+    const auth = sessionStorage.getItem("vip_authorized");
+    if (auth === "true") {
+      setIsAuthorized(true);
+    }
+  }, []);
+
   const handleVerify = (e: React.FormEvent) => {
     e.preventDefault();
     if (passwordInput === correctPassword || passwordInput === adminPassword) {
       setIsAuthorized(true);
+      sessionStorage.setItem("vip_authorized", "true");
       toast.success("¡Acceso concedido, ARMY!");
     } else {
       toast.error("Contraseña incorrecta. Revisa el grupo de suscriptores.");
@@ -71,13 +80,6 @@ export default function Subscribers() {
       return prev >= maxIndex ? 0 : prev + 1;
     });
   };
-
-  const filteredPhotocards = photocards.filter(
-    (pc) =>
-      searchQuery === "" ||
-      pc.folio?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      pc.characterName?.toLowerCase().includes(searchQuery.toLowerCase())
-  );
 
   const vipBenefits = [
     {
@@ -264,45 +266,7 @@ export default function Subscribers() {
                 <Sparkles className="size-5 text-yellow-400" />
               </motion.div>
 
-              {/* ── SECCIÓN: Buscador de Folios ── */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 }}
-              >
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-1 h-6 bg-gradient-to-b from-purple-400 to-pink-400 rounded-full" />
-                  <h2 className="text-xl font-black uppercase tracking-tighter text-white">
-                    Buscador de Folios
-                  </h2>
-                </div>
-
-                <div className="relative">
-                  {/* Glow */}
-                  <div className="absolute -inset-1 bg-gradient-to-r from-purple-600 via-pink-600 to-purple-600 rounded-3xl blur-2xl opacity-20" />
-
-                  <Card className="relative bg-white/10 border-2 border-white/20 shadow-2xl backdrop-blur-2xl overflow-hidden">
-                    <CardContent className="p-6">
-                      <div className="flex flex-col md:flex-row gap-4 items-center">
-                        <p className="text-white/70 text-sm font-medium shrink-0">
-                          Busca tu nombre para encontrar tu descarga personalizada.
-                        </p>
-                        <div className="relative w-full">
-                          <Search className="absolute left-4 top-3.5 h-4 w-4 text-white/60" />
-                          <Input
-                            placeholder="Escribe tu nombre o folio..."
-                            className="pl-11 bg-white/10 border-white/20 text-white placeholder:text-white/50 backdrop-blur-xl focus:bg-white/20 focus:border-white/40 transition-all"
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                          />
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </div>
-              </motion.div>
-
-              {/* ── SECCIÓN: Beneficios VIP (incluyendo Photocards en carrusel) ── */}
+              {/* ── SECCIÓN: Beneficios VIP ── */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -522,16 +486,11 @@ export default function Subscribers() {
                   </motion.div>
                 </div>
 
-                {/* Botón Ver Todas las Photocards */}
+                {/* Botón Ver Todas las Photocards (Nueva Sección) */}
                 {photocards.length > 0 && (
                   <div className="flex justify-center mt-8">
                     <Button
-                      onClick={() => {
-                        // Scroll a la sección de buscador
-                        document
-                          .querySelector("[data-search-section]")
-                          ?.scrollIntoView({ behavior: "smooth" });
-                      }}
+                      onClick={() => navigate("/photocards")}
                       className="gap-2 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white font-semibold px-8 h-11 rounded-lg text-base shadow-lg shadow-blue-500/30"
                     >
                       <ImageIcon className="size-5" />
@@ -541,102 +500,6 @@ export default function Subscribers() {
                   </div>
                 )}
               </motion.div>
-
-              {/* ── SECCIÓN: Galería Completa de Photocards (con búsqueda) ── */}
-              {photocards.length > 0 && (
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.4 }}
-                  data-search-section
-                >
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="w-1 h-6 bg-gradient-to-b from-yellow-400 to-pink-400 rounded-full" />
-                    <h2 className="text-xl font-black uppercase tracking-tighter text-white flex items-center gap-2">
-                      <Sparkles className="size-5 text-yellow-400" />
-                      Galería Completa
-                    </h2>
-                  </div>
-
-                  <p className="text-white/60 text-sm mb-5 font-medium">
-                    Colecciona nuestras photocards exclusivas. ¡Mueve el ratón o
-                    desliza en móvil para ver el efecto holográfico!
-                  </p>
-
-                  <div className="relative">
-                    {/* Glow */}
-                    <div className="absolute -inset-1 bg-gradient-to-r from-yellow-500 via-pink-500 to-purple-500 rounded-3xl blur-2xl opacity-20" />
-
-                    <Card className="relative bg-white/10 border-2 border-white/20 shadow-2xl backdrop-blur-2xl overflow-hidden">
-                      <CardContent className="p-6">
-                        {filteredPhotocards.length > 0 ? (
-                          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
-                            {filteredPhotocards.map((pc) => (
-                              <motion.div
-                                key={pc.id}
-                                initial={{ opacity: 0, scale: 0.9 }}
-                                animate={{ opacity: 1, scale: 1 }}
-                                whileHover={{ scale: 1.05 }}
-                                className="flex flex-col gap-2"
-                              >
-                                <div
-                                  className="relative rounded-2xl overflow-hidden shadow-lg border-2 border-white/20 hover:border-purple-400/70 transition-all duration-300 hover:shadow-xl hover:shadow-purple-500/30 cursor-pointer group"
-                                  style={{ aspectRatio: "2/3" }}
-                                  onClick={() => {
-                                    setSelectedPhotocard(pc);
-                                    setIsModalOpen(true);
-                                  }}
-                                >
-                                  <InteractivePhotocard
-                                    imageUrl={pc.imageUrl}
-                                    characterName={pc.characterName}
-                                    shineType={pc.shineType}
-                                    showName={false}
-                                    opacity={pc.opacity ?? 0.5}
-                                  />
-                                  {/* Overlay hover */}
-                                  <div className="absolute inset-0 flex items-center justify-center bg-black/0 group-hover:bg-black/30 transition-all duration-300 rounded-2xl">
-                                    <div className="opacity-0 group-hover:opacity-100 transition-all duration-300 transform scale-75 group-hover:scale-100">
-                                      <Sparkles className="size-8 text-white drop-shadow-lg" />
-                                    </div>
-                                  </div>
-                                </div>
-
-                                {/* Info y botón */}
-                                <div className="space-y-2">
-                                  <div className="space-y-0.5">
-                                    <p className="text-xs font-bold text-white truncate">
-                                      {pc.folio}
-                                    </p>
-                                    <p className="text-xs text-white/50 truncate">
-                                      {pc.characterName}
-                                    </p>
-                                  </div>
-                                  <button
-                                    onClick={() => {
-                                      setSelectedPhotocard(pc);
-                                      setIsModalOpen(true);
-                                    }}
-                                    className="w-full px-3 py-2 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white text-xs font-bold rounded-lg transition-all duration-300 shadow-md hover:shadow-lg hover:shadow-purple-500/40"
-                                  >
-                                    Ver Completa ✨
-                                  </button>
-                                </div>
-                              </motion.div>
-                            ))}
-                          </div>
-                        ) : (
-                          <div className="text-center py-12">
-                            <p className="text-white/40 text-sm">
-                              No se encontraron photocards con ese nombre.
-                            </p>
-                          </div>
-                        )}
-                      </CardContent>
-                    </Card>
-                  </div>
-                </motion.div>
-              )}
 
               {/* ── SECCIÓN: CTA ── */}
               <motion.div
