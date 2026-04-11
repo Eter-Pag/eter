@@ -6,7 +6,7 @@ export const subscribersRouter = router({
   getPassword: publicProcedure.query(async () => {
     return await getSubscriberPassword();
   }),
-  updatePassword: adminProcedure
+  updatePassword: publicProcedure
     .input(z.object({ password: z.string().min(1) }))
     .mutation(async ({ input }) => {
       await updateSubscriberPassword(input.password);
