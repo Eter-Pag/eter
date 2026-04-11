@@ -177,7 +177,7 @@ export default function CalendarCustomizer() {
                 image={image}
                 crop={crop}
                 zoom={zoom}
-                aspect={0.92 / 0.40} // Proporción exacta del recuadro blanco (width/height)
+                aspect={1} // Proporción cuadrada para el espacio a la izquierda
                 onCropChange={setCrop}
                 onCropComplete={onCropComplete}
                 onZoomChange={setZoom}
@@ -248,17 +248,18 @@ export default function CalendarCustomizer() {
                     className="relative w-full max-w-[500px] aspect-[1/1.414] bg-white shadow-2xl overflow-hidden"
                     style={{ borderRadius: '0px' }}
                 >
-                    {/* El diseño base del calendario */}
+                    {/* El diseño base del calendario - CAPA SUPERIOR (z-20) */}
+                    {/* Nota: Para que la foto se vea "detrás", la imagen base DEBE ser transparente en el área de recorte */}
+                    {/* Como la imagen base es un PNG opaco, usaremos la foto detrás y la base delante con mix-blend-mode o simplemente z-index si la base tuviera transparencia */}
                     <img 
                         src="/assets/calendario_base_abril.png" 
                         className="absolute inset-0 w-full h-full object-cover z-20 pointer-events-none"
                         alt="Calendario Base"
                     />
 
-                    {/* RECUADRO DE PERSONALIZACIÓN: AJUSTADO AL DISEÑO DEL PDF */}
-                    {/* El recuadro blanco está en la parte inferior, ocupando casi todo el ancho */}
+                    {/* RECUADRO DE PERSONALIZACIÓN: AJUSTADO A LA IZQUIERDA (Debajo de Abril 2026) - CAPA INFERIOR (z-10) */}
                     <div 
-                        className="absolute bottom-[3.5%] left-[3.5%] w-[93%] h-[40.5%] z-10 bg-white rounded-[2.5rem] overflow-hidden"
+                        className="absolute bottom-[8%] left-[6.5%] w-[36%] h-[24%] z-10 bg-white rounded-3xl overflow-hidden"
                     >
                         {image && croppedAreaPixels && (
                             <div className="relative w-full h-full">
