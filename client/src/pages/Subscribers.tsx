@@ -19,11 +19,14 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
 import { InteractivePhotocard } from "@/components/InteractivePhotocard";
+import { PhotocardModal } from "@/components/PhotocardModal";
 
 export default function Subscribers() {
   const [passwordInput, setPasswordInput] = useState("");
   const [isAuthorized, setIsAuthorized] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [selectedPhotocard, setSelectedPhotocard] = useState<any>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   
   const { data: correctPassword } = trpc.subscribers.getPassword.useQuery();
   const { data: photocards = [] } = trpc.photocards.list.useQuery();
@@ -172,6 +175,11 @@ export default function Subscribers() {
                       animate={{ opacity: 1, scale: 1 }}
                       whileHover={{ scale: 1.05 }}
                       style={{ aspectRatio: '2/3' }}
+                      onClick={() => {
+                        setSelectedPhotocard(pc);
+                        setIsModalOpen(true);
+                      }}
+                      className="cursor-pointer"
                     >
                       <div className="h-full rounded-2xl overflow-hidden shadow-lg border-2 border-slate-200 hover:border-purple-400 transition-all duration-300 hover:shadow-xl">
                         <InteractivePhotocard
@@ -239,6 +247,11 @@ export default function Subscribers() {
                       animate={{ opacity: 1, scale: 1 }}
                       whileHover={{ scale: 1.05 }}
                       style={{ aspectRatio: '2/3' }}
+                      onClick={() => {
+                        setSelectedPhotocard(pc);
+                        setIsModalOpen(true);
+                      }}
+                      className="cursor-pointer"
                     >
                       <div className="h-full rounded-2xl overflow-hidden shadow-lg border-2 border-slate-200 hover:border-purple-400 transition-all duration-300 hover:shadow-xl">
                         <InteractivePhotocard
@@ -319,6 +332,16 @@ export default function Subscribers() {
           </div>
         )}
       </div>
+
+      {/* Photocard Modal */}
+      <PhotocardModal
+        isOpen={isModalOpen}
+        photocard={selectedPhotocard}
+        onClose={() => {
+          setIsModalOpen(false);
+          setSelectedPhotocard(null);
+        }}
+      />
     </div>
   );
 }

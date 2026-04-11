@@ -114,6 +114,7 @@ export const InteractivePhotocard: React.FC<InteractivePhotocardProps> = ({
       style={{
         '--shine-x': `${shinePosition.x}%`,
         '--shine-y': `${shinePosition.y}%`,
+        touchAction: 'none',
       } as React.CSSProperties}
     >
       <motion.div
