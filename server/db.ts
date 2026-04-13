@@ -190,7 +190,7 @@ function getHeadersForSheet(sheetName: string): string[] {
     stories: ['id', 'nombre', 'historia_es', 'historia_ko', 'fecha', 'createdAt', 'updatedAt'],
     galleries: ['id', 'group', 'url', 'createdAt', 'updatedAt'],
     quiz_scores: ['id', 'name', 'score', 'total', 'quizId', 'date', 'createdAt', 'updatedAt'],
-    subscriber_settings: ['id', 'password', 'updatedAt'],
+    subscriber_settings: ['id', 'password', 'calendarPdfUrl', 'calendarPreviewUrl', 'calendarMonth', 'updatedAt'],
     photocards: ['id', 'characterName', 'imageUrl', 'shineType', 'folio', 'folioNumber', 'showName', 'opacity', 'createdAt', 'updatedAt'],
   };
   return headers[sheetName] || [];
@@ -330,244 +330,6 @@ export async function markTicketsSold(orderId: number, numbers: string[], name: 
   }
 }
 
-// ============ ORDER QUERIES ============
-export async function createOrder(order: any): Promise<number> {
-  const doc = await getDoc();
-  if (!doc) throw new Error('DB not available');
-  const sheet = doc.sheetsByTitle['orders'];
-  const id = Date.now();
-  const now = new Date().toISOString();
-  await sheet.addRow({ ...order, id: id.toString(), createdAt: now, updatedAt: now });
-  return id;
-}
-
-export async function getAllOrders(): Promise<Order[]> {
-  const doc = await getDoc();
-  if (!doc) return [];
-  const sheet = doc.sheetsByTitle['orders'];
-  const rows = await sheet.getRows();
-  return rows.map(r => rowToObject(r, getHeadersForSheet('orders'))).sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-}
-
-export async function getOrderById(id: number): Promise<Order | null> {
-  const orders = await getAllOrders();
-  return orders.find(o => Number(o.id) === id) || null;
-}
-
-export async function updateOrderStatus(id: number, status: string, paymentIntentId?: string): Promise<void> {
-  const doc = await getDoc();
-  if (!doc) return;
-  const sheet = doc.sheetsByTitle['orders'];
-  const rows = await sheet.getRows();
-  const row = rows.find(r => Number(r.get('id')) === id);
-  if (row) {
-    row.set('status', status);
-    if (paymentIntentId) row.set('stripePaymentIntentId', paymentIntentId);
-    row.set('updatedAt', new Date().toISOString());
-    await row.save();
-  }
-}
-
-export async function updateOrderStripeSession(id: number, sessionId: string): Promise<void> {
-  const doc = await getDoc();
-  if (!doc) return;
-  const sheet = doc.sheetsByTitle['orders'];
-  const rows = await sheet.getRows();
-  const row = rows.find(r => Number(r.get('id')) === id);
-  if (row) {
-    row.set('stripeSessionId', sessionId);
-    await row.save();
-  }
-}
-
-export async function deleteOrder(id: number): Promise<void> {
-  const doc = await getDoc();
-  if (!doc) return;
-  const sheet = doc.sheetsByTitle['orders'];
-  const rows = await sheet.getRows();
-  const row = rows.find(r => Number(r.get('id')) === id);
-  if (row) await row.delete();
-}
-
-// ============ RAFFLE QUERIES ============
-export async function createRaffle(data: any): Promise<number> {
-  const doc = await getDoc();
-  if (!doc) throw new Error('DB not available');
-  const raffleSheet = doc.sheetsByTitle['raffles'];
-  const ticketSheet = doc.sheetsByTitle['tickets'];
-
-  // 1. Desactivar anteriores
-  const rRows = await raffleSheet.getRows();
-  for (const r of rRows) {
-    if (String(r.get('isActive')).toUpperCase() === 'TRUE') {
-      r.set('isActive', 'FALSE');
-      await r.save();
-    }
-  }
-
-  // 2. Limpiar tickets de forma segura
-  const tRows = await ticketSheet.getRows();
-  for (const t of tRows) { await t.delete(); }
-
-  // 3. Crear rifa
-  const id = Date.now();
-  const now = new Date().toISOString();
-  const total = Number(data.totalTickets);
-  const safeData = {
-    ...data,
-    id: id.toString(),
-    raffleNumber: '1',
-    isActive: 'TRUE',
-    createdAt: now,
-    updatedAt: now
-  };
-  await raffleSheet.addRow(safeData);
-
-  // 4. Generar tickets
-  const padding = total > 10000 ? 5 : (total > 1000 ? 4 : 3);
-  const batch = [];
-  for (let i = 0; i < total; i++) {
-    batch.push({
-      id: (i + 1).toString(),
-      number: i.toString().padStart(padding, '0'),
-      status: 'available',
-      updatedAt: now
-    });
-    if (batch.length >= 500) {
-      await ticketSheet.addRows(batch);
-      batch.length = 0;
-    }
-  }
-  if (batch.length > 0) await ticketSheet.addRows(batch);
-
-  return id;
-}
-
-export async function getAllRaffles(): Promise<Raffle[]> {
-  const doc = await getDoc();
-  if (!doc) return [];
-  const sheet = doc.sheetsByTitle['raffles'];
-  const rows = await sheet.getRows();
-  return rows.map(r => normalizeRaffle(rowToObject(r, getHeadersForSheet('raffles'))));
-}
-
-export async function getRaffleById(id: number): Promise<Raffle | null> {
-  const all = await getAllRaffles();
-  return all.find(r => r.id === id) || null;
-}
-
-export async function getRaffleByNumber(num: number): Promise<Raffle | null> {
-  const all = await getAllRaffles();
-  return all.find(r => r.raffleNumber === num) || null;
-}
-
-export async function updateRaffle(id: number, data: any): Promise<void> {
-  const doc = await getDoc();
-  if (!doc) return;
-  const sheet = doc.sheetsByTitle['raffles'];
-  const rows = await sheet.getRows();
-  const row = rows.find(r => Number(r.get('id')) === id);
-  if (row) {
-    for (const k in data) {
-      const v = data[k];
-      row.set(k, v instanceof Date ? v.toISOString() : (v === null ? '' : v));
-    }
-    row.set('updatedAt', new Date().toISOString());
-    await row.save();
-  }
-}
-
-export async function deleteRaffle(id: number): Promise<void> {
-  const doc = await getDoc();
-  if (!doc) return;
-  const sheet = doc.sheetsByTitle['raffles'];
-  const rows = await sheet.getRows();
-  const row = rows.find(r => Number(r.get('id')) === id);
-  if (row) await row.delete();
-}
-
-// ============ PRODUCT QUERIES ============
-export async function getAllProducts(): Promise<Product[]> {
-  const doc = await getDoc();
-  if (!doc) return [];
-  const sheet = doc.sheetsByTitle['products'];
-  const rows = await sheet.getRows();
-  return rows.map(r => rowToObject(r, getHeadersForSheet('products')));
-}
-
-export async function getProductById(id: string): Promise<Product | null> {
-  const all = await getAllProducts();
-  return all.find(p => p.id === id) || null;
-}
-
-export async function createProduct(data: any): Promise<void> {
-  const doc = await getDoc();
-  if (!doc) return;
-  const sheet = doc.sheetsByTitle['products'];
-  const now = new Date().toISOString();
-  await sheet.addRow({ ...data, id: Date.now().toString(), createdAt: now, updatedAt: now });
-}
-
-export async function updateProduct(id: string, data: any): Promise<void> {
-  const doc = await getDoc();
-  if (!doc) return;
-  const sheet = doc.sheetsByTitle['products'];
-  const rows = await sheet.getRows();
-  const row = rows.find(r => r.get('id') === id);
-  if (row) {
-    for (const k in data) row.set(k, data[k]);
-    row.set('updatedAt', new Date().toISOString());
-    await row.save();
-  }
-}
-
-export async function deleteProduct(id: string): Promise<void> {
-  const doc = await getDoc();
-  if (!doc) return;
-  const sheet = doc.sheetsByTitle['products'];
-  const rows = await sheet.getRows();
-  const row = rows.find(r => r.get('id') === id);
-  if (row) await row.delete();
-}
-
-// ============ TICKET STATS ============
-export async function getTicketStats(): Promise<{ available: number; reserved: number; sold: number; total: number }> {
-  const all = await getAllTickets();
-  return {
-    available: all.filter(t => t.status === 'available').length,
-    reserved: all.filter(t => t.status === 'reserved').length,
-    sold: all.filter(t => t.status === 'sold').length,
-    total: all.length
-  };
-}
-
-export async function getOrdersByPhone(phone: string): Promise<Order[]> {
-  const all = await getAllOrders();
-  return all.filter(o => o.buyerPhone === phone);
-}
-
-// ============ NEWS QUERIES ============
-export async function getAllNews(): Promise<News[]> {
-  const doc = await getDoc();
-  if (!doc) return [];
-  const sheet = doc.sheetsByTitle['news'];
-  const rows = await sheet.getRows();
-  return rows.map(r => {
-    const obj = rowToObject(r, getHeadersForSheet('news'));
-    return { ...obj, isPublished: String(obj.isPublished).toUpperCase() === 'TRUE' };
-  });
-}
-
-export async function createNews(data: any): Promise<string> {
-  const doc = await getDoc();
-  if (!doc) throw new Error('DB not available');
-  const sheet = doc.sheetsByTitle['news'];
-  const id = Date.now().toString();
-  const now = new Date().toISOString();
-  await sheet.addRow({ ...data, id, createdAt: now, updatedAt: now });
-  return id;
-}
-
 // ============ SUBSCRIBER SETTINGS QUERIES ============
 export async function getSubscriberPassword(): Promise<string | null> {
   const doc = await getDoc();
@@ -596,6 +358,50 @@ export async function updateSubscriberPassword(password: string): Promise<void> 
   }
 }
 
+export async function getCalendarSettings(): Promise<any> {
+  const doc = await getDoc();
+  if (!doc) return null;
+  const sheet = doc.sheetsByTitle['subscriber_settings'];
+  if (!sheet) return null;
+  const rows = await sheet.getRows();
+  const row = rows.find(r => r.get('id') === 'calendar_settings');
+  if (!row) return {
+    pdfUrl: 'https://drive.google.com/file/d/1Zhuc3a9Pc2kAy6o9dR1fwtXsWKd8NbJ_/view?usp=sharing',
+    imageUrl: '/assets/calendario_base_abril.png',
+    month: 'Abril 2026'
+  };
+  return {
+    pdfUrl: row.get('calendarPdfUrl'),
+    imageUrl: row.get('calendarPreviewUrl'),
+    month: row.get('calendarMonth')
+  };
+}
+
+export async function updateCalendarSettings(data: any): Promise<void> {
+  const doc = await getDoc();
+  if (!doc) throw new Error('DB not available');
+  const sheet = doc.sheetsByTitle['subscriber_settings'];
+  if (!sheet) throw new Error('Subscriber settings sheet not found');
+  const rows = await sheet.getRows();
+  const row = rows.find(r => r.get('id') === 'calendar_settings');
+  const now = new Date().toISOString();
+  if (row) {
+    if (data.pdfUrl) row.set('calendarPdfUrl', data.pdfUrl);
+    if (data.imageUrl) row.set('calendarPreviewUrl', data.imageUrl);
+    if (data.month) row.set('calendarMonth', data.month);
+    row.set('updatedAt', now);
+    await row.save();
+  } else {
+    await sheet.addRow({ 
+      id: 'calendar_settings', 
+      calendarPdfUrl: data.pdfUrl || '', 
+      calendarPreviewUrl: data.imageUrl || '', 
+      calendarMonth: data.month || '',
+      updatedAt: now 
+    });
+  }
+}
+
 // ============ STORY QUERIES ============
 export async function getAllStories(): Promise<Story[]> {
   const doc = await getDoc();
@@ -616,6 +422,28 @@ export async function createStory(data: any): Promise<string> {
 }
 
 // ============ EXTRA ORDER QUERIES ============
+export async function getAllOrders(): Promise<Order[]> {
+  const doc = await getDoc();
+  if (!doc) return [];
+  const sheet = doc.sheetsByTitle['orders'];
+  const rows = await sheet.getRows();
+  return rows.map(r => rowToObject(r, getHeadersForSheet('orders')));
+}
+
+export async function getOrderById(id: number): Promise<Order | null> {
+  const all = await getAllOrders();
+  return all.find(o => Number(o.id) === id) || null;
+}
+
+export async function deleteOrder(id: number): Promise<void> {
+  const doc = await getDoc();
+  if (!doc) return;
+  const sheet = doc.sheetsByTitle['orders'];
+  const rows = await sheet.getRows();
+  const row = rows.find(r => Number(r.get('id')) === id);
+  if (row) await row.delete();
+}
+
 export async function getOrderByStripeSession(sessionId: string): Promise<Order | null> {
   const all = await getAllOrders();
   return all.find(o => o.stripeSessionId === sessionId) || null;
@@ -650,7 +478,28 @@ export async function getUser(openId: string): Promise<User | null> {
   return row ? rowToObject(row, getHeadersForSheet('users')) : null;
 }
 
-// ============ NEWS QUERIES (EXTRAS) ============
+// ============ NEWS QUERIES ============
+export async function getAllNews(): Promise<News[]> {
+  const doc = await getDoc();
+  if (!doc) return [];
+  const sheet = doc.sheetsByTitle['news'];
+  const rows = await sheet.getRows();
+  return rows.map(r => {
+    const obj = rowToObject(r, getHeadersForSheet('news'));
+    return { ...obj, isPublished: String(obj.isPublished).toUpperCase() === 'TRUE' };
+  });
+}
+
+export async function createNews(data: any): Promise<string> {
+  const doc = await getDoc();
+  if (!doc) throw new Error('DB not available');
+  const sheet = doc.sheetsByTitle['news'];
+  const id = Date.now().toString();
+  const now = new Date().toISOString();
+  await sheet.addRow({ ...data, id, createdAt: now, updatedAt: now });
+  return id;
+}
+
 export async function getNewsBySlug(slug: string): Promise<News | null> {
   const all = await getAllNews();
   return all.find(n => n.slug === slug) || null;
@@ -727,7 +576,7 @@ export async function getAllQuizScores(quizId?: string): Promise<QuizScore[]> {
   const sheet = doc.sheetsByTitle['quiz_scores'];
   if (!sheet) return [];
   const rows = await sheet.getRows();
-  const scores = rows.map(r => rowToObject(r, getHeadersForSheet('quiz_scores')));
+  const scores = scores = rows.map(r => rowToObject(r, getHeadersForSheet('quiz_scores')));
   
   if (quizId) {
     return scores.filter(s => s.quizId === quizId);
