@@ -576,7 +576,7 @@ export async function getAllQuizScores(quizId?: string): Promise<QuizScore[]> {
   const sheet = doc.sheetsByTitle['quiz_scores'];
   if (!sheet) return [];
   const rows = await sheet.getRows();
-  const scores = scores = rows.map(r => rowToObject(r, getHeadersForSheet('quiz_scores')));
+  const scores = rows.map(r => rowToObject(r, getHeadersForSheet('quiz_scores')));
   
   if (quizId) {
     return scores.filter(s => s.quizId === quizId);
