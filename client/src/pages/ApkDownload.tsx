@@ -17,7 +17,7 @@ import { useLocation } from "wouter";
 export default function ApkDownload() {
   const [, navigate] = useLocation();
   // El link de Drive se actualizará cuando el usuario lo proporcione. Por ahora usamos un placeholder.
-  const [downloadLink] = useState("https://drive.google.com/open?id=YOUR_DRIVE_LINK_HERE");
+  const [downloadLink] = useState("https://drive.google.com/file/d/1-NjaEgfOlAZaH3nNDmlUr4dEBsjDKC7E/view?usp=sharing");
 
   const steps = [
     {
@@ -97,7 +97,7 @@ export default function ApkDownload() {
                 <div className="space-y-4">
                   <div className="relative aspect-[9/16] max-w-[250px] mx-auto bg-slate-800 rounded-[2.5rem] border-[6px] border-slate-700 shadow-2xl overflow-hidden shadow-purple-500/20">
                     <img
-                      src="/assets/bts_card.png"
+                      src="/assets/bts_apk_preview.png"
                       alt="Vista previa APK Calendario BTS"
                       className="w-full h-full object-cover"
                     />
@@ -148,9 +148,11 @@ export default function ApkDownload() {
                     </Button>
                   </motion.a>
                   
-                  <p className="text-[10px] text-purple-300 text-center uppercase tracking-widest">
-                    Compatible con Android 8.0 o superior
-                  </p>
+                  <div className="flex flex-col items-center gap-1">
+                    <p className="text-[10px] text-purple-300 text-center uppercase tracking-widest">
+                      Tamaño: 91.4 MB • Compatible con Android 8.0+
+                    </p>
+                  </div>
                 </div>
               </div>
             </CardContent>
