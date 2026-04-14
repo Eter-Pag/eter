@@ -30,7 +30,8 @@ import {
   ExternalLink,
   ShoppingCart,
   Calendar,
-  Download
+  Download,
+  Smartphone
 } from "lucide-react";
 import { STORE_CONFIG } from "@shared/const";
 import { motion } from "framer-motion";
@@ -119,6 +120,7 @@ export default function LandingHome() {
     { icon: Newspaper, label: "Noticias", path: "/noticias" },
     { icon: Store, label: "Tienda", path: "/tienda" },
     { icon: Images, label: "Galerías", path: "/galerias" },
+    { icon: Smartphone, label: "Calendario APK", path: "/descarga-apk" },
     { icon: Users, label: "Biografías", path: "/biografias" },
     { icon: MessageCircle, label: "Historias", path: "/historias" },
     { icon: Brain, label: "Quizzes", path: "/quizzes" },
@@ -236,7 +238,7 @@ export default function LandingHome() {
 
           {/* Desktop Menu */}
           <div className="hidden lg:flex items-center gap-1">
-            {menuItems.slice(0, 3).map((item) => (
+            {menuItems.slice(0, 4).map((item) => (
               <Button
                 key={item.path}
                 variant="ghost"

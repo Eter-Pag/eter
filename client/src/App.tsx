@@ -30,6 +30,7 @@ import Privacy from "./pages/Privacy";
 import Quizzes from "./pages/Quizzes";
 import Calendar from "./pages/Calendar";
 import BTSCalendar from "./pages/BTSCalendar";
+import ApkDownload from "./pages/ApkDownload";
 import Subscribers from "./pages/Subscribers";
 import PhotocardsGallery from "./pages/PhotocardsGallery";
 import VipCalendar from "./pages/VipCalendar";
@@ -64,6 +65,7 @@ function Router() {
       <Route path="/quizzes" component={Quizzes} />
       <Route path="/calendario" component={Calendar} />
       <Route path="/calendario-bts" component={BTSCalendar} />
+      <Route path="/descarga-apk" component={ApkDownload} />
       <Route path="/suscriptores" component={Subscribers} />
       <Route path="/photocards" component={PhotocardsGallery} />
       <Route path="/suscriptores/calendario-personalizado" component={VipCalendar} />
