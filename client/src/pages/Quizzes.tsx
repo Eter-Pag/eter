@@ -134,7 +134,7 @@ const QUIZZES: Quiz[] = [
     title: "¿Cuánto sabes de BLACKPINK?",
     description: "El examen definitivo para BLINK sobre las reinas del K-pop.",
     type: "trivia",
-    image: "https://media.vogue.es/photos/632997780004f291880436f5/16:9/w_2560%2Cc_limit/GettyImages-1424458514.jpg",
+    image: "https://fotos.perfil.com/2026/02/27/trim/950/534/blackpink-2193445.jpg",
     questions: [
       { id: 1, text: "¿En qué año debutó BLACKPINK?", options: [{ id: "a", text: "2014" }, { id: "b", text: "2015" }, { id: "c", text: "2016" }, { id: "d", text: "2017" }], correctAnswer: "c" },
       { id: 2, text: "¿Cuál fue su canción de debut?", options: [{ id: "a", text: "Boombayah" }, { id: "b", text: "Whistle" }, { id: "c", text: "Playing with Fire" }, { id: "d", text: "A y B son correctas" }], correctAnswer: "d" },
@@ -158,7 +158,7 @@ const QUIZZES: Quiz[] = [
     title: "¿Eres un verdadero STAY?",
     description: "Demuestra cuánto sabes sobre Stray Kids y su música auto-producida.",
     type: "trivia",
-    image: "https://media.vogue.co.uk/photos/6638a531e0f0656f4e64560d/16:9/w_1280,c_limit/GettyImages-2151336443.jpg",
+    image: "https://elcomercio.pe/resizer/v2/CSNR2ANPUFDBXIBPQNHFFEYFQY.jpg?auth=6c8f9f00d791d155a5c36706152cdc737aa9ffd0a026b69fe6c9e36c0d15a9c2&width=1200&height=900&quality=75&smart=true",
     questions: [
       { id: 1, text: "¿En qué año debutó Stray Kids?", options: [{ id: "a", text: "2017" }, { id: "b", text: "2018" }, { id: "c", text: "2019" }, { id: "d", text: "2020" }], correctAnswer: "b" },
       { id: 2, text: "¿Cómo se llama el programa de supervivencia donde se formó el grupo?", options: [{ id: "a", text: "Sixteen" }, { id: "b", text: "Stray Kids" }, { id: "c", text: "Produce 101" }, { id: "d", text: "I-LAND" }], correctAnswer: "b" },
@@ -182,7 +182,7 @@ const QUIZZES: Quiz[] = [
     title: "¿Eres un ONCE experto?",
     description: "Pon a prueba tus conocimientos sobre TWICE, el grupo de la nación.",
     type: "trivia",
-    image: "https://hips.hearstapps.com/hmg-prod/images/twice-celebrates-at-the-2023-billboard-women-in-music-news-photo-1677764786.jpg?crop=1xw:1xh;center,top&resize=1200:*",
+    image: "https://fotos.perfil.com/2025/04/29/trim/950/534/twice-2013069.jpg",
     questions: [
       { id: 1, text: "¿A través de qué programa de supervivencia se formó TWICE?", options: [{ id: "a", text: "Sixteen" }, { id: "b", text: "Produce 48" }, { id: "c", text: "I-LAND" }, { id: "d", text: "Girls Planet 999" }], correctAnswer: "a" },
       { id: 2, text: "¿En qué año debutó TWICE?", options: [{ id: "a", text: "2014" }, { id: "b", text: "2015" }, { id: "c", text: "2016" }, { id: "d", text: "2017" }], correctAnswer: "b" },
@@ -206,7 +206,7 @@ const QUIZZES: Quiz[] = [
     title: "¿Eres un MOA de corazón?",
     description: "Demuestra cuánto sabes sobre Tomorrow X Together (TXT).",
     type: "trivia",
-    image: "https://images.lifestyleasia.com/wp-content/uploads/sites/2/2023/01/26131435/tomorrow-x-together-txt-members-guide-1600x900.jpg",
+    image: "https://cdn.shopify.com/s/files/1/0469/3927/5428/files/Preview_1_00bd3798-e892-4d73-a4d7-e314670be7a7.png?v=1772629005",
     questions: [
       { id: 1, text: "¿En qué año debutó TXT?", options: [{ id: "a", text: "2018" }, { id: "b", text: "2019" }, { id: "c", text: "2020" }, { id: "d", text: "2021" }], correctAnswer: "b" },
       { id: 2, text: "¿Qué significan las siglas TXT?", options: [{ id: "a", text: "Together X Tomorrow" }, { id: "b", text: "Tomorrow X Together" }, { id: "c", text: "The X Team" }, { id: "d", text: "Total X Technology" }], correctAnswer: "b" },
@@ -230,7 +230,7 @@ const QUIZZES: Quiz[] = [
     title: "¿Eres un fan de BABYMONSTER?",
     description: "Demuestra cuánto sabes sobre el nuevo grupo de YG Entertainment.",
     type: "trivia",
-    image: "https://img.vogue.com.hk/2024/04/Baby-Monster.jpg",
+    image: "https://d.es.enstarz.com/en/full/11643/babymonsters-herederas-de-blackpink.png",
     questions: [
       { id: 1, text: "¿Cuántas integrantes tiene BABYMONSTER?", options: [{ id: "a", text: "5" }, { id: "b", text: "6" }, { id: "c", text: "7" }, { id: "d", text: "8" }], correctAnswer: "c" },
       { id: 2, text: "¿En qué año lanzaron su sencillo de pre-debut 'Dream'?", options: [{ id: "a", text: "2022" }, { id: "b", text: "2023" }, { id: "c", text: "2024" }, { id: "d", text: "2021" }], correctAnswer: "b" },
@@ -254,7 +254,7 @@ const QUIZZES: Quiz[] = [
     title: "¿Cuánto sabes de IVE?",
     description: "Pon a prueba tus conocimientos sobre las reinas del 'Eleven'.",
     type: "trivia",
-    image: "https://media.allure.com/photos/643862214300e84489814f85/16:9/w_2560%2Cc_limit/ive%2520k-pop%2520group%2520members.jpg",
+    image: "https://media.vogue.mx/photos/6678b4fd8825a01334fbbd4d/16:9/w_2560%2Cc_limit/ive-k-pop.jpg",
     questions: [
       { id: 1, text: "¿En qué año debutó IVE?", options: [{ id: "a", text: "2020" }, { id: "b", text: "2021" }, { id: "c", text: "2022" }, { id: "d", text: "2023" }], correctAnswer: "b" },
       { id: 2, text: "¿Cuál fue su canción de debut?", options: [{ id: "a", text: "Love Dive" }, { id: "b", text: "Eleven" }, { id: "c", text: "After LIKE" }, { id: "d", text: "I AM" }], correctAnswer: "b" },
@@ -278,7 +278,7 @@ const QUIZZES: Quiz[] = [
     title: "¿Cuánto sabes de Kep1er?",
     description: "Demuestra que eres un verdadero Kep1ian.",
     type: "trivia",
-    image: "https://img.vogue.com.hk/2022/01/Kep1er-1.jpg",
+    image: "https://cloudfront-us-east-1.images.arcpublishing.com/infobae/FN777WYFFRBHXKORXQPDURHO7I.png",
     questions: [
       { id: 1, text: "¿A través de qué programa se formó Kep1er?", options: [{ id: "a", text: "Produce 48" }, { id: "b", text: "Girls Planet 999" }, { id: "c", text: "Sixteen" }, { id: "d", text: "Queendom" }], correctAnswer: "b" },
       { id: 2, text: "¿En qué año debutó Kep1er?", options: [{ id: "a", text: "2021" }, { id: "b", text: "2022" }, { id: "c", text: "2023" }, { id: "d", text: "2020" }], correctAnswer: "b" },
