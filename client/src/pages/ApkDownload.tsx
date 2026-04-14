@@ -83,10 +83,10 @@ export default function ApkDownload() {
               <CardTitle className="text-3xl md:text-4xl font-black text-white mb-2">
                 Descarga la App del Calendario BTS 2026
               </CardTitle>
-              <div className="flex items-start gap-3 bg-amber-500/20 border border-amber-500/50 rounded-lg p-4 mb-6">
-                <ShieldAlert className="h-6 w-6 text-amber-400 shrink-0 mt-1" />
-                <p className="text-amber-100 text-sm leading-relaxed">
-                  <span className="font-bold">Aviso Importante:</span> Esta es una aplicación creada por fans para fans (Fan-APK). No tiene fines de lucro y no está afiliada oficialmente con HYBE o BTS. Úsala bajo tu propia responsabilidad.
+              <div className="flex items-start gap-3 bg-purple-500/20 border border-purple-400/50 rounded-lg p-4 mb-6">
+                <Sparkles className="h-6 w-6 text-purple-400 shrink-0 mt-1" />
+                <p className="text-purple-100 text-sm leading-relaxed">
+                  <span className="font-bold">Proyecto de Fans:</span> Esta es una aplicación creada con mucho cariño por fans para la comunidad (Fan-APK). Es un proyecto 100% libre de virus y sin fines de lucro, diseñado para que disfrutes de BTS en tu dispositivo. ¡Esperamos que te encante!
                 </p>
               </div>
             </CardHeader>
