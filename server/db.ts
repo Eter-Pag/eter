@@ -636,3 +636,68 @@ export async function deletePhotocard(id: string): Promise<void> {
   const row = rows.find(r => r.get('id') === id);
   if (row) await row.delete();
 }
+
+// ============ PRODUCT QUERIES ============
+export async function getAllProducts(): Promise<Product[]> {
+  const doc = await getDoc();
+  if (!doc) return [];
+  const sheet = doc.sheetsByTitle['products'];
+  if (!sheet) return [];
+  const rows = await sheet.getRows();
+  return rows.map(r => rowToObject(r, getHeadersForSheet('products')));
+}
+
+export async function getProductById(id: number): Promise<Product | null> {
+  const all = await getAllProducts();
+  return all.find(p => Number(p.id) === id) || null;
+}
+
+export async function createProduct(data: any): Promise<number> {
+  const doc = await getDoc();
+  if (!doc) throw new Error('DB not available');
+  const sheet = doc.sheetsByTitle['products'];
+  const rows = await sheet.getRows();
+  const id = (rows.length + 1).toString();
+  const now = new Date().toISOString();
+  await sheet.addRow({ 
+    ...data, 
+    id, 
+    rating: data.rating ? data.rating.toString() : '',
+    reviews: data.reviews ? data.reviews.toString() : '0',
+    createdAt: now, 
+    updatedAt: now 
+  });
+  return Number(id);
+}
+
+export async function updateProduct(id: number, data: any): Promise<void> {
+  const doc = await getDoc();
+  if (!doc) return;
+  const sheet = doc.sheetsByTitle['products'];
+  const rows = await sheet.getRows();
+  const row = rows.find(r => Number(r.get('id')) === id);
+  if (row) {
+    Object.keys(data).forEach(key => {
+      if (data[key] !== undefined) {
+        row.set(key, data[key] === null ? '' : data[key].toString());
+      }
+    });
+    row.set('updatedAt', new Date().toISOString());
+    await row.save();
+  }
+}
+
+export async function deleteProduct(id: number): Promise<void> {
+  const doc = await getDoc();
+  if (!doc) return;
+  const sheet = doc.sheetsByTitle['products'];
+  const rows = await sheet.getRows();
+  const row = rows.find(r => Number(r.get('id')) === id);
+  if (row) await row.delete();
+}
+
+// ============ ORDER QUERIES (EXTRAS) ============
+export async function getOrdersByPhone(phone: string): Promise<Order[]> {
+  const all = await getAllOrders();
+  return all.filter(o => o.buyerPhone === phone);
+}
