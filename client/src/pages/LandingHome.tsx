@@ -197,7 +197,6 @@ export default function LandingHome() {
 
   // Carousel logic
   const itemsPerPageDesktop = 5; // 5 productos en desktop para llenar todo el ancho
-  const itemsPerPageMobile = 2; // 2-3 productos en móvil
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
@@ -208,19 +207,20 @@ export default function LandingHome() {
   }, []);
 
   const itemsPerPageNews = isMobile ? 2 : 3;
+  const itemsPerPageProducts = isMobile ? 2 : itemsPerPageDesktop;
 
   const handlePrevProduct = () => {
-    setProductCarouselIndex((prev) => (prev === 0 ? Math.max(0, products.length - itemsPerPageDesktop) : prev - 1));
+    setProductCarouselIndex((prev) => (prev === 0 ? Math.max(0, products.length - itemsPerPageProducts) : prev - 1));
   };
 
   const handleNextProduct = () => {
     setProductCarouselIndex((prev) => {
-      const maxIndex = Math.max(0, products.length - itemsPerPageDesktop);
+      const maxIndex = Math.max(0, products.length - itemsPerPageProducts);
       return prev >= maxIndex ? 0 : prev + 1;
     });
   };
 
-  const visibleProducts = products.slice(productCarouselIndex, productCarouselIndex + itemsPerPageDesktop);
+  const visibleProducts = products.slice(productCarouselIndex, productCarouselIndex + itemsPerPageProducts);
 
   const visibleNews = recentNews.slice(newsCarouselIndex, newsCarouselIndex + itemsPerPageNews);
 
@@ -585,7 +585,7 @@ export default function LandingHome() {
                 <>
                   {/* Grid de Productos - Fila Completa */}
                   <div className="flex-grow flex items-center mb-6">
-                    <div className="w-full grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 md:gap-6">
+	                    <div className="w-full grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 md:gap-6">
                         {visibleProducts.map((product) => (
                           <motion.div
                             key={product.id}
@@ -661,18 +661,18 @@ export default function LandingHome() {
                       >
                         <ChevronLeft className="size-5" />
                       </Button>
-                      <div className="flex gap-1">
-                        {Array.from({ length: Math.max(1, Math.ceil(products.length / itemsPerPageDesktop)) }).map((_, i) => (
-                          <div
-                            key={i}
-                            className={`h-2 rounded-full transition-all ${
-                              i === Math.floor(productCarouselIndex / itemsPerPageDesktop)
-                                ? "w-6 bg-blue-600"
-                                : "w-2 bg-slate-300"
-                            }`}
-                          />
-                        ))}
-                      </div>
+	                      <div className="flex gap-1">
+	                        {Array.from({ length: Math.max(1, products.length - itemsPerPageProducts + 1) }).map((_, i) => (
+	                          <div
+	                            key={i}
+	                            className={`h-2 rounded-full transition-all ${
+	                              i === productCarouselIndex
+	                                ? "w-6 bg-blue-600"
+	                                : "w-2 bg-slate-300"
+	                            }`}
+	                          />
+	                        ))}
+	                      </div>
                       <Button
                         onClick={handleNextProduct}
                         variant="outline"
