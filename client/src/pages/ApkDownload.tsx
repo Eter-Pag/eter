@@ -17,7 +17,7 @@ import { useLocation } from "wouter";
 export default function ApkDownload() {
   const [, navigate] = useLocation();
   // El link de Drive se actualizará cuando el usuario lo proporcione. Por ahora usamos un placeholder.
-  const [downloadLink] = useState("https://drive.google.com/file/d/1-NjaEgfOlAZaH3nNDmlUr4dEBsjDKC7E/view?usp=sharing");
+  const [downloadLink] = useState("https://drive.google.com/file/d/1cD9xBb7fFsksSMrOaVWFO-vvNhgRmN96/view?usp=sharing");
 
   const steps = [
     {
