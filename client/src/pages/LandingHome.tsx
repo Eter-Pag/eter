@@ -397,8 +397,8 @@ export default function LandingHome() {
         >
           <Card className="glass-effect overflow-hidden hover:shadow-2xl transition-all duration-500 group">
             <CardContent className="p-0 flex flex-col md:flex-row">
-              {/* Columna Izquierda: Imagen, Texto y Botón */}
-              <div className="w-full md:w-1/3 flex flex-col">
+              {/* Columna Izquierda: Imagen, Texto y Botón - Oculto en móvil */}
+              <div className="hidden md:flex w-full md:w-1/3 flex-col">
                 {/* Imagen */}
                 <div className="relative h-48 md:h-80 bg-gradient-to-br from-emerald-500 to-teal-500 overflow-hidden">
                   <img
@@ -530,6 +530,18 @@ export default function LandingHome() {
                         className="rounded-full hover:bg-emerald-50 hover:text-emerald-600"
                       >
                         <ChevronRight className="size-5" />
+                      </Button>
+                    </div>
+
+                    {/* Botón Ver Noticias - Solo en móvil, debajo del carrusel */}
+                    <div className="md:hidden mt-6">
+                      <Button
+                        onClick={() => navigate("/noticias")}
+                        className="w-full gap-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-bold px-6 h-12 rounded-xl text-sm shadow-lg shadow-emerald-500/20"
+                      >
+                        <Newspaper className="size-4" />
+                        Ver todas las noticias
+                        <ArrowRight className="size-4" />
                       </Button>
                     </div>
                   </>
