@@ -106,12 +106,12 @@ export default function LandingHome() {
   };
 
   const handlePrevNews = () => {
-    setNewsCarouselIndex((prev) => (prev === 0 ? Math.max(0, recentNews.length - itemsPerPageNewsDesktop) : prev - 1));
+    setNewsCarouselIndex((prev) => (prev === 0 ? Math.max(0, recentNews.length - itemsPerPageNews) : prev - 1));
   };
 
   const handleNextNews = () => {
     setNewsCarouselIndex((prev) => {
-      const maxIndex = Math.max(0, recentNews.length - itemsPerPageNewsDesktop);
+      const maxIndex = Math.max(0, recentNews.length - itemsPerPageNews);
       return prev >= maxIndex ? 0 : prev + 1;
     });
   };
@@ -198,7 +198,16 @@ export default function LandingHome() {
   // Carousel logic
   const itemsPerPageDesktop = 5; // 5 productos en desktop para llenar todo el ancho
   const itemsPerPageMobile = 2; // 2-3 productos en móvil
-  const itemsPerPageNewsDesktop = 3; // 3 noticias por vista en carrusel
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
+  const itemsPerPageNews = isMobile ? 2 : 3;
 
   const handlePrevProduct = () => {
     setProductCarouselIndex((prev) => (prev === 0 ? Math.max(0, products.length - itemsPerPageDesktop) : prev - 1));
@@ -213,7 +222,7 @@ export default function LandingHome() {
 
   const visibleProducts = products.slice(productCarouselIndex, productCarouselIndex + itemsPerPageDesktop);
 
-  const visibleNews = recentNews.slice(newsCarouselIndex, newsCarouselIndex + itemsPerPageNewsDesktop);
+  const visibleNews = recentNews.slice(newsCarouselIndex, newsCarouselIndex + itemsPerPageNews);
 
   return (
     <div className="min-h-screen bg-background">
@@ -429,7 +438,7 @@ export default function LandingHome() {
                   <>
                     {/* Grid de Noticias (Carrusel) */}
                     <div className="flex-grow flex items-center">
-                      <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-4">
+                      <div className="w-full grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
                         {visibleNews.map((article: any) => (
                           <motion.div
                             key={article.id}
@@ -503,11 +512,11 @@ export default function LandingHome() {
                         <ChevronLeft className="size-5" />
                       </Button>
                       <div className="flex gap-1">
-                        {Array.from({ length: Math.ceil(recentNews.length / itemsPerPageNewsDesktop) }).map((_, i) => (
+                        {Array.from({ length: Math.max(1, recentNews.length - itemsPerPageNews + 1) }).map((_, i) => (
                           <div
                             key={i}
                             className={`h-2 rounded-full transition-all ${
-                              i === Math.floor(newsCarouselIndex / itemsPerPageNewsDesktop)
+                              i === newsCarouselIndex
                                 ? "w-6 bg-emerald-600"
                                 : "w-2 bg-slate-300"
                             }`}
