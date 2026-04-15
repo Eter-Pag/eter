@@ -437,7 +437,29 @@ export default function LandingHome() {
                 {recentNews.length > 0 ? (
                   <>
                     {/* Grid de Noticias (Carrusel) */}
-                    <div className="flex-grow flex items-center">
+                    <div className="flex-grow flex items-center relative">
+                      {/* Flechas laterales en móvil para noticias */}
+                      <div className="absolute -left-2 md:hidden z-10">
+                        <Button
+                          onClick={handlePrevNews}
+                          variant="outline"
+                          size="icon"
+                          className="rounded-full bg-white/80 backdrop-blur-sm border-emerald-200 text-emerald-600 shadow-md h-8 w-8"
+                        >
+                          <ChevronLeft className="size-4" />
+                        </Button>
+                      </div>
+                      <div className="absolute -right-2 md:hidden z-10">
+                        <Button
+                          onClick={handleNextNews}
+                          variant="outline"
+                          size="icon"
+                          className="rounded-full bg-white/80 backdrop-blur-sm border-emerald-200 text-emerald-600 shadow-md h-8 w-8"
+                        >
+                          <ChevronRight className="size-4" />
+                        </Button>
+                      </div>
+
                       <div className="w-full grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
                         {visibleNews.map((article: any) => (
                           <motion.div
@@ -507,7 +529,7 @@ export default function LandingHome() {
                         onClick={handlePrevNews}
                         variant="outline"
                         size="icon"
-                        className="rounded-full hover:bg-emerald-50 hover:text-emerald-600"
+                        className="hidden md:flex rounded-full hover:bg-emerald-50 hover:text-emerald-600"
                       >
                         <ChevronLeft className="size-5" />
                       </Button>
@@ -527,7 +549,7 @@ export default function LandingHome() {
                         onClick={handleNextNews}
                         variant="outline"
                         size="icon"
-                        className="rounded-full hover:bg-emerald-50 hover:text-emerald-600"
+                        className="hidden md:flex rounded-full hover:bg-emerald-50 hover:text-emerald-600"
                       >
                         <ChevronRight className="size-5" />
                       </Button>
@@ -583,9 +605,31 @@ export default function LandingHome() {
             <CardContent className="p-6 md:p-8 flex flex-col">
               {products.length > 0 ? (
                 <>
-                  {/* Grid de Productos - Fila Completa */}
-                  <div className="flex-grow flex items-center mb-6">
-	                    <div className="w-full grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 md:gap-6">
+	                  {/* Grid de Productos - Fila Completa */}
+	                  <div className="flex-grow flex items-center mb-6 relative">
+                      {/* Flechas laterales en móvil para tienda */}
+                      <div className="absolute -left-2 md:hidden z-10">
+                        <Button
+                          onClick={handlePrevProduct}
+                          variant="outline"
+                          size="icon"
+                          className="rounded-full bg-white/80 backdrop-blur-sm border-blue-200 text-blue-600 shadow-md h-8 w-8"
+                        >
+                          <ChevronLeft className="size-4" />
+                        </Button>
+                      </div>
+                      <div className="absolute -right-2 md:hidden z-10">
+                        <Button
+                          onClick={handleNextProduct}
+                          variant="outline"
+                          size="icon"
+                          className="rounded-full bg-white/80 backdrop-blur-sm border-blue-200 text-blue-600 shadow-md h-8 w-8"
+                        >
+                          <ChevronRight className="size-4" />
+                        </Button>
+                      </div>
+
+		                    <div className="w-full grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 md:gap-6">
                         {visibleProducts.map((product) => (
                           <motion.div
                             key={product.id}
@@ -651,16 +695,16 @@ export default function LandingHome() {
                     </div>
                   </div>
 
-                  {/* Controles del Carrusel */}
-                  <div className="flex items-center justify-center gap-4">
-                      <Button
-                        onClick={handlePrevProduct}
-                        variant="outline"
-                        size="icon"
-                        className="rounded-full hover:bg-blue-50 hover:text-blue-600"
-                      >
-                        <ChevronLeft className="size-5" />
-                      </Button>
+	                  {/* Controles del Carrusel */}
+	                  <div className="flex items-center justify-center gap-4">
+	                      <Button
+	                        onClick={handlePrevProduct}
+	                        variant="outline"
+	                        size="icon"
+	                        className="hidden md:flex rounded-full hover:bg-blue-50 hover:text-blue-600"
+	                      >
+	                        <ChevronLeft className="size-5" />
+	                      </Button>
 	                      <div className="flex gap-1">
 	                        {Array.from({ length: Math.max(1, products.length - itemsPerPageProducts + 1) }).map((_, i) => (
 	                          <div
@@ -673,15 +717,15 @@ export default function LandingHome() {
 	                          />
 	                        ))}
 	                      </div>
-                      <Button
-                        onClick={handleNextProduct}
-                        variant="outline"
-                        size="icon"
-                        className="rounded-full hover:bg-blue-50 hover:text-blue-600"
-                      >
-                        <ChevronRight className="size-5" />
-                      </Button>
-                  </div>
+	                      <Button
+	                        onClick={handleNextProduct}
+	                        variant="outline"
+	                        size="icon"
+	                        className="hidden md:flex rounded-full hover:bg-blue-50 hover:text-blue-600"
+	                      >
+	                        <ChevronRight className="size-5" />
+	                      </Button>
+	                  </div>
                 </>
               ) : (
                 <div className="text-center py-12">
