@@ -762,7 +762,7 @@ export default function LandingHome() {
           <p className="text-slate-500 text-center text-base">Acceso rápido a todo lo que necesitas sobre K-POP</p>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-6">
           {sections.map((section, index) => {
             const isCalendarBTS = section.path === "/calendario-bts";
             return (
@@ -797,33 +797,33 @@ export default function LandingHome() {
                   </CardContent>
                 ) : (
                   <CardContent className="p-0 flex flex-col h-full">
-                  <div className={`relative h-48 bg-gradient-to-br ${section.color} overflow-hidden`}>
-                    <img
-                      src={section.image}
-                      alt={section.title}
-                      className="w-full h-full object-cover object-top group-hover:scale-110 transition-transform duration-700"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
-                  </div>
-                  <div className="p-6 flex flex-col flex-grow">
-                    <div className="flex items-center gap-3 mb-3">
-                      <div className={`p-2 rounded-lg bg-gradient-to-br ${section.color} bg-opacity-20`}>
-                        <section.icon className="size-5 text-white" />
-                      </div>
-                      <h3 className="text-lg md:text-xl font-bold">{section.title}</h3>
-                    </div>
-                    <p className="text-slate-600 text-sm mb-6 flex-grow">
-                      {section.description}
-                    </p>
-                    <Button
-                      onClick={() => handleNavigate(section.path)}
-                      className={`w-full gap-2 font-semibold px-6 h-11 rounded-lg transition-all bg-gradient-to-r ${section.color} text-white hover:shadow-lg`}
-                    >
-                      <section.icon className="size-4" />
-                      Ir a {section.title}
-                      <ArrowRight className="size-4" />
-                    </Button>
-                  </div>
+	                    <div className={`relative h-32 md:h-48 bg-gradient-to-br ${section.color} overflow-hidden`}>
+	                      <img
+	                        src={section.image}
+	                        alt={section.title}
+	                        className="w-full h-full object-cover object-top group-hover:scale-110 transition-transform duration-700"
+	                      />
+	                      <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+	                    </div>
+	                    <div className="p-3 md:p-6 flex flex-col flex-grow">
+	                      <div className="flex items-center gap-2 md:gap-3 mb-2 md:mb-3">
+	                        <div className={`p-1.5 md:p-2 rounded-lg bg-gradient-to-br ${section.color} bg-opacity-20`}>
+	                          <section.icon className="size-4 md:size-5 text-white" />
+	                        </div>
+	                        <h3 className="text-sm md:text-xl font-bold line-clamp-1">{section.title}</h3>
+	                      </div>
+	                      <p className="text-slate-600 text-[10px] md:text-sm mb-4 md:mb-6 flex-grow line-clamp-2 md:line-clamp-none">
+	                        {section.description}
+	                      </p>
+	                      <Button
+	                        onClick={() => handleNavigate(section.path)}
+	                        className={`w-full gap-1 md:gap-2 font-semibold px-3 md:px-6 h-9 md:h-11 rounded-lg transition-all bg-gradient-to-r ${section.color} text-white hover:shadow-lg text-[10px] md:text-base`}
+	                      >
+	                        <section.icon className="size-3 md:size-4" />
+	                        <span className="hidden xs:inline">Ir a </span>{section.title}
+	                        <ArrowRight className="size-3 md:size-4" />
+	                      </Button>
+	                    </div>
                 </CardContent>
                 )}
               </Card>
