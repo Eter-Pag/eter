@@ -42,6 +42,7 @@ export default function Admin() {
               <TabsTrigger value="subscribers" className="rounded-xl gap-2 px-4"><ShieldCheck className="size-4" /> Suscriptores</TabsTrigger>
               <TabsTrigger value="photocards" className="rounded-xl gap-2 px-4"><Sparkles className="size-4" /> Photocards</TabsTrigger>
               <TabsTrigger value="calendar" className="rounded-xl gap-2 px-4"><Calendar className="size-4" /> Calendario</TabsTrigger>
+              <TabsTrigger value="app-events" className="rounded-xl gap-2 px-4"><RefreshCw className="size-4" /> App Events</TabsTrigger>
             </TabsList>
           </div>
 
@@ -76,8 +77,138 @@ export default function Admin() {
           <TabsContent value="calendar" className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
             <CalendarManager />
           </TabsContent>
+
+          <TabsContent value="app-events" className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
+            <AppEventManager />
+          </TabsContent>
         </Tabs>
       </main>
+    </div>
+  );
+}
+
+// --- APP EVENT MANAGER ---
+function AppEventManager() {
+  const { data: events, refetch } = trpc.appEvents.getAll.useQuery();
+  const createMutation = trpc.appEvents.create.useMutation();
+  const deleteMutation = trpc.appEvents.delete.useMutation();
+  
+  const [formData, setFormData] = useState({
+    day: new Date().getDate(),
+    month: new Date().getMonth(),
+    year: new Date().getFullYear(),
+    title: "",
+    type: "bts" as "bts" | "personal"
+  });
+  const [isCreating, setIsCreating] = useState(false);
+
+  const handleCreate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!formData.title) return;
+    setIsCreating(true);
+    try {
+      await createMutation.mutateAsync(formData);
+      toast.success("Evento creado exitosamente");
+      setFormData({ ...formData, title: "" });
+      refetch();
+    } catch (error) {
+      toast.error("Error al crear el evento");
+    } finally {
+      setIsCreating(false);
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!confirm("¿Estás seguro de eliminar este evento?")) return;
+    try {
+      await deleteMutation.mutateAsync({ id });
+      toast.success("Evento eliminado");
+      refetch();
+    } catch (error) {
+      toast.error("Error al eliminar");
+    }
+  };
+
+  const MESES = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+
+  return (
+    <div className="grid md:grid-cols-3 gap-8">
+      <Card className="md:col-span-1 border-slate-200 shadow-xl rounded-[2rem] bg-white overflow-hidden h-fit">
+        <CardHeader className="bg-slate-50 border-b border-slate-100 p-6">
+          <CardTitle className="text-xl font-black uppercase tracking-tighter flex items-center gap-2">
+            <Plus className="size-5 text-indigo-600" /> Nuevo Evento
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="p-6">
+          <form onSubmit={handleCreate} className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-1">
+                <label className="text-[10px] font-black uppercase text-slate-400">Día</label>
+                <Input type="number" min="1" max="31" value={formData.day} onChange={e => setFormData({...formData, day: Number(e.target.value)})} />
+              </div>
+              <div className="space-y-1">
+                <label className="text-[10px] font-black uppercase text-slate-400">Año</label>
+                <Input type="number" value={formData.year} onChange={e => setFormData({...formData, year: Number(e.target.value)})} />
+              </div>
+            </div>
+            <div className="space-y-1">
+              <label className="text-[10px] font-black uppercase text-slate-400">Mes</label>
+              <select 
+                className="w-full h-10 rounded-xl bg-slate-50 border border-slate-200 px-3 text-sm"
+                value={formData.month}
+                onChange={e => setFormData({...formData, month: Number(e.target.value)})}
+              >
+                {MESES.map((m, i) => <option key={i} value={i}>{m}</option>)}
+              </select>
+            </div>
+            <div className="space-y-1">
+              <label className="text-[10px] font-black uppercase text-slate-400">Título del Evento</label>
+              <Input placeholder="Ej: Cumpleaños de Jungkook" value={formData.title} onChange={e => setFormData({...formData, title: e.target.value})} />
+            </div>
+            <Button disabled={isCreating} className="w-full bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl h-11 uppercase font-black tracking-widest text-xs">
+              {isCreating ? <Loader2 className="animate-spin size-4" /> : "Publicar en App"}
+            </Button>
+          </form>
+        </CardContent>
+      </Card>
+
+      <Card className="md:col-span-2 border-slate-200 shadow-xl rounded-[2rem] bg-white overflow-hidden">
+        <CardHeader className="bg-slate-50 border-b border-slate-100 p-6 flex flex-row items-center justify-between">
+          <CardTitle className="text-xl font-black uppercase tracking-tighter flex items-center gap-2">
+            <RefreshCw className="size-5 text-indigo-600" /> Eventos Programados
+          </CardTitle>
+          <Button variant="ghost" size="sm" onClick={() => refetch()}><RefreshCw className="size-4" /></Button>
+        </CardHeader>
+        <CardContent className="p-0">
+          <Table>
+            <TableHeader className="bg-slate-50/50">
+              <TableRow>
+                <TableHead className="font-black uppercase text-[10px] tracking-widest">Fecha</TableHead>
+                <TableHead className="font-black uppercase text-[10px] tracking-widest">Evento</TableHead>
+                <TableHead className="w-20"></TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {events?.map((ev: any) => (
+                <TableRow key={ev.id}>
+                  <TableCell className="font-bold text-slate-600">{ev.day} {MESES[ev.month]} {ev.year}</TableCell>
+                  <TableCell className="font-medium">{ev.title}</TableCell>
+                  <TableCell>
+                    <Button variant="ghost" size="sm" onClick={() => handleDelete(ev.id)} className="text-red-500 hover:text-red-700 hover:bg-red-50">
+                      <Trash2 className="size-4" />
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+              {(!events || events.length === 0) && (
+                <TableRow>
+                  <TableCell colSpan={3} className="text-center py-10 text-slate-400 italic">No hay eventos remotos programados.</TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
     </div>
   );
 }
