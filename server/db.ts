@@ -139,6 +139,17 @@ export interface SubscriberPassword {
   updatedAt?: string;
 }
 
+export interface AppEvent {
+  id?: string;
+  day: number;
+  month: number;
+  year: number;
+  title: string;
+  type: 'bts' | 'personal';
+  createdAt?: string;
+  updatedAt?: string;
+}
+
 let _doc: GoogleSpreadsheet | null = null;
 
 async function getDoc() {
@@ -170,7 +181,7 @@ async function getDoc() {
 async function ensureSheets() {
   const doc = _doc;
   if (!doc) return;
-  const requiredSheets = ['users', 'tickets', 'orders', 'raffles', 'purchases', 'products', 'news', 'stories', 'galleries', 'quiz_scores', 'subscriber_settings', 'photocards'];
+  const requiredSheets = ['users', 'tickets', 'orders', 'raffles', 'purchases', 'products', 'news', 'stories', 'galleries', 'quiz_scores', 'subscriber_settings', 'photocards', 'app_events'];
   for (const sheetName of requiredSheets) {
     if (!doc.sheetsByTitle[sheetName]) {
       await doc.addSheet({ title: sheetName, headerValues: getHeadersForSheet(sheetName) });
@@ -192,6 +203,7 @@ function getHeadersForSheet(sheetName: string): string[] {
     quiz_scores: ['id', 'name', 'score', 'total', 'quizId', 'date', 'createdAt', 'updatedAt'],
     subscriber_settings: ['id', 'password', 'calendarPdfUrl', 'calendarPreviewUrl', 'calendarMonth', 'updatedAt'],
     photocards: ['id', 'characterName', 'imageUrl', 'shineType', 'folio', 'folioNumber', 'showName', 'opacity', 'createdAt', 'updatedAt'],
+    app_events: ['id', 'day', 'month', 'year', 'title', 'type', 'createdAt', 'updatedAt'],
   };
   return headers[sheetName] || [];
 }
@@ -700,4 +712,51 @@ export async function deleteProduct(id: number): Promise<void> {
 export async function getOrdersByPhone(phone: string): Promise<Order[]> {
   const all = await getAllOrders();
   return all.filter(o => o.buyerPhone === phone);
+}
+
+// ============ APP EVENTS QUERIES ============
+export async function getAllAppEvents(): Promise<AppEvent[]> {
+  const doc = await getDoc();
+  if (!doc) return [];
+  const sheet = doc.sheetsByTitle['app_events'];
+  if (!sheet) return [];
+  const rows = await sheet.getRows();
+  return rows.map(r => {
+    const obj = rowToObject(r, getHeadersForSheet('app_events'));
+    return {
+      ...obj,
+      day: Number(obj.day),
+      month: Number(obj.month),
+      year: Number(obj.year),
+    };
+  });
+}
+
+export async function createAppEvent(data: Omit<AppEvent, 'id' | 'createdAt' | 'updatedAt'>): Promise<string> {
+  const doc = await getDoc();
+  if (!doc) throw new Error('DB not available');
+  const sheet = doc.sheetsByTitle['app_events'];
+  if (!sheet) throw new Error('App events sheet not found');
+  const id = Date.now().toString();
+  const now = new Date().toISOString();
+  await sheet.addRow({ 
+    ...data, 
+    id, 
+    day: data.day.toString(),
+    month: data.month.toString(),
+    year: data.year.toString(),
+    createdAt: now, 
+    updatedAt: now 
+  });
+  return id;
+}
+
+export async function deleteAppEvent(id: string): Promise<void> {
+  const doc = await getDoc();
+  if (!doc) return;
+  const sheet = doc.sheetsByTitle['app_events'];
+  if (!sheet) return;
+  const rows = await sheet.getRows();
+  const row = rows.find(r => r.get('id') === id);
+  if (row) await row.delete();
 }
