@@ -735,16 +735,24 @@ export async function getAllAppEvents(): Promise<AppEvent[]> {
 export async function createAppEvent(data: Omit<AppEvent, 'id' | 'createdAt' | 'updatedAt'>): Promise<string> {
   const doc = await getDoc();
   if (!doc) throw new Error('DB not available');
+  
+  // Asegurar que la hoja existe antes de intentar añadir una fila
+  await ensureSheets();
+  
   const sheet = doc.sheetsByTitle['app_events'];
   if (!sheet) throw new Error('App events sheet not found');
+  
   const id = Date.now().toString();
   const now = new Date().toISOString();
+  
+  // Convertir todo a string para asegurar compatibilidad con Google Sheets
   await sheet.addRow({ 
-    ...data, 
-    id, 
-    day: data.day.toString(),
-    month: data.month.toString(),
-    year: data.year.toString(),
+    id,
+    day: String(data.day),
+    month: String(data.month),
+    year: String(data.year),
+    title: data.title,
+    type: data.type,
     createdAt: now, 
     updatedAt: now 
   });
