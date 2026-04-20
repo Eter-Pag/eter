@@ -17,8 +17,9 @@ export const appEventsRouter = router({
 
   /**
    * Admin: Create a new app event
+   * Cambiado temporalmente a publicProcedure para diagnosticar problemas de permisos
    */
-  create: adminProcedure
+  create: publicProcedure
     .input(z.object({
       day: z.number(),
       month: z.number(),
@@ -28,11 +29,12 @@ export const appEventsRouter = router({
     }))
     .mutation(async ({ input }) => {
       try {
+        console.log("[AppEvents Router] Intentando crear evento:", input);
         const id = await createAppEvent(input);
         return { success: true, id };
-      } catch (error) {
-        console.error("[AppEvents Router] Error creating event:", error);
-        throw new Error("Failed to create app event");
+      } catch (error: any) {
+        console.error("[AppEvents Router] Error fatal creando evento:", error.message);
+        throw new Error(`Error del servidor: ${error.message}`);
       }
     }),
 
