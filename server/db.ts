@@ -143,9 +143,11 @@ export interface AppEvent {
   id?: string;
   day: number;
   month: number;
-  year: number;
+  year: number | null; // null = evento recurrente (todos los años)
   title: string;
   type: 'bts' | 'personal';
+  summary?: string | null;
+  url?: string | null;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -203,7 +205,7 @@ function getHeadersForSheet(sheetName: string): string[] {
     quiz_scores: ['id', 'name', 'score', 'total', 'quizId', 'date', 'createdAt', 'updatedAt'],
     subscriber_settings: ['id', 'password', 'calendarPdfUrl', 'calendarPreviewUrl', 'calendarMonth', 'updatedAt'],
     photocards: ['id', 'characterName', 'imageUrl', 'shineType', 'folio', 'folioNumber', 'showName', 'opacity', 'createdAt', 'updatedAt'],
-    app_events: ['id', 'day', 'month', 'year', 'title', 'type', 'createdAt', 'updatedAt'],
+    app_events: ['id', 'day', 'month', 'year', 'title', 'type', 'summary', 'url', 'createdAt', 'updatedAt'],
   };
   return headers[sheetName] || [];
 }
@@ -727,7 +729,9 @@ export async function getAllAppEvents(): Promise<AppEvent[]> {
       ...obj,
       day: Number(obj.day),
       month: Number(obj.month),
-      year: Number(obj.year),
+      year: obj.year === null || obj.year === '' || obj.year === 'null' ? null : Number(obj.year),
+      summary: obj.summary || null,
+      url: obj.url || null,
     };
   });
 }
@@ -750,13 +754,34 @@ export async function createAppEvent(data: Omit<AppEvent, 'id' | 'createdAt' | '
     id,
     day: String(data.day),
     month: String(data.month),
-    year: String(data.year),
+    year: data.year === null ? '' : String(data.year),
     title: data.title,
     type: data.type,
+    summary: data.summary || '',
+    url: data.url || '',
     createdAt: now, 
     updatedAt: now 
   });
   return id;
+}
+
+export async function updateAppEvent(id: string, data: Omit<AppEvent, 'id' | 'createdAt' | 'updatedAt'>): Promise<void> {
+  const doc = await getDoc();
+  if (!doc) throw new Error('DB not available');
+  const sheet = doc.sheetsByTitle['app_events'];
+  if (!sheet) throw new Error('App events sheet not found');
+  const rows = await sheet.getRows();
+  const row = rows.find(r => r.get('id') === id);
+  if (!row) throw new Error('Event not found');
+  row.set('day', String(data.day));
+  row.set('month', String(data.month));
+  row.set('year', data.year === null ? '' : String(data.year));
+  row.set('title', data.title);
+  row.set('type', data.type);
+  row.set('summary', data.summary || '');
+  row.set('url', data.url || '');
+  row.set('updatedAt', new Date().toISOString());
+  await row.save();
 }
 
 export async function deleteAppEvent(id: string): Promise<void> {
@@ -766,5 +791,41 @@ export async function deleteAppEvent(id: string): Promise<void> {
   if (!sheet) return;
   const rows = await sheet.getRows();
   const row = rows.find(r => r.get('id') === id);
+  if (row) await row.delete();
+}
+
+// ============ EVENT DETAILS QUERIES ============
+const EVENT_DETAILS_HEADERS = ['slug', 'title', 'description', 'image', 'location', 'time', 'ticketsUrl', 'extraUrl', 'tags', 'createdAt', 'updatedAt'];
+
+export async function getAllEventDetails(): Promise<any[]> {
+  const doc = await getDoc();
+  if (!doc) return [];
+  let sheet = doc.sheetsByTitle['event_details'];
+  if (!sheet) {
+    sheet = await doc.addSheet({ title: 'event_details', headerValues: EVENT_DETAILS_HEADERS });
+  }
+  const rows = await sheet.getRows();
+  return rows.map(r => rowToObject(r, EVENT_DETAILS_HEADERS));
+}
+
+export async function createEventDetail(data: any): Promise<string> {
+  const doc = await getDoc();
+  if (!doc) throw new Error('DB not available');
+  let sheet = doc.sheetsByTitle['event_details'];
+  if (!sheet) {
+    sheet = await doc.addSheet({ title: 'event_details', headerValues: EVENT_DETAILS_HEADERS });
+  }
+  const now = new Date().toISOString();
+  await sheet.addRow({ ...data, createdAt: now, updatedAt: now });
+  return data.slug;
+}
+
+export async function deleteEventDetail(slug: string): Promise<void> {
+  const doc = await getDoc();
+  if (!doc) return;
+  const sheet = doc.sheetsByTitle['event_details'];
+  if (!sheet) return;
+  const rows = await sheet.getRows();
+  const row = rows.find(r => r.get('slug') === slug);
   if (row) await row.delete();
 }

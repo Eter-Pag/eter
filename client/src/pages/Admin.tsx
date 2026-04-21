@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useLocation } from "wouter";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -43,6 +44,7 @@ export default function Admin() {
               <TabsTrigger value="photocards" className="rounded-xl gap-2 px-4"><Sparkles className="size-4" /> Photocards</TabsTrigger>
               <TabsTrigger value="calendar" className="rounded-xl gap-2 px-4"><Calendar className="size-4" /> Calendario</TabsTrigger>
               <TabsTrigger value="app-events" className="rounded-xl gap-2 px-4"><RefreshCw className="size-4" /> App Events</TabsTrigger>
+              <TabsTrigger value="eventos" className="rounded-xl gap-2 px-4"><Calendar className="size-4" /> Eventos Blog</TabsTrigger>
             </TabsList>
           </div>
 
@@ -81,6 +83,10 @@ export default function Admin() {
           <TabsContent value="app-events" className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
             <AppEventManager />
           </TabsContent>
+
+          <TabsContent value="eventos" className="space-y-6 animate-in fade-in slide-in-from-bottom-2 duration-300">
+            <EventoManager />
+          </TabsContent>
         </Tabs>
       </main>
     </div>
@@ -91,30 +97,69 @@ export default function Admin() {
 function AppEventManager() {
   const { data: events, refetch } = trpc.appEvents.getAll.useQuery();
   const createMutation = trpc.appEvents.create.useMutation();
+  const updateMutation = trpc.appEvents.update.useMutation();
   const deleteMutation = trpc.appEvents.delete.useMutation();
-  
-  const [formData, setFormData] = useState({
-    day: new Date().getDate(),
-    month: new Date().getMonth(),
-    year: new Date().getFullYear(),
-    title: "",
-    type: "bts" as "bts" | "personal"
-  });
-  const [isCreating, setIsCreating] = useState(false);
 
-  const handleCreate = async (e: React.FormEvent) => {
+  const emptyForm = {
+    day: new Date().getDate(),
+    month: new Date().getMonth() + 1,
+    year: new Date().getFullYear() as number | null,
+    title: "",
+    type: "bts" as "bts" | "personal",
+    summary: "",
+    url: "",
+  };
+
+  const [formData, setFormData] = useState(emptyForm);
+  const [isRecurring, setIsRecurring] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
+
+  const handleEdit = (ev: any) => {
+    const recurring = ev.year === null || ev.year === 0;
+    setEditingId(ev.id);
+    setIsRecurring(recurring);
+    setFormData({
+      day: ev.day,
+      month: Number(ev.month),
+      year: recurring ? new Date().getFullYear() : ev.year,
+      title: ev.title || "",
+      type: ev.type || "bts",
+      summary: ev.summary || "",
+      url: ev.url || "",
+    });
+    // scroll al formulario
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const handleCancelEdit = () => {
+    setEditingId(null);
+    setIsRecurring(false);
+    setFormData(emptyForm);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.title) return;
-    setIsCreating(true);
+    setIsSaving(true);
+    const payload = { ...formData, year: isRecurring ? null : formData.year };
     try {
-      await createMutation.mutateAsync(formData);
-      toast.success("Evento creado exitosamente");
-      setFormData({ ...formData, title: "" });
+      if (editingId) {
+        await updateMutation.mutateAsync({ id: editingId, ...payload });
+        toast.success("Evento actualizado");
+        setEditingId(null);
+        setFormData(emptyForm);
+        setIsRecurring(false);
+      } else {
+        await createMutation.mutateAsync(payload);
+        toast.success("Evento creado exitosamente");
+        setFormData({ ...emptyForm });
+      }
       refetch();
     } catch (error) {
-      toast.error("Error al crear el evento");
+      toast.error(editingId ? "Error al actualizar" : "Error al crear el evento");
     } finally {
-      setIsCreating(false);
+      setIsSaving(false);
     }
   };
 
@@ -123,6 +168,7 @@ function AppEventManager() {
     try {
       await deleteMutation.mutateAsync({ id });
       toast.success("Evento eliminado");
+      if (editingId === id) handleCancelEdit();
       refetch();
     } catch (error) {
       toast.error("Error al eliminar");
@@ -133,14 +179,25 @@ function AppEventManager() {
 
   return (
     <div className="grid md:grid-cols-3 gap-8">
-      <Card className="md:col-span-1 border-slate-200 shadow-xl rounded-[2rem] bg-white overflow-hidden h-fit">
-        <CardHeader className="bg-slate-50 border-b border-slate-100 p-6">
+      {/* ── Formulario ── */}
+      <Card className={`md:col-span-1 border-slate-200 shadow-xl rounded-[2rem] bg-white overflow-hidden h-fit transition-all ${
+        editingId ? 'ring-2 ring-amber-400 ring-offset-2' : ''
+      }`}>
+        <CardHeader className={`border-b border-slate-100 p-6 ${
+          editingId ? 'bg-amber-50' : 'bg-slate-50'
+        }`}>
           <CardTitle className="text-xl font-black uppercase tracking-tighter flex items-center gap-2">
-            <Plus className="size-5 text-indigo-600" /> Nuevo Evento
+            {editingId
+              ? <><Edit2 className="size-5 text-amber-500" /> Editando Evento</>
+              : <><Plus className="size-5 text-indigo-600" /> Nuevo Evento</>
+            }
           </CardTitle>
+          {editingId && (
+            <p className="text-[10px] text-amber-600 font-bold uppercase mt-1">Modifica los campos y guarda los cambios</p>
+          )}
         </CardHeader>
         <CardContent className="p-6">
-          <form onSubmit={handleCreate} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-1">
                 <label className="text-[10px] font-black uppercase text-slate-400">Día</label>
@@ -148,30 +205,92 @@ function AppEventManager() {
               </div>
               <div className="space-y-1">
                 <label className="text-[10px] font-black uppercase text-slate-400">Año</label>
-                <Input type="number" value={formData.year} onChange={e => setFormData({...formData, year: Number(e.target.value)})} />
+                <div className="flex items-center gap-2 mb-1">
+                  <button
+                    type="button"
+                    onClick={() => setIsRecurring(!isRecurring)}
+                    className={`relative w-9 h-5 rounded-full transition-colors shrink-0 ${isRecurring ? 'bg-indigo-500' : 'bg-slate-200'}`}
+                  >
+                    <span className={`absolute top-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform ${isRecurring ? 'translate-x-4' : 'translate-x-0.5'}`} />
+                  </button>
+                  <span className="text-[10px] font-bold text-slate-500 uppercase">Recurrente</span>
+                </div>
+                {!isRecurring && (
+                  <Input type="number" value={formData.year ?? new Date().getFullYear()} onChange={e => setFormData({...formData, year: Number(e.target.value)})} />
+                )}
+                {isRecurring && (
+                  <div className="h-10 flex items-center px-3 rounded-xl bg-indigo-50 border border-indigo-100 text-xs font-bold text-indigo-600">Cada año ♾</div>
+                )}
               </div>
             </div>
             <div className="space-y-1">
               <label className="text-[10px] font-black uppercase text-slate-400">Mes</label>
-              <select 
+              <select
                 className="w-full h-10 rounded-xl bg-slate-50 border border-slate-200 px-3 text-sm"
                 value={formData.month}
                 onChange={e => setFormData({...formData, month: Number(e.target.value)})}
               >
-                {MESES.map((m, i) => <option key={i} value={i}>{m}</option>)}
+                {MESES.map((m, i) => <option key={i} value={i + 1}>{m}</option>)}
               </select>
             </div>
             <div className="space-y-1">
               <label className="text-[10px] font-black uppercase text-slate-400">Título del Evento</label>
               <Input placeholder="Ej: Cumpleaños de Jungkook" value={formData.title} onChange={e => setFormData({...formData, title: e.target.value})} />
             </div>
-            <Button disabled={isCreating} className="w-full bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl h-11 uppercase font-black tracking-widest text-xs">
-              {isCreating ? <Loader2 className="animate-spin size-4" /> : "Publicar en App"}
-            </Button>
+            <div className="space-y-1">
+              <label className="text-[10px] font-black uppercase text-slate-400">Tipo</label>
+              <select
+                className="w-full h-10 rounded-xl bg-slate-50 border border-slate-200 px-3 text-sm"
+                value={formData.type}
+                onChange={e => setFormData({...formData, type: e.target.value as "bts" | "personal"})}
+              >
+                <option value="bts">BTS</option>
+                <option value="personal">Personal</option>
+              </select>
+            </div>
+            <div className="space-y-1">
+              <label className="text-[10px] font-black uppercase text-slate-400">Resumen <span className="text-slate-300 normal-case font-normal">(descripción corta)</span></label>
+              <textarea
+                className="w-full rounded-xl bg-slate-50 border border-slate-200 p-3 text-sm min-h-[72px] resize-none"
+                placeholder="Ej: La espera ha terminado, BTS anuncia..."
+                value={formData.summary}
+                onChange={e => setFormData({...formData, summary: e.target.value})}
+              />
+            </div>
+            <div className="space-y-1">
+              <label className="text-[10px] font-black uppercase text-slate-400">URL <span className="text-slate-300 normal-case font-normal">(enlace del evento)</span></label>
+              <Input placeholder="https://..." value={formData.url} onChange={e => setFormData({...formData, url: e.target.value})} />
+            </div>
+            <div className="flex gap-2">
+              <Button
+                disabled={isSaving}
+                className={`flex-1 text-white rounded-xl h-11 uppercase font-black tracking-widest text-xs ${
+                  editingId
+                    ? 'bg-amber-500 hover:bg-amber-600'
+                    : 'bg-indigo-600 hover:bg-indigo-700'
+                }`}
+              >
+                {isSaving
+                  ? <Loader2 className="animate-spin size-4" />
+                  : editingId ? "Guardar Cambios" : "Publicar en App"
+                }
+              </Button>
+              {editingId && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={handleCancelEdit}
+                  className="rounded-xl border-slate-200 font-black text-slate-500"
+                >
+                  <X className="size-4" />
+                </Button>
+              )}
+            </div>
           </form>
         </CardContent>
       </Card>
 
+      {/* ── Tabla ── */}
       <Card className="md:col-span-2 border-slate-200 shadow-xl rounded-[2rem] bg-white overflow-hidden">
         <CardHeader className="bg-slate-50 border-b border-slate-100 p-6 flex flex-row items-center justify-between">
           <CardTitle className="text-xl font-black uppercase tracking-tighter flex items-center gap-2">
@@ -185,24 +304,58 @@ function AppEventManager() {
               <TableRow>
                 <TableHead className="font-black uppercase text-[10px] tracking-widest">Fecha</TableHead>
                 <TableHead className="font-black uppercase text-[10px] tracking-widest">Evento</TableHead>
-                <TableHead className="w-20"></TableHead>
+                <TableHead className="font-black uppercase text-[10px] tracking-widest">Resumen / URL</TableHead>
+                <TableHead className="w-24"></TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {events?.map((ev: any) => (
-                <TableRow key={ev.id}>
-                  <TableCell className="font-bold text-slate-600">{ev.day} {MESES[ev.month]} {ev.year}</TableCell>
+                <TableRow
+                  key={ev.id}
+                  className={editingId === ev.id ? 'bg-amber-50/60' : ''}
+                >
+                  <TableCell className="font-bold text-slate-600 whitespace-nowrap">
+                    {ev.day} {MESES[Number(ev.month) - 1]}{" "}
+                    {ev.year === null || ev.year === 0
+                      ? <span className="text-indigo-500 text-[10px] font-black">♾ RECURRENTE</span>
+                      : ev.year
+                    }
+                  </TableCell>
                   <TableCell className="font-medium">{ev.title}</TableCell>
+                  <TableCell className="max-w-[180px]">
+                    {ev.summary && <p className="text-xs text-slate-500 truncate mb-1">{ev.summary}</p>}
+                    {ev.url && <a href={ev.url} target="_blank" rel="noopener noreferrer" className="text-[10px] text-indigo-500 hover:underline truncate block">{ev.url}</a>}
+                    {!ev.summary && !ev.url && <span className="text-slate-300 text-xs italic">—</span>}
+                  </TableCell>
                   <TableCell>
-                    <Button variant="ghost" size="sm" onClick={() => handleDelete(ev.id)} className="text-red-500 hover:text-red-700 hover:bg-red-50">
-                      <Trash2 className="size-4" />
-                    </Button>
+                    <div className="flex gap-1 justify-end">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => editingId === ev.id ? handleCancelEdit() : handleEdit(ev)}
+                        className={`${
+                          editingId === ev.id
+                            ? 'text-amber-500 hover:text-amber-700 hover:bg-amber-50'
+                            : 'text-slate-400 hover:text-amber-600 hover:bg-amber-50'
+                        }`}
+                      >
+                        {editingId === ev.id ? <X className="size-4" /> : <Edit2 className="size-4" />}
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleDelete(ev.id)}
+                        className="text-red-400 hover:text-red-700 hover:bg-red-50"
+                      >
+                        <Trash2 className="size-4" />
+                      </Button>
+                    </div>
                   </TableCell>
                 </TableRow>
               ))}
               {(!events || events.length === 0) && (
                 <TableRow>
-                  <TableCell colSpan={3} className="text-center py-10 text-slate-400 italic">No hay eventos remotos programados.</TableCell>
+                  <TableCell colSpan={4} className="text-center py-10 text-slate-400 italic">No hay eventos remotos programados.</TableCell>
                 </TableRow>
               )}
             </TableBody>
@@ -774,118 +927,291 @@ function NewsManager() {
   const { data: news, refetch, isLoading } = trpc.news.list.useQuery();
   const createMutation = trpc.news.create.useMutation();
   const deleteMutation = trpc.news.delete.useMutation();
+  const runAutomation = trpc.news.runAutomation.useMutation();
+  const [, navigate] = useLocation();
 
   const [formData, setFormData] = useState({
     title: "",
     content: "",
     summary: "",
     image: "",
-    source: "",
+    source: "ETER",
     sourceUrl: "",
-    isPublished: true
+    isPublished: true,
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isRunningAuto, setIsRunningAuto] = useState(false);
+  const [preview, setPreview] = useState(false);
+
+  const generateSlug = (title: string) =>
+    title.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-z0-9\s-]/g, "").trim().replace(/\s+/g, "-");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!formData.title || !formData.content) {
+      toast.error("Título y contenido son obligatorios");
+      return;
+    }
+    setIsSubmitting(true);
     try {
-      const slug = formData.title.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '');
+      const slug = generateSlug(formData.title);
       await createMutation.mutateAsync({ ...formData, slug });
-      toast.success("Noticia publicada");
-      setFormData({ title: "", content: "", summary: "", image: "", source: "", sourceUrl: "", isPublished: true });
+      toast.success("✅ Noticia publicada correctamente");
+      setFormData({ title: "", content: "", summary: "", image: "", source: "ETER", sourceUrl: "", isPublished: true });
+      setPreview(false);
       refetch();
-    } catch (error) {
-      toast.error("Error al publicar");
+    } catch {
+      toast.error("Error al publicar la noticia");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   const handleDelete = async (id: number) => {
     if (!confirm("¿Eliminar noticia?")) return;
     await deleteMutation.mutateAsync({ id });
+    toast.success("Noticia eliminada");
     refetch();
+  };
+
+  const handleRunAutomation = async () => {
+    setIsRunningAuto(true);
+    try {
+      await runAutomation.mutateAsync();
+      toast.success("✅ Automatización ejecutada");
+      refetch();
+    } catch {
+      toast.error("Error en la automatización");
+    } finally {
+      setIsRunningAuto(false);
+    }
   };
 
   if (isLoading) return <div className="flex justify-center p-12"><Loader2 className="animate-spin size-8 text-slate-400" /></div>;
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-      <Card className="lg:col-span-1 border-slate-200 shadow-lg rounded-3xl h-fit sticky top-24">
-        <CardHeader className="border-b border-slate-100">
+    <div className="space-y-8">
+
+      {/* ── Barra superior ── */}
+      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 bg-white p-6 rounded-3xl border border-slate-200 shadow-sm">
+        <div>
+          <h2 className="font-black text-xl uppercase tracking-tighter">Gestión de Noticias</h2>
+          <p className="text-slate-500 text-sm mt-1">{news?.length || 0} noticias publicadas</p>
+        </div>
+        <div className="flex gap-3">
+          <Button
+            variant="outline"
+            onClick={handleRunAutomation}
+            disabled={isRunningAuto}
+            className="gap-2 rounded-xl border-slate-200 font-bold"
+          >
+            {isRunningAuto ? <Loader2 className="size-4 animate-spin" /> : <RefreshCw className="size-4" />}
+            Auto K-POP
+          </Button>
+          <Button onClick={() => refetch()} variant="outline" size="icon" className="rounded-xl border-slate-200">
+            <RefreshCw className="size-4" />
+          </Button>
+        </div>
+      </div>
+
+      {/* ── Editor ── */}
+      <Card className="border-slate-200 shadow-xl rounded-[2rem] bg-white overflow-hidden">
+        <CardHeader className="bg-slate-50 border-b border-slate-100 p-6 flex flex-row items-center justify-between">
           <CardTitle className="text-lg font-black uppercase tracking-tighter flex items-center gap-2">
-            <Newspaper className="size-5 text-blue-600" /> Nueva Noticia
+            <Newspaper className="size-5 text-blue-600" /> Nueva Noticia / Blog
           </CardTitle>
+          <div className="flex items-center gap-3">
+            <span className="text-xs text-slate-400 font-bold uppercase">Preview</span>
+            <button
+              type="button"
+              onClick={() => setPreview(!preview)}
+              className={`relative w-11 h-6 rounded-full transition-colors ${
+                preview ? "bg-blue-600" : "bg-slate-200"
+              }`}
+            >
+              <span className={`absolute top-1 w-4 h-4 rounded-full bg-white shadow transition-transform ${
+                preview ? "translate-x-6" : "translate-x-1"
+              }`} />
+            </button>
+          </div>
         </CardHeader>
-        <CardContent className="p-6">
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Título</label>
-              <Input className="rounded-xl bg-slate-50" value={formData.title} onChange={e => setFormData({...formData, title: e.target.value})} />
-            </div>
-            <div className="space-y-2">
-              <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Imagen (URL)</label>
-              <Input className="rounded-xl bg-slate-50" value={formData.image} onChange={e => setFormData({...formData, image: e.target.value})} />
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Fuente</label>
-                <Input className="rounded-xl bg-slate-50" value={formData.source} onChange={e => setFormData({...formData, source: e.target.value})} placeholder="Ej: Dispatch" />
+        <CardContent className="p-0">
+          {preview ? (
+            /* ── Vista previa ── */
+            <div className="p-8 max-w-3xl mx-auto">
+              {formData.image && (
+                <img src={formData.image} alt="preview" className="w-full h-64 object-cover rounded-2xl mb-6" />
+              )}
+              <div className="flex gap-2 mb-4">
+                <Badge className="bg-emerald-100 text-emerald-700 border-none font-bold">{formData.source || "ETER"}</Badge>
               </div>
-              <div className="space-y-2">
-                <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest">URL Fuente</label>
-                <Input className="rounded-xl bg-slate-50" value={formData.sourceUrl} onChange={e => setFormData({...formData, sourceUrl: e.target.value})} />
+              <h1 className="text-3xl font-black text-slate-900 mb-4">{formData.title || "Título de la noticia"}</h1>
+              {formData.summary && (
+                <p className="text-slate-500 text-lg mb-6 italic border-l-4 border-emerald-400 pl-4">{formData.summary}</p>
+              )}
+              <div className="space-y-4">
+                {(formData.content || "El contenido aparecerá aquí...").split("\n").filter(p => p.trim()).map((p, i) => (
+                  <p key={i} className="text-slate-700 leading-relaxed">{p}</p>
+                ))}
               </div>
+              <p className="text-xs text-slate-400 mt-8 font-bold">URL: /noticias/{generateSlug(formData.title) || "slug-de-la-noticia"}</p>
             </div>
-            <div className="space-y-2">
-              <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Resumen Corto</label>
-              <textarea 
-                className="w-full rounded-xl bg-slate-50 border border-slate-200 p-3 text-sm min-h-[80px]" 
-                value={formData.summary} 
-                onChange={e => setFormData({...formData, summary: e.target.value})}
-              />
-            </div>
-            <div className="space-y-2">
-              <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Contenido Completo</label>
-              <textarea 
-                className="w-full rounded-xl bg-slate-50 border border-slate-200 p-3 text-sm min-h-[150px]" 
-                value={formData.content} 
-                onChange={e => setFormData({...formData, content: e.target.value})}
-              />
-            </div>
-            <Button type="submit" className="w-full rounded-xl font-black uppercase tracking-widest bg-slate-900 text-white">
-              Publicar Noticia
-            </Button>
-          </form>
+          ) : (
+            /* ── Formulario ── */
+            <form onSubmit={handleSubmit} className="p-6 md:p-8 space-y-6">
+              <div className="grid md:grid-cols-2 gap-6">
+                {/* Título */}
+                <div className="md:col-span-2 space-y-2">
+                  <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Título *</label>
+                  <Input
+                    className="rounded-xl bg-slate-50 h-12 text-lg font-bold"
+                    placeholder="Escribe el título de la noticia..."
+                    value={formData.title}
+                    onChange={e => setFormData({ ...formData, title: e.target.value })}
+                  />
+                  {formData.title && (
+                    <p className="text-[10px] text-slate-400">URL: /noticias/<strong>{generateSlug(formData.title)}</strong></p>
+                  )}
+                </div>
+
+                {/* Imagen */}
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest">URL Imagen Portada</label>
+                  <Input
+                    className="rounded-xl bg-slate-50"
+                    placeholder="https://..."
+                    value={formData.image}
+                    onChange={e => setFormData({ ...formData, image: e.target.value })}
+                  />
+                  {formData.image && (
+                    <img src={formData.image} alt="preview" className="w-full h-32 object-cover rounded-xl mt-2" />
+                  )}
+                </div>
+
+                {/* Fuente */}
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Fuente</label>
+                  <Input
+                    className="rounded-xl bg-slate-50"
+                    placeholder="ETER, Weverse, Hybe..."
+                    value={formData.source}
+                    onChange={e => setFormData({ ...formData, source: e.target.value })}
+                  />
+                  <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest">URL Fuente Original</label>
+                  <Input
+                    className="rounded-xl bg-slate-50"
+                    placeholder="https://..."
+                    value={formData.sourceUrl}
+                    onChange={e => setFormData({ ...formData, sourceUrl: e.target.value })}
+                  />
+                </div>
+
+                {/* Resumen */}
+                <div className="md:col-span-2 space-y-2">
+                  <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Resumen Corto <span className="text-slate-300">(aparece en la tarjeta)</span></label>
+                  <textarea
+                    className="w-full rounded-xl bg-slate-50 border border-slate-200 p-3 text-sm min-h-[80px] resize-none"
+                    placeholder="Un párrafo corto que resume la noticia..."
+                    value={formData.summary}
+                    onChange={e => setFormData({ ...formData, summary: e.target.value })}
+                  />
+                </div>
+
+                {/* Contenido completo */}
+                <div className="md:col-span-2 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Contenido Completo * <span className="text-slate-300">(soporta saltos de línea)</span></label>
+                    <span className="text-[10px] text-slate-400">{formData.content.length} caracteres</span>
+                  </div>
+                  <textarea
+                    className="w-full rounded-xl bg-slate-50 border border-slate-200 p-4 text-sm min-h-[400px] resize-y font-mono leading-relaxed"
+                    placeholder="Escribe aquí el artículo completo...\n\nPuedes usar saltos de línea para separar párrafos.\n\nCada línea en blanco creará un nuevo párrafo en la página."
+                    value={formData.content}
+                    onChange={e => setFormData({ ...formData, content: e.target.value })}
+                  />
+                </div>
+
+                {/* Publicar */}
+                <div className="md:col-span-2 flex items-center justify-between pt-2">
+                  <label className="flex items-center gap-3 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={formData.isPublished}
+                      onChange={e => setFormData({ ...formData, isPublished: e.target.checked })}
+                      className="size-5 rounded"
+                    />
+                    <span className="text-sm font-bold text-slate-700">Publicar inmediatamente</span>
+                  </label>
+                  <Button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="h-12 px-8 rounded-xl font-black uppercase tracking-widest bg-slate-900 text-white gap-2"
+                  >
+                    {isSubmitting ? <Loader2 className="animate-spin size-4" /> : <Newspaper className="size-4" />}
+                    Publicar Noticia
+                  </Button>
+                </div>
+              </div>
+            </form>
+          )}
         </CardContent>
       </Card>
 
-      <div className="lg:col-span-2 space-y-4">
+      {/* ── Lista de noticias ── */}
+      <div className="space-y-4">
+        <h3 className="font-black uppercase tracking-tighter text-lg px-1">Noticias Publicadas</h3>
         {news?.map((item: any) => (
           <Card key={item.id} className="border-slate-200 shadow-sm rounded-3xl overflow-hidden group">
             <div className="flex flex-col md:flex-row">
-              <div className="w-full md:w-48 h-48 md:h-auto bg-slate-100 relative shrink-0">
-                <img src={item.image} alt={item.title} className="w-full h-full object-cover" />
-              </div>
-              <CardContent className="p-6 flex-1">
-                <div className="flex justify-between items-start mb-2">
-                  <div className="flex items-center gap-2">
-                    <Badge className="bg-blue-50 text-blue-600 border-none font-bold text-[10px] tracking-widest uppercase">{item.source}</Badge>
-                    <span className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">{new Date(item.createdAt).toLocaleDateString()}</span>
-                  </div>
-                  <Button size="icon" variant="ghost" className="text-slate-300 hover:text-red-600 hover:bg-red-50 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity" onClick={() => handleDelete(Number(item.id))}>
-                    <Trash2 className="size-4" />
-                  </Button>
+              {item.image && (
+                <div className="w-full md:w-40 h-32 md:h-auto bg-slate-100 relative shrink-0">
+                  <img src={item.image} alt={item.title} className="w-full h-full object-cover" />
                 </div>
-                <h4 className="text-xl font-black text-slate-900 uppercase tracking-tight mb-2 leading-tight">{item.title}</h4>
-                <p className="text-sm text-slate-500 line-clamp-3 mb-4">{item.summary}</p>
-                <div className="flex items-center gap-4 text-xs font-bold text-slate-400 uppercase tracking-widest">
-                  <span>Slug: {item.slug}</span>
-                  <div className="flex items-center gap-1 text-green-600">
-                    <CheckCircle2 className="size-3" /> Publicado
+              )}
+              <CardContent className="p-5 flex-1">
+                <div className="flex justify-between items-start gap-4">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-1">
+                      <Badge className="bg-blue-50 text-blue-600 border-none font-bold text-[10px] tracking-widest uppercase">{item.source}</Badge>
+                      <span className="text-[10px] text-slate-400 font-bold">{new Date(item.createdAt).toLocaleDateString("es-ES")}</span>
+                      {item.isPublished
+                        ? <Badge className="bg-green-50 text-green-600 border-none text-[10px] font-bold">✓ Publicado</Badge>
+                        : <Badge className="bg-amber-50 text-amber-600 border-none text-[10px] font-bold">Borrador</Badge>
+                      }
+                    </div>
+                    <h4 className="font-black text-slate-900 leading-tight mb-1">{item.title}</h4>
+                    <p className="text-xs text-slate-400 truncate">/{item.slug}</p>
+                  </div>
+                  <div className="flex gap-2 shrink-0">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="rounded-xl text-xs font-bold border-slate-200"
+                      onClick={() => navigate(`/noticias/${item.slug}`)}
+                    >
+                      Ver
+                    </Button>
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      className="text-slate-300 hover:text-red-600 hover:bg-red-50 rounded-xl"
+                      onClick={() => handleDelete(Number(item.id))}
+                    >
+                      <Trash2 className="size-4" />
+                    </Button>
                   </div>
                 </div>
               </CardContent>
             </div>
           </Card>
         ))}
+        {(!news || news.length === 0) && (
+          <div className="text-center py-16 text-slate-400">
+            <Newspaper className="size-12 mx-auto mb-4 opacity-30" />
+            <p className="font-bold">No hay noticias aún. ¡Crea la primera!</p>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -969,6 +1295,241 @@ function GalleryManager() {
             </div>
           </div>
         ))}
+      </div>
+    </div>
+  );
+}
+
+// --- EVENTO MANAGER ---
+function EventoManager() {
+  const { data: eventos, refetch, isLoading } = trpc.eventDetails.getAll.useQuery();
+  const createMutation = trpc.eventDetails.create.useMutation();
+  const deleteMutation = trpc.eventDetails.delete.useMutation();
+  const [, navigate] = useLocation();
+
+  const [formData, setFormData] = useState({
+    title: "",
+    description: "",
+    image: "",
+    location: "",
+    time: "",
+    ticketsUrl: "",
+    extraUrl: "",
+    tags: "",
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [preview, setPreview] = useState(false);
+
+  const generateSlug = (title: string) =>
+    title.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-z0-9\s-]/g, "").trim().replace(/\s+/g, "-");
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!formData.title) { toast.error("El título es obligatorio"); return; }
+    setIsSubmitting(true);
+    try {
+      const slug = generateSlug(formData.title);
+      await createMutation.mutateAsync({ ...formData, slug });
+      toast.success("✅ Evento publicado correctamente");
+      setFormData({ title: "", description: "", image: "", location: "", time: "", ticketsUrl: "", extraUrl: "", tags: "" });
+      setPreview(false);
+      refetch();
+    } catch {
+      toast.error("Error al publicar el evento");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleDelete = async (slug: string) => {
+    if (!confirm("¿Eliminar este evento?")) return;
+    await deleteMutation.mutateAsync({ slug });
+    toast.success("Evento eliminado");
+    refetch();
+  };
+
+  if (isLoading) return <div className="flex justify-center p-12"><Loader2 className="animate-spin size-8 text-slate-400" /></div>;
+
+  return (
+    <div className="space-y-8">
+
+      {/* ── Barra superior ── */}
+      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 bg-white p-6 rounded-3xl border border-slate-200 shadow-sm">
+        <div>
+          <h2 className="font-black text-xl uppercase tracking-tighter">Eventos Blog</h2>
+          <p className="text-slate-500 text-sm mt-1">{eventos?.length || 0} eventos publicados — conectado a Sheets event_details</p>
+        </div>
+        <Button onClick={() => refetch()} variant="outline" size="icon" className="rounded-xl border-slate-200">
+          <RefreshCw className="size-4" />
+        </Button>
+      </div>
+
+      {/* ── Editor ── */}
+      <Card className="border-slate-200 shadow-xl rounded-[2rem] bg-white overflow-hidden">
+        <CardHeader className="bg-slate-50 border-b border-slate-100 p-6 flex flex-row items-center justify-between">
+          <CardTitle className="text-lg font-black uppercase tracking-tighter flex items-center gap-2">
+            <Calendar className="size-5 text-purple-600" /> Nuevo Evento
+          </CardTitle>
+          <div className="flex items-center gap-3">
+            <span className="text-xs text-slate-400 font-bold uppercase">Preview</span>
+            <button
+              type="button"
+              onClick={() => setPreview(!preview)}
+              className={`relative w-11 h-6 rounded-full transition-colors ${
+                preview ? "bg-purple-600" : "bg-slate-200"
+              }`}
+            >
+              <span className={`absolute top-1 w-4 h-4 rounded-full bg-white shadow transition-transform ${
+                preview ? "translate-x-6" : "translate-x-1"
+              }`} />
+            </button>
+          </div>
+        </CardHeader>
+        <CardContent className="p-0">
+          {preview ? (
+            <div className="p-8 max-w-3xl mx-auto bg-gradient-to-br from-slate-900 via-purple-900/30 to-slate-900 rounded-2xl my-6">
+              {formData.image && <img src={formData.image} alt="preview" className="w-full h-64 object-cover rounded-2xl mb-6" />}
+              <h1 className="text-3xl font-black text-white mb-2">{formData.title || "Título del evento"}</h1>
+              {formData.location && <p className="text-purple-300 font-semibold mb-2">📍 {formData.location}</p>}
+              {formData.time && <p className="text-white/60 text-sm mb-4">🕒 {formData.time}</p>}
+              <div className="space-y-3">
+                {(formData.description || "Descripción del evento...").split("\n").filter(p => p.trim()).map((p, i) => (
+                  <p key={i} className="text-white/80 leading-relaxed">{p}</p>
+                ))}
+              </div>
+              {formData.tags && (
+                <div className="flex flex-wrap gap-2 mt-6">
+                  {formData.tags.split(",").map(t => (
+                    <span key={t} className="bg-white/10 text-white/70 px-3 py-1 rounded-full text-xs font-bold">#{t.trim()}</span>
+                  ))}
+                </div>
+              )}
+              <p className="text-xs text-white/30 mt-6">URL: /evento/{generateSlug(formData.title) || "slug-del-evento"}</p>
+            </div>
+          ) : (
+            <form onSubmit={handleSubmit} className="p-6 md:p-8 space-y-6">
+              <div className="grid md:grid-cols-2 gap-6">
+
+                {/* Título */}
+                <div className="md:col-span-2 space-y-2">
+                  <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Título *</label>
+                  <Input
+                    className="rounded-xl bg-slate-50 h-12 text-lg font-bold"
+                    placeholder="Ej: BTS World Tour 2026 - Fecha México"
+                    value={formData.title}
+                    onChange={e => setFormData({ ...formData, title: e.target.value })}
+                  />
+                  {formData.title && (
+                    <p className="text-[10px] text-slate-400">URL: /evento/<strong>{generateSlug(formData.title)}</strong></p>
+                  )}
+                </div>
+
+                {/* Imagen */}
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest">URL Imagen Portada</label>
+                  <Input className="rounded-xl bg-slate-50" placeholder="https://..." value={formData.image} onChange={e => setFormData({ ...formData, image: e.target.value })} />
+                  {formData.image && <img src={formData.image} alt="preview" className="w-full h-32 object-cover rounded-xl mt-2" />}
+                </div>
+
+                {/* Lugar y Hora */}
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Lugar / Venue</label>
+                    <Input className="rounded-xl bg-slate-50" placeholder="Ej: Foro Sol, CDMX" value={formData.location} onChange={e => setFormData({ ...formData, location: e.target.value })} />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Hora</label>
+                    <Input className="rounded-xl bg-slate-50" placeholder="Ej: 8:00 PM" value={formData.time} onChange={e => setFormData({ ...formData, time: e.target.value })} />
+                  </div>
+                </div>
+
+                {/* Links */}
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest">URL Boletos</label>
+                  <Input className="rounded-xl bg-slate-50" placeholder="https://ticketmaster..." value={formData.ticketsUrl} onChange={e => setFormData({ ...formData, ticketsUrl: e.target.value })} />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest">URL Extra (info oficial)</label>
+                  <Input className="rounded-xl bg-slate-50" placeholder="https://..." value={formData.extraUrl} onChange={e => setFormData({ ...formData, extraUrl: e.target.value })} />
+                </div>
+
+                {/* Tags */}
+                <div className="md:col-span-2 space-y-2">
+                  <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Tags <span className="text-slate-300">(separados por coma)</span></label>
+                  <Input className="rounded-xl bg-slate-50" placeholder="BTS, concierto, 2026, México" value={formData.tags} onChange={e => setFormData({ ...formData, tags: e.target.value })} />
+                </div>
+
+                {/* Descripción */}
+                <div className="md:col-span-2 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Descripción Completa <span className="text-slate-300">(blog largo)</span></label>
+                    <span className="text-[10px] text-slate-400">{formData.description.length} caracteres</span>
+                  </div>
+                  <textarea
+                    className="w-full rounded-xl bg-slate-50 border border-slate-200 p-4 text-sm min-h-[400px] resize-y font-mono leading-relaxed"
+                    placeholder="Escribe aquí toda la información del evento...\n\nHorarios, setlist esperado, info de boletos, cómo llegar, etc.\n\nCada salto de línea crea un nuevo párrafo."
+                    value={formData.description}
+                    onChange={e => setFormData({ ...formData, description: e.target.value })}
+                  />
+                </div>
+
+                <div className="md:col-span-2 flex justify-end pt-2">
+                  <Button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="h-12 px-8 rounded-xl font-black uppercase tracking-widest bg-purple-600 hover:bg-purple-700 text-white gap-2"
+                  >
+                    {isSubmitting ? <Loader2 className="animate-spin size-4" /> : <Calendar className="size-4" />}
+                    Publicar Evento
+                  </Button>
+                </div>
+              </div>
+            </form>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* ── Lista ── */}
+      <div className="space-y-4">
+        <h3 className="font-black uppercase tracking-tighter text-lg px-1">Eventos Publicados</h3>
+        {eventos?.map((ev: any) => (
+          <Card key={ev.slug} className="border-slate-200 shadow-sm rounded-3xl overflow-hidden group">
+            <div className="flex flex-col md:flex-row">
+              {ev.image && (
+                <div className="w-full md:w-40 h-32 md:h-auto bg-slate-100 relative shrink-0">
+                  <img src={ev.image} alt={ev.title} className="w-full h-full object-cover" />
+                </div>
+              )}
+              <CardContent className="p-5 flex-1">
+                <div className="flex justify-between items-start gap-4">
+                  <div className="flex-1">
+                    <h4 className="font-black text-slate-900 leading-tight mb-1">{ev.title}</h4>
+                    <div className="flex flex-wrap items-center gap-2">
+                      {ev.location && <span className="text-xs text-slate-500">📍 {ev.location}</span>}
+                      {ev.time && <span className="text-xs text-slate-500">🕒 {ev.time}</span>}
+                    </div>
+                    <p className="text-xs text-slate-400 mt-1 truncate">/evento/{ev.slug}</p>
+                  </div>
+                  <div className="flex gap-2 shrink-0">
+                    <Button size="sm" variant="outline" className="rounded-xl text-xs font-bold border-slate-200" onClick={() => navigate(`/evento/${ev.slug}`)}>
+                      Ver
+                    </Button>
+                    <Button size="icon" variant="ghost" className="text-slate-300 hover:text-red-600 hover:bg-red-50 rounded-xl" onClick={() => handleDelete(ev.slug)}>
+                      <Trash2 className="size-4" />
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </div>
+          </Card>
+        ))}
+        {(!eventos || eventos.length === 0) && (
+          <div className="text-center py-16 text-slate-400">
+            <Calendar className="size-12 mx-auto mb-4 opacity-30" />
+            <p className="font-bold">No hay eventos aún. ¡Crea el primero!</p>
+          </div>
+        )}
       </div>
     </div>
   );

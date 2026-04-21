@@ -4,7 +4,7 @@
  */
 
 import { publicProcedure, router, adminProcedure } from "../_core/trpc";
-import { getAllNews, getNewsBySlug, deleteNews } from "../db";
+import { getAllNews, getNewsBySlug, deleteNews, createNews } from "../db";
 import { z } from "zod";
 
 export const newsRouter = router({
@@ -67,6 +67,46 @@ export const newsRouter = router({
       } catch (error) {
         console.error("[News Router] Error fetching news by source:", error);
         return [];
+      }
+    }),
+
+  /**
+   * Admin: List all news (alias for adminGetAll)
+   */
+  list: publicProcedure.query(async () => {
+    try {
+      const articles = await getAllNews();
+      return articles.sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime());
+    } catch (error) {
+      console.error("[News Router] Error listing news:", error);
+      return [];
+    }
+  }),
+
+  /**
+   * Admin: Create a news article
+   */
+  create: publicProcedure
+    .input(z.object({
+      title:       z.string(),
+      content:     z.string(),
+      summary:     z.string().optional().default(""),
+      image:       z.string().optional().default(""),
+      source:      z.string().default("ETER"),
+      sourceUrl:   z.string().optional().default(""),
+      slug:        z.string(),
+      isPublished: z.boolean().default(true),
+    }))
+    .mutation(async ({ input }) => {
+      try {
+        const id = await createNews({
+          ...input,
+          isPublished: input.isPublished,
+        });
+        return { success: true, id };
+      } catch (error) {
+        console.error("[News Router] Error creating news:", error);
+        throw new Error("Error al crear noticia");
       }
     }),
 

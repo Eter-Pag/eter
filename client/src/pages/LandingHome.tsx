@@ -31,7 +31,10 @@ import {
   ShoppingCart,
   Calendar,
   Download,
-  Smartphone
+  Smartphone,
+  MapPin,
+  Ticket,
+  Star
 } from "lucide-react";
 import { STORE_CONFIG } from "@shared/const";
 import { motion } from "framer-motion";
@@ -50,6 +53,48 @@ export default function LandingHome() {
   // Admin Access State
   const [showAdminPrompt, setShowAdminPrompt] = useState(false);
   const [adminPassword, setAdminPassword] = useState("");
+
+  // Fetch events
+  const SHEETS_URL = "https://script.google.com/macros/s/AKfycbyEgUCF8FawfIfqIDIigz9MdQIDJ_iFcAt1vo7T1phRC9gAxZYtd9zy0AE1HJhREPXJ/exec";
+  const [recentEventos, setRecentEventos] = useState<any[]>([]);
+  const [eventosCarouselIndex, setEventosCarouselIndex] = useState(0);
+  useEffect(() => {
+    fetch(SHEETS_URL + "?sheet=event_details")
+      .then(r => r.json())
+      .then(json => {
+        if (json.ok && Array.isArray(json.data)) {
+          const hoy = new Date();
+          const futuros = json.data
+            .filter((ev: any) => {
+              const mes = Number(ev.month);
+              const dia = Number(ev.day);
+              const anio = Number(ev.year) || hoy.getFullYear();
+              if (isNaN(mes) || isNaN(dia)) return true; // si no tiene fecha, incluir
+              const fecha = new Date(anio, mes - 1, dia);
+              return fecha >= hoy;
+            })
+            .sort((a: any, b: any) => {
+              const da = new Date(Number(a.year) || hoy.getFullYear(), (Number(a.month) || 1) - 1, Number(a.day) || 1);
+              const db = new Date(Number(b.year) || hoy.getFullYear(), (Number(b.month) || 1) - 1, Number(b.day) || 1);
+              return da.getTime() - db.getTime();
+            });
+          setRecentEventos(futuros.length > 0 ? futuros.slice(0, 6) : json.data.slice(0, 6));
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  const MESES_CORTOS = ["Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dic"];
+  const TIPO_COLOR: Record<string, string> = {
+    bts: "from-purple-600 to-pink-600",
+    concierto: "from-pink-600 to-rose-600",
+    album: "from-blue-600 to-indigo-600",
+    army: "from-emerald-600 to-teal-600",
+    personal: "from-amber-500 to-orange-500",
+  };
+  const TIPO_EMOJI: Record<string, string> = {
+    bts: "💜", concierto: "🎤", album: "💿", army: "🪖", personal: "⭐",
+  };
 
   // Fetch products
   const { data: products = [] } = trpc.products.list.useQuery();
@@ -118,13 +163,14 @@ export default function LandingHome() {
 
   const menuItems = [
     { icon: Newspaper, label: "Noticias", path: "/noticias" },
+    { icon: Calendar, label: "Eventos", path: "/eventos" },
     { icon: Store, label: "Tienda", path: "/tienda" },
     { icon: Images, label: "Galerías", path: "/galerias" },
     { icon: Smartphone, label: "Calendario APK", path: "/descarga-apk" },
     { icon: Users, label: "Biografías", path: "/biografias" },
     { icon: MessageCircle, label: "Historias", path: "/historias" },
     { icon: Brain, label: "Quizzes", path: "/quizzes" },
-    { icon: Calendar, label: "Calendario", path: "/calendario" },
+    { icon: Calendar, label: "Cumpleaños", path: "/calendario" },
   ];
 
   const sections = [
@@ -746,6 +792,150 @@ export default function LandingHome() {
               <ArrowRight className="size-5" />
             </Button>
           </div>
+        </motion.div>
+      </section>
+
+      {/* ── Sección de Eventos ── */}
+      <section className="container py-12 md:py-20">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          viewport={{ once: true }}
+        >
+          <Card className="glass-effect overflow-hidden hover:shadow-2xl transition-all duration-500 group">
+            <CardContent className="p-0 flex flex-col md:flex-row">
+
+              {/* Columna izquierda ─ oculta en móvil */}
+              <div className="hidden md:flex w-full md:w-1/3 flex-col">
+                <div className="relative h-48 md:h-80 bg-gradient-to-br from-purple-600 to-pink-600 overflow-hidden">
+                  <div className="absolute inset-0 opacity-20" style={{backgroundImage:'radial-gradient(circle at 25% 25%, white 1px, transparent 1px)',backgroundSize:'24px 24px'}} />
+                  <div className="absolute inset-0 flex items-center justify-center text-8xl">📅</div>
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+                </div>
+                <div className="p-4 md:p-6 flex flex-col justify-between flex-grow">
+                  <div>
+                    <div className="flex items-center gap-2 mb-2">
+                      <div className="w-1 h-6 bg-gradient-to-b from-purple-500 to-pink-500 rounded-full" />
+                      <h2 className="text-lg md:text-2xl font-black">Eventos K-POP</h2>
+                    </div>
+                    <p className="text-slate-600 text-xs md:text-sm mb-4 leading-relaxed">
+                      Conciertos, lanzamientos y fechas especiales. Las próximas 6 fechas que no te puedes perder.
+                    </p>
+                  </div>
+                  <Button
+                    onClick={() => navigate("/eventos")}
+                    className="w-full gap-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold px-6 h-10 rounded-lg text-sm"
+                  >
+                    <Calendar className="size-4" /> Ver todos los eventos <ArrowRight className="size-4" />
+                  </Button>
+                </div>
+              </div>
+
+              {/* Columna derecha: carrusel */}
+              <div className="w-full md:w-2/3 p-4 md:p-6 flex flex-col justify-between">
+                {recentEventos.length > 0 ? (
+                  <>
+                    <div className="flex-grow flex items-center relative">
+                      {/* Flechas móvil */}
+                      <div className="absolute -left-2 md:hidden z-10">
+                        <Button onClick={() => setEventosCarouselIndex(i => Math.max(0, i - 1))} variant="outline" size="icon" className="rounded-full bg-white/80 border-purple-200 text-purple-600 shadow-md h-8 w-8">
+                          <ChevronLeft className="size-4" />
+                        </Button>
+                      </div>
+                      <div className="absolute -right-2 md:hidden z-10">
+                        <Button onClick={() => setEventosCarouselIndex(i => Math.min(recentEventos.length - (isMobile ? 2 : 3), i + 1))} variant="outline" size="icon" className="rounded-full bg-white/80 border-purple-200 text-purple-600 shadow-md h-8 w-8">
+                          <ChevronRight className="size-4" />
+                        </Button>
+                      </div>
+
+                      <div className="w-full grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
+                        {recentEventos.slice(eventosCarouselIndex, eventosCarouselIndex + (isMobile ? 2 : 3)).map((ev: any, idx: number) => {
+                          const tipo = (ev.type || "").toLowerCase();
+                          const color = TIPO_COLOR[tipo] || "from-slate-500 to-slate-700";
+                          const emoji = TIPO_EMOJI[tipo] || "📡";
+                          const mes = MESES_CORTOS[Number(ev.month) - 1] ?? "";
+                          return (
+                            <motion.div key={ev.slug || idx} whileHover={{ y: -4 }} className="cursor-pointer" onClick={() => ev.slug && navigate(`/evento/${ev.slug}`)}>
+                              <Card className="group h-full bg-white border-none shadow-lg rounded-2xl overflow-hidden flex flex-col hover:shadow-xl transition-all">
+                                {ev.image ? (
+                                  <div className="relative aspect-video overflow-hidden bg-slate-100">
+                                    <img src={ev.image} alt={ev.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all" />
+                                    <div className="absolute top-2 left-2">
+                                      <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-black uppercase bg-gradient-to-r ${color} text-white`}>{emoji}</span>
+                                    </div>
+                                  </div>
+                                ) : (
+                                  <div className={`h-1.5 bg-gradient-to-r ${color}`} />
+                                )}
+                                <CardContent className="p-4 flex flex-col flex-grow">
+                                  <div className="flex items-center gap-2 mb-2">
+                                    {!ev.image && (
+                                      <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-black uppercase bg-gradient-to-r ${color} text-white`}>{emoji}</span>
+                                    )}
+                                    <span className="text-[10px] text-slate-500 font-bold">{ev.day} {mes} {ev.year}</span>
+                                  </div>
+                                  <h3 className="font-black text-slate-900 text-sm mb-2 line-clamp-2 leading-tight">{ev.title}</h3>
+                                  {ev.location && (
+                                    <p className="text-xs text-slate-500 flex items-center gap-1 mb-3">
+                                      <MapPin className="size-3" /> {ev.location}
+                                    </p>
+                                  )}
+                                  <div className="mt-auto">
+                                    <Button className="w-full rounded-lg bg-slate-900 hover:bg-purple-700 text-white font-bold text-[10px] uppercase tracking-widest h-8 transition-all gap-1">
+                                      <Ticket className="size-3" /> Ver Evento
+                                    </Button>
+                                  </div>
+                                </CardContent>
+                              </Card>
+                            </motion.div>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    {/* Controles carrusel */}
+                    <div className="flex items-center justify-center gap-4 mt-4">
+                      <Button
+                        onClick={() => setEventosCarouselIndex(i => Math.max(0, i - 1))}
+                        variant="outline" size="icon"
+                        className="hidden md:flex rounded-full hover:bg-purple-50 hover:text-purple-600"
+                      >
+                        <ChevronLeft className="size-5" />
+                      </Button>
+                      <div className="flex gap-1">
+                        {Array.from({ length: Math.max(1, recentEventos.length - (isMobile ? 2 : 3) + 1) }).map((_, i) => (
+                          <div key={i} className={`h-2 rounded-full transition-all ${
+                            i === eventosCarouselIndex ? "w-6 bg-purple-600" : "w-2 bg-slate-300"
+                          }`} />
+                        ))}
+                      </div>
+                      <Button
+                        onClick={() => setEventosCarouselIndex(i => Math.min(recentEventos.length - (isMobile ? 2 : 3), i + 1))}
+                        variant="outline" size="icon"
+                        className="hidden md:flex rounded-full hover:bg-purple-50 hover:text-purple-600"
+                      >
+                        <ChevronRight className="size-5" />
+                      </Button>
+                    </div>
+
+                    {/* Botón móvil */}
+                    <div className="md:hidden mt-6">
+                      <Button
+                        onClick={() => navigate("/eventos")}
+                        className="w-full gap-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold h-12 rounded-xl text-sm shadow-lg"
+                      >
+                        <Calendar className="size-4" /> Ver todos los eventos <ArrowRight className="size-4" />
+                      </Button>
+                    </div>
+                  </>
+                ) : (
+                  <div className="h-full flex items-center justify-center text-slate-400 text-sm py-12">Cargando eventos...</div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
         </motion.div>
       </section>
 

@@ -10,6 +10,7 @@ import { quizzesRouter } from "./routers/quizzes";
 import { subscribersRouter } from "./routers/subscribers";
 import { photocardsRouter } from "./routers/photocards";
 import { appEventsRouter } from "./routers/appEvents";
+import { eventDetailsRouter } from "./routers/eventDetails";
 import { publicProcedure, protectedProcedure, router } from "./_core/trpc";
 import { z } from "zod";
 import {
@@ -48,6 +49,7 @@ export const appRouter = router({
   subscribers: subscribersRouter,
   photocards: photocardsRouter,
   appEvents: appEventsRouter,
+  eventDetails: eventDetailsRouter,
 });
 
 export type AppRouter = typeof appRouter;

@@ -34,6 +34,9 @@ import ApkDownload from "./pages/ApkDownload";
 import Subscribers from "./pages/Subscribers";
 import PhotocardsGallery from "./pages/PhotocardsGallery";
 import VipCalendar from "./pages/VipCalendar";
+import EventoDetalle from "./pages/EventoDetalle";
+import Eventos from "./pages/Eventos";
+import NoticiaDetalle from "./pages/NoticiaDetalle";
 import { MobileBottomNav } from "./components/MobileBottomNav";
 
 
@@ -69,6 +72,9 @@ function Router() {
       <Route path="/suscriptores" component={Subscribers} />
       <Route path="/photocards" component={PhotocardsGallery} />
       <Route path="/suscriptores/calendario-personalizado" component={VipCalendar} />
+      <Route path="/noticias/:slug" component={NoticiaDetalle} />
+      <Route path="/eventos" component={Eventos} />
+      <Route path="/evento/:slug" component={EventoDetalle} />
       <Route path="/admin" component={Admin} />
       <Route path="/admin/" component={Admin} />
       <Route path="/404" component={NotFound} />

@@ -3,9 +3,8 @@ import { useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { LegalFooter } from "@/components/LegalFooter";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Badge } from "../components/ui/badge";
-import { ArrowLeft, Calendar, ExternalLink, Loader2, Maximize2, Globe } from "lucide-react";
+import { ArrowLeft, Calendar, Loader2, Maximize2 } from "lucide-react";
 import { trpc } from "@/lib/trpc";
 
 interface NewsArticle {
@@ -29,7 +28,6 @@ export default function News() {
   const [displayedArticles, setDisplayedArticles] = useState<NewsArticle[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
-  const [openArticleId, setOpenArticleId] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const observerTarget = useRef<HTMLDivElement>(null);
@@ -100,31 +98,6 @@ export default function News() {
       }
     };
   }, [loadMoreArticles, hasMore, loadingMore]);
-
-  useEffect(() => {
-    const handleHashChange = () => {
-      const hash = window.location.hash.replace("#", "");
-      if (hash) {
-        setOpenArticleId(hash);
-      } else {
-        setOpenArticleId(null);
-      }
-    };
-
-    window.addEventListener("hashchange", handleHashChange);
-    handleHashChange(); // Check on mount
-
-    return () => window.removeEventListener("hashchange", handleHashChange);
-  }, []);
-
-  const handleOpenChange = (open: boolean, id: string) => {
-    if (open) {
-      window.location.hash = id;
-    } else {
-      window.history.pushState(null, "", window.location.pathname);
-      setOpenArticleId(null);
-    }
-  };
 
   const formatDate = (date: any) => {
     try {
@@ -233,79 +206,13 @@ export default function News() {
                       </p>
 
                       <div className="mt-auto">
-                        <Dialog 
-                          open={openArticleId === article.slug} 
-                          onOpenChange={(open) => handleOpenChange(open, article.slug)}
+                        <Button 
+                          className="w-full bg-slate-900 hover:bg-emerald-600 text-white rounded-xl gap-2 font-bold transition-all"
+                          onClick={() => navigate(`/noticias/${article.slug}`)}
                         >
-                          <DialogTrigger asChild>
-                            <Button 
-                              className="w-full bg-slate-900 hover:bg-emerald-600 text-white rounded-xl gap-2 font-bold transition-all"
-                            >
-                              <Maximize2 className="size-4" />
-                              Leer Noticia Completa
-                            </Button>
-                          </DialogTrigger>
-                          <DialogContent className="max-w-3xl bg-white/95 backdrop-blur-2xl border-none shadow-2xl rounded-[2.5rem] p-0 overflow-hidden">
-                            <div className="h-3 bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500" />
-                            <div className="p-0 max-h-[85vh] overflow-y-auto custom-scrollbar">
-                              {article.image && (
-                                <div className="w-full h-64 md:h-80 relative">
-                                  <img 
-                                    src={article.image} 
-                                    alt={article.title} 
-                                    className="w-full h-full object-cover"
-                                  />
-                                  <div className="absolute inset-0 bg-gradient-to-t from-white via-transparent to-transparent" />
-                                </div>
-                              )}
-                              
-                              <div className="p-8 md:p-12 -mt-12 relative bg-white/80 backdrop-blur-sm rounded-t-[3rem]">
-                                <div className="flex items-center gap-3 mb-6">
-                                  <div className="bg-emerald-100 text-emerald-700 border-none px-3 py-1 font-black uppercase tracking-widest text-[10px]">
-                                    {article.source}
-                                  </div>
-                                  <div className="flex items-center gap-2 text-gray-400 font-bold text-xs uppercase tracking-widest">
-                                    <Calendar className="size-4" />
-                                    {formatDate(article.createdAt)}
-                                  </div>
-                                </div>
-
-                                <DialogHeader>
-                                  <DialogTitle className="text-3xl md:text-4xl font-black text-gray-900 mb-8 leading-tight tracking-tight">
-                                    {article.title}
-                                  </DialogTitle>
-                                </DialogHeader>
-
-                                <div className="space-y-6 text-gray-700 text-lg leading-relaxed">
-                                  {stripHtml(article.content).split('\n').map((paragraph, idx) => (
-                                    paragraph.trim() && (
-                                      <p key={idx} className="animate-in fade-in slide-in-from-bottom-2 duration-500" style={{ animationDelay: `${idx * 100}ms` }}>
-                                        {paragraph}
-                                      </p>
-                                    )
-                                  ))}
-                                </div>
-
-                                <div className="mt-12 pt-8 border-t border-gray-100 flex flex-wrap gap-4 items-center justify-between">
-                                  {article.sourceUrl && (
-                                    <Button
-                                      onClick={() => window.open(article.sourceUrl!, "_blank")}
-                                      variant="outline"
-                                      className="rounded-full border-emerald-200 text-emerald-600 hover:bg-emerald-50 gap-2 font-bold px-6"
-                                    >
-                                      <ExternalLink className="size-4" />
-                                      Ver Fuente Original
-                                    </Button>
-                                  )}
-                                  <div className="flex items-center gap-2 text-gray-300">
-                                    <Globe className="size-5" />
-                                    <span className="text-[10px] font-black uppercase tracking-widest">Eter K-Pop News</span>
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          </DialogContent>
-                        </Dialog>
+                          <Maximize2 className="size-4" />
+                          Leer Noticia Completa
+                        </Button>
                       </div>
                     </div>
                   </CardContent>
