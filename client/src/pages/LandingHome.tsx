@@ -231,6 +231,14 @@ export default function LandingHome() {
       image: "/assets/bts_card.png",
     },
     {
+      icon: Smartphone,
+      title: "App BTS Calendar",
+      description: "Descarga nuestra app oficial para Android. Calendario sincronizado, notificaciones de eventos y más. ¡Gratis!",
+      path: "/descarga-apk",
+      color: "from-violet-600 to-purple-700",
+      image: "https://images.unsplash.com/photo-1611532736597-de2d4265fba3?w=800&h=600&fit=crop",
+    },
+    {
       icon: Sparkles,
       title: "Zona VIP",
       description: "Contenido exclusivo, folios personalizados y descargas especiales para suscriptores de Facebook.",
@@ -304,6 +312,14 @@ export default function LandingHome() {
                 {item.label}
               </Button>
             ))}
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => handleNavigate("/descarga-apk")}
+              className="text-xs font-medium hover:bg-purple-50 hover:text-purple-600 transition-all"
+            >
+              App
+            </Button>
           </div>
 
             {/* Right Section */}
